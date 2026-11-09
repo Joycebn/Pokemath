@@ -1,0 +1,17 @@
+MODELOS 3D PRÓPRIOS (opcional)
+
+O app já funciona sem nenhum arquivo aqui: ele usa uma criatura 3D feita no próprio código,
+com as cores do tipo do Pokémon.
+
+Se você tiver modelos 3D que PODE usar (feitos por você, encomendados ou com licença que permita
+o uso no seu projeto), coloque-os nesta pasta em formato GLB:
+
+  modelos/25.glb   -> Pikachu (o nome do arquivo é o número do Pokémon na Pokédex)
+  modelos/4.glb    -> Charmander
+
+O app encontra o arquivo sozinho e passa a mostrar o modelo no lugar da criatura padrão.
+Se o modelo tiver animações, o app toca a que se chamar "idle" (ou a primeira).
+Depois de enviar os arquivos ao GitHub, feche e abra o app duas vezes para atualizar.
+
+Atenção: os modelos 3D dos jogos Pokémon pertencem à Nintendo/Game Freak/The Pokémon Company.
+Não use arquivos extraídos dos jogos sem autorização.
