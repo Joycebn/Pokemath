@@ -88,22 +88,21 @@ nav button{padding:10px 2px;font-size:.78rem}button:disabled{opacity:.45;cursor:
 .cena2{position:relative;height:290px;border-radius:12px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;border:3px solid #0c1433}
 .cena2 .cena img{width:190px;height:190px}.dec{position:absolute;line-height:1}
 .stat{display:grid;grid-template-columns:110px 1fr 74px;gap:8px;align-items:center;font-size:.85rem;margin:5px 0}
-.palco{position:relative;height:min(60vh,420px);border-radius:16px;overflow:hidden;border:3px solid #0c1433;touch-action:none}
-.hud{position:absolute;top:6px;left:6px;right:6px;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;pointer-events:none}
-.hud .chips{grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2px}
-.chip{background:rgba(12,20,51,.82);color:#fff;border-radius:99px;padding:3px 10px;font-size:.8rem;font-weight:700}
-.hb{font-size:.68rem;color:#fff;text-shadow:0 1px 2px #000}.hb .barra{height:7px;background:rgba(0,0,0,.35)}
-.fala3d{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;background:rgba(255,255,255,.94);color:var(--tinta);border-radius:12px;padding:7px 12px;font-weight:700;font-size:.9rem;pointer-events:none;text-align:center}
-.carregando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;z-index:3;text-align:center}
-.mochila{margin-top:10px;background:var(--card);border-radius:14px;padding:10px}
-.tabs{display:flex;gap:6px;margin-bottom:8px}.tab{flex:1;background:#16224a;color:#fff;padding:9px 4px;font-size:.85rem}.tab.on{background:var(--amar);color:var(--tinta)}
-.bags{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
-.bag{background:#16224a;border-radius:12px;padding:6px 4px;text-align:center;touch-action:none;user-select:none;-webkit-user-select:none;border:2px solid transparent;font-size:.78rem}
-.bag.sel{border-color:var(--amar)}.bag img{width:56px;height:56px}.bag i{display:block;width:44px;height:44px;border-radius:50%;margin:6px auto}
-.bag b{display:block}.bag small{display:block;opacity:.75;font-size:.68rem;min-height:.9em}.bag span{font-weight:800;color:var(--amar)}
-.bag em{display:block;font-style:normal;font-size:.65rem;background:#7a3fc7;border-radius:99px;margin-top:2px}.bag em.c{background:#2b6e4a}
-.itens{display:flex;flex-wrap:wrap;gap:6px}.dica3{font-size:.8rem;opacity:.85;margin:8px 2px 0}
-.ghost{position:fixed;width:64px;height:64px;transform:translate(-50%,-50%);border-radius:50%;background-size:cover;pointer-events:none;z-index:40;opacity:.95}
+#cena{touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
+.cena.nham{animation:nham .35s ease-in-out 3}.cena.festa{animation:festa .8s}.cena.feliz2{animation:feliz2 .7s}
+@keyframes nham{50%{transform:scale(1.05,.93)}}
+@keyframes festa{30%{transform:translateY(-26px) rotate(-5deg)}60%{transform:translateY(0)}80%{transform:translateY(-10px) rotate(4deg)}}
+@keyframes feliz2{25%{transform:rotate(-6deg) scale(1.04)}75%{transform:rotate(6deg) scale(1.04)}}
+.expr{position:absolute;top:-4px;right:-10px;font-size:2.4rem;animation:surge .4s;z-index:3}
+.ghost2{position:fixed;width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;transform:translate(-50%,-50%);z-index:40;pointer-events:none;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.boca{position:fixed;transform:translate(-50%,-50%);z-index:35;pointer-events:none;background:#4a0f1f;border:3px solid #2a0812;border-radius:50% 50% 60% 60%;overflow:hidden;animation:abre .22s ease-out}
+.boca u{position:absolute;left:18%;right:18%;bottom:-8%;height:50%;background:#ff7a93;border-radius:50% 50% 0 0}
+.boca.mastiga{animation:mastiga .35s ease-in-out 3}.boca.fecha{animation:fecha .2s forwards}
+@keyframes abre{from{transform:translate(-50%,-50%) scale(.1)}}
+@keyframes mastiga{50%{transform:translate(-50%,-50%) scaleY(.45)}}
+@keyframes fecha{to{transform:translate(-50%,-50%) scale(.05);opacity:0}}
+.part{position:fixed;font-size:1.6rem;transform:translate(-50%,-50%);pointer-events:none;z-index:45;animation:sobeP 1.1s forwards}
+@keyframes sobeP{to{opacity:0;transform:translate(-50%,-150%)}}
 .reduzir *{animation-duration:.01s!important;animation-iteration-count:1!important;transition:none!important}
 </style>
 </head>
@@ -149,7 +148,7 @@ function render(){
   app.innerHTML=({inicio,estudar,cuidar,loja,dex,prof}[tela])();
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tela));
   document.body.classList.toggle("reduzir",!!S.cfg.reduzir||sysReduz);
-  if(tela==="estudar")aprender();if(tela==="loja"||tela==="cuidar")checarDesb();if(tela==="cuidar")iniciarPalco();else pararPalco();
+  if(tela==="estudar")aprender();
   if(tela==="inicio"){entregas();garantirEvo()}
 }
 
@@ -247,7 +246,7 @@ function responder(val){
 }
 async function fim(ok,ex){
   clearInterval(Q.timer);const q=Q;Q=null;save();
-  const m=q.modo==="desafio",rec=recompensaDiaria(q,ok)+(ok?" "+msgFim(q):"");checarDesb();estudou(ok);
+  const m=q.modo==="desafio",rec=recompensaDiaria(q,ok)+(ok?" "+msgFim(q):"");
   app.innerHTML=`<div class="tela"><div class="nome">${ok?(m?"Tabuada perfeita!":"Treino concluído!"):"Ainda não foi desta vez"}</div>
   <p>${ok?`Você acertou de primeira ${q.certas} de ${q.f.length} e ganhou 🪙 ${q.ganho}. ${rec}`:ex+" Cada tentativa ajuda você a aprender. Vamos de novo?"}</p>
   <button class="grande" onclick="ir('estudar')">Continuar</button></div>`;
@@ -331,10 +330,10 @@ function montarDiario(){
 }
 function recompensaDiaria(q,ok){
   if(!ok)return "";
-  if(q.modo==="desafio"){S.perf=(S.perf||0)+1;presenteFruta();ganharXP(20,true);q.mot=motivoSemCaptura(q.t);
+  if(q.modo==="desafio"){ganharXP(20,true);q.mot=motivoSemCaptura(q.t);
     if(q.mot){S.coins+=S.cfg.bonusRepet;save();return `+20 XP para seu companheiro! ${q.mot} Desta vez o prêmio é 🪙 ${S.cfg.bonusRepet}. Tente outra tabuada ou volte amanhã.`}
     return "+20 XP para seu companheiro!"}
-  if(q.modo==="diario"&&S.diario!==hoje()){S.diario=hoje();S.nDiario=(S.nDiario||0)+1;S.coins+=S.cfg.bonusDiario;const xp=20+2*q.certas;ganharXP(xp,true);return `Desafio diário feito! +${xp} XP e 🪙 ${S.cfg.bonusDiario}.`}
+  if(q.modo==="diario"&&S.diario!==hoje()){S.diario=hoje();S.coins+=S.cfg.bonusDiario;const xp=20+2*q.certas;ganharXP(xp,true);return `Desafio diário feito! +${xp} XP e 🪙 ${S.cfg.bonusDiario}.`}
   return "";
 }
 
@@ -343,14 +342,6 @@ const pedra=(n,d)=>({id:n,nome:n,cat:"Evolução",preco:150,emoji:"💎",desc:d}
 const LOJA=[
 {id:"petisco",nome:"Petisco",cat:"Comida",preco:8,emoji:"🍪",desc:"+4 de amizade",amz:4},
 {id:"fruta",nome:"Fruta fresca",cat:"Comida",preco:12,emoji:"🍎",desc:"+6 de amizade",amz:6},
-{id:"oran",nome:"Oran Berry (Fruta Oran)",cat:"Comida",preco:10,emoji:"🫐",desc:"Fruta azul, leve e saborosa",amz:4,sac:18,fel:4,cor:"#4a7fe0",rea:"feliz"},
-{id:"sitrus",nome:"Sitrus Berry (Fruta Sitrus)",cat:"Comida",preco:16,emoji:"🍋",desc:"Fruta amarela, dá muita energia",amz:5,sac:25,fel:6,cor:"#f2c230",rea:"pulo"},
-{id:"pecha",nome:"Pecha Berry (Fruta Pecha)",cat:"Comida",preco:18,emoji:"🍑",desc:"Fruta rosa, bem docinha",amz:6,sac:20,fel:10,cor:"#f58fb0",rea:"doce",req:{txt:"Acerte 20 contas de primeira",ok:()=>totalOk()>=20}},
-{id:"cheri",nome:"Cheri Berry (Fruta Cheri)",cat:"Comida",preco:18,emoji:"🍒",desc:"Fruta vermelha, picante!",amz:5,sac:20,fel:6,cor:"#d62839",rea:"picante",req:{txt:"Chegue a 3 dias de ofensiva",ok:()=>S.streak>=3||(S.maxStreak||0)>=3}},
-{id:"rawst",nome:"Rawst Berry (Fruta Rawst)",cat:"Comida",preco:20,emoji:"🍏",desc:"Fruta verde-água, meio amarga",amz:5,sac:20,fel:6,cor:"#4fc3a0",rea:"amargo",req:{txt:"Vença 1 desafio de captura perfeito",ok:()=>(S.perf||0)>=1}},
-{id:"lum",nome:"Lum Berry (Fruta Lum)",cat:"Comida",preco:30,emoji:"🍈",desc:"Rara! Deixa o Pokémon radiante",amz:8,sac:25,fel:14,cor:"#5cc84a",rea:"giro",req:{txt:"Chegue a 7 dias de ofensiva",ok:()=>S.streak>=7||(S.maxStreak||0)>=7}},
-{id:"poffin",nome:"Poffin",cat:"Comida",preco:45,emoji:"🧁",desc:"Especial: doce de Pokémon",esp:1,amz:9,sac:30,fel:16,cor:"#f08ac0",rea:"festa",req:{txt:"Conclua 5 desafios diários",ok:()=>(S.nDiario||0)>=5}},
-{id:"bloco",nome:"Poké Block",cat:"Comida",preco:60,emoji:"🟦",desc:"Especial: bloco nutritivo",esp:1,amz:10,sac:35,fel:18,cor:"#7a8cf0",rea:"festa",req:{txt:"Vença 3 desafios perfeitos",ok:()=>(S.perf||0)>=3}},
 {id:"bola",nome:"Bola de brincar",cat:"Brinquedo",preco:30,emoji:"⚽",desc:"+3 de amizade (até 3 brincadeiras por dia)",amz:3},
 {id:"pelucia",nome:"Pelúcia",cat:"Brinquedo",preco:45,emoji:"🧸",desc:"+4 de amizade (até 3 brincadeiras por dia)",amz:4},
 {id:"laco",nome:"Laço",cat:"Acessório",preco:50,emoji:"🎀",desc:"Para o companheiro usar"},
@@ -371,29 +362,29 @@ pedra("Pedra d'Água","Evolui o Poliwhirl"),pedra("Pedra Folha","Evolui o Gloom"
 {id:"Cabo de Troca",nome:"Cabo de Troca",cat:"Evolução",preco:180,emoji:"🔌",desc:"Evolui quem evolui por troca (adaptação do app)"}
 ];
 let msgC="Seu companheiro está feliz em ver você!";
-function comprar(x){const i=LOJA[x];if(trava(i)||S.coins<i.preco)return;S.coins-=i.preco;S.inv[i.id]=(S.inv[i.id]||0)+1;save();bip([880,1100]);toast(i.emoji+" "+i.nome+" comprado!");render()}
+function comprar(x){const i=LOJA[x];if(S.coins<i.preco)return;S.coins-=i.preco;S.inv[i.id]=(S.inv[i.id]||0)+1;save();bip([880,1100]);toast(i.emoji+" "+i.nome+" comprado!");render()}
 function usoDia(k,max){const h=hoje();if(S.uso[k]?.dia!==h)S.uso[k]={dia:h,n:0};if(S.uso[k].n>=max)return false;S.uso[k].n++;return true}
 function amizade(n){const c=ent(S.comp);c.amizade=Math.min(100,c.amizade+n);save()}
 function agrado(){if(usoDia("car",5)){amizade(1);return "♥ Eu gosto de estudar com você!"}return "♥ Já ganhei muito carinho hoje!"}
 function reagir(){const e=$("#cena");if(e){e.classList.remove("pulo");void e.offsetWidth;e.classList.add("pulo")}}
-function alimentar(x){const i=LOJA[x];if(!S.inv[i.id])return;S.inv[i.id]--;amizade(i.amz);aplicarCuidado(i);msgC=`Nham! Adorei o ${i.nome.toLowerCase()}. ❤ +${i.amz}`;bip([660,784]);render();reagir()}
+function alimentar(x){const i=LOJA[x];if(!S.inv[i.id])return;S.inv[i.id]--;amizade(i.amz);msgC=`Nham! Adorei o ${i.nome.toLowerCase()}. ❤ +${i.amz}`;bip([660,784]);render();reagir()}
 function brincar(x){const i=LOJA[x];if(!usoDia("brin",3)){msgC="Já brincamos bastante hoje! Amanhã tem mais.";return render()}amizade(i.amz);msgC=`Que divertido! ❤ +${i.amz}`;bip([523,659]);render();reagir()}
 function doce(x){const i=LOJA[x];if(!S.inv[i.id])return;S.inv[i.id]--;msgC="Que energia! +"+i.xp+" XP";ganharXP(i.xp,true);render();reagir()}
 const CEN={grama:"linear-gradient(#bfe6ff 0 55%,#8fd36b 55%)",praia:"linear-gradient(#bfe6ff 0 50%,#4fc3e8 50% 70%,#f2d98b 70%)",noite:"linear-gradient(#16224a 0 55%,#2d5a3d 55%)",neve:"linear-gradient(#cfe8f5 0 55%,#fff 55%)"};
 const DECO={planta:[8,62,"2.4rem"],tenda:[70,46,"4rem"],arco:[28,2,"4.5rem"],arvore:[1,36,"4.5rem"],fonte:[82,66,"3rem"],casa:[58,8,"3.6rem"]};
 const sysReduz=(()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch{return false}})();
-function carinhoC(){msgC=agrado();bip([587]);render();reagir()}
+function carinhoC(){msgC=agrado();bip([587]);render();reagir();const r=posCena();if(r){expressao("🥰");animCena("feliz2",700);particula("💕",r.left+r.width/2,r.top+r.height*.3)}}
 function equipCen(k){S.cen=S.cen===k?null:k;save();render()}
 function equipar(id){S.acc=S.acc===id?null:id;save();render()}
-function cuidar2D(){
+function cuidar(){
   const c=ent(S.comp);if(!c)return `<p class="aviso">Escolha um companheiro na tela Início.</p>`;
   const meus=f=>LOJA.map((i,x)=>({i,x})).filter(o=>S.inv[o.i.id]&&f(o.i));
-  const lista=(l,fn)=>l.length?l.map(o=>`<button class="lin" onclick="${fn}(${o.x})">${o.i.emoji} ${o.i.nome}${o.i.cat==="Comida"||o.i.xp?" ×"+S.inv[o.i.id]:""}</button>`).join(""):`<p>Nada por aqui ainda. Visite a loja!</p>`;
+  const lista=(l,fn)=>l.length?l.map(o=>`<button class="lin" ${fn==="alimentar"?`onpointerdown="arrastarComida(event,${o.x})" style="touch-action:none"`:`onclick="${fn}(${o.x})"`}>${o.i.emoji} ${o.i.nome}${o.i.cat==="Comida"||o.i.xp?" ×"+S.inv[o.i.id]:""}</button>`).join(""):`<p>Nada por aqui ainda. Visite a loja!</p>`;
   const acc=LOJA.find(i=>i.id===S.acc),decos=LOJA.filter(i=>i.cat==="Decoração"&&S.inv[i.id]).map(i=>i.emoji).join(" ");
-  return `<div class="tela"><div class="cena2" style="background:${CEN[S.cen||"grama"]}">${LOJA.filter(i=>i.cat==="Decoração"&&S.inv[i.id]).map(i=>{const q=DECO[i.id]||[10,10,"2.5rem"];return `<span class="dec" style="left:${q[0]}%;top:${q[1]}%;font-size:${q[2]}">${i.emoji}</span>`}).join("")}<div class="cena" id="cena"><img src="${IMG(S.comp)}" alt="${c.nome}"><span class="acc">${acc?acc.emoji:""}</span></div></div><div class="nome">${c.nome}</div><div>${msgC}</div></div>
+  return `<div class="tela"><div class="cena2" style="background:${CEN[S.cen||"grama"]}">${LOJA.filter(i=>i.cat==="Decoração"&&S.inv[i.id]).map(i=>{const q=DECO[i.id]||[10,10,"2.5rem"];return `<span class="dec" style="left:${q[0]}%;top:${q[1]}%;font-size:${q[2]}">${i.emoji}</span>`}).join("")}<div class="cena" id="cena" onpointerdown="carinhoDown(event)"><img src="${IMG(S.comp)}" alt="${c.nome}"><span class="acc">${acc?acc.emoji:""}</span></div></div><div class="nome">${c.nome}</div><div>${msgC}</div></div>
   <div class="info"><p>❤ Amizade: ${c.amizade} de 100</p><div class="barra"><i style="width:${c.amizade}%"></i></div></div>
   <h2>Carinho</h2><button class="lin" onclick="carinhoC()">🤚 Fazer carinho</button>
-  <h2>Alimentar</h2>${lista(meus(i=>i.cat==="Comida"),"alimentar")}
+  <h2>Alimentar</h2><p style="font-size:.85rem;opacity:.85;margin:0 0 6px">Arraste a comida até a boca do Pokémon, ou só toque nela.</p>${lista(meus(i=>i.cat==="Comida"),"alimentar")}
   <h2>Brincar</h2>${lista(meus(i=>i.cat==="Brinquedo"),"brincar")}
   <h2>Energia (XP)</h2>${lista(meus(i=>i.xp),"doce")}
   <h2>Cenários</h2>${meus(i=>i.cat==="Cenário").length?meus(i=>i.cat==="Cenário").map(o=>`<button class="lin" onclick="equipCen('${o.i.id.slice(4)}')">${o.i.emoji} ${o.i.nome.replace("Cenário: ","")}${S.cen===o.i.id.slice(4)?" ✔":""}</button>`).join(""):"<p>Compre cenários na loja para mudar o fundo.</p>"}
@@ -403,7 +394,7 @@ function loja(){
   const cats=["Comida","Brinquedo","Acessório","Decoração","Cenário","Evolução"];
   return `<div class="topo"><h2 style="margin:0">Loja</h2><div class="moedas">🪙 ${S.coins}</div></div>`+cats.map(cat=>`<h2>${cat}</h2>`+LOJA.map((i,x)=>({i,x})).filter(o=>o.i.cat===cat).map(({i,x})=>{
     const tem=S.inv[i.id]||0,unico=cat==="Acessório"||cat==="Decoração"||cat==="Cenário";
-    return `<div class="item">${P3.mini[i.id]?`<img src="${P3.mini[i.id]}" width="44" height="44" alt="">`:`<span style="font-size:2rem">${i.emoji||"🎁"}</span>`}<b>${i.nome}${i.esp?" ⭐":""}<br><small>${trava(i)?"🔒 "+i.req.txt:i.desc}${tem?" · você tem "+tem:""}</small></b>${trava(i)?"🔒":unico&&tem?"✔":`<button onclick="comprar(${x})" ${S.coins<i.preco?"disabled":""}>🪙 ${i.preco}</button>`}</div>`}).join("")).join("");
+    return `<div class="item"><span style="font-size:2rem">${i.emoji}</span><b>${i.nome}<br><small>${i.desc}${tem?" · você tem "+tem:""}</small></b>${unico&&tem?"✔":`<button onclick="comprar(${x})" ${S.coins<i.preco?"disabled":""}>🪙 ${i.preco}</button>`}</div>`}).join("")).join("");
 }
 let AC;
 function bip(seq){if(!S.cfg.som)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();let t=AC.currentTime;for(const f of seq){const o=AC.createOscillator(),g=AC.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.16);t+=.12}}catch{}}
@@ -497,382 +488,63 @@ function aplicar(txt){
 }
 function importar(f){if(f)f.text().then(aplicar)}
 
-/* ======== CUIDAR EM 3D (Three.js) ======== */
-const P3={pronto:false,falhou:false,id:null,pet:null,toy:null,sel:null,aba:"comida",mini:{},T:0,v:{},builds:0,timeout:15000,corac:[]};
-const TCOR={Normal:"#c9b79c",Fogo:"#f08030",Água:"#6890f0",Elétrico:"#f8d030",Planta:"#78c850",Gelo:"#98d8d8",Lutador:"#c03028",Veneno:"#a040a0",Terra:"#e0c068",Voador:"#a890f0",Psíquico:"#f85888",Inseto:"#a8b820",Pedra:"#b8a038",Fantasma:"#705898",Dragão:"#7038f8",Sombrio:"#705848",Aço:"#b8b8d0",Fada:"#ee99ac"};
-const COR_DEF={petisco:"#c98a4b",fruta:"#d94141"};
-const ESTADOS={sonolento:["😴","Sonolento"],cansado:["🥱","Cansado"],fome:["🍽️","Com fome"],animado:["🤩","Animado"],feliz:["😊","Feliz"],quieto:["🙂","Quer carinho"]};
-const FALA={sonolento:"Zzz... estou com sono.",cansado:"Estou cansadinho...",fome:"Estou com fome! Você tem uma fruta?",animado:"Vamos brincar? Estou animado!",feliz:"Estou feliz de estudar com você!",quieto:"Faz um carinho em mim?"};
-const DECOS=["planta","tenda","arco","arvore","fonte","casa"];
-const CHAO={grama:"#8fd36b",praia:"#f2d98b",noite:"#2d5a3d",neve:"#ffffff"};
-const lim=v=>Math.max(0,Math.min(100,v));
-const trava=i=>!!i.req&&!(S.desb&&S.desb[i.id]);
-const totalOk=()=>Object.values(S.stats).reduce((s,v)=>s+v.ok,0);
-const nomeIn=i=>i.nome.split(" (")[0],nomePt=i=>(i.nome.match(/\((.*)\)/)||[])[1]||"";
-
-/* --- necessidades, desbloqueios e presentes --- */
-function cuid(){return S.care||(S.care={sac:70,fel:70,ene:80,satis:50,t:Date.now()})}
-function atualizarCuidado(){const c=cuid(),h=Math.min(24,Math.max(0,(Date.now()-c.t)/36e5));c.sac=Math.max(15,c.sac-4*h);c.fel=Math.max(30,c.fel-2*h);c.ene=Math.min(100,c.ene+8*h);c.satis=Math.max(0,(c.satis||0)-h);c.t=Date.now();save()}
-function estadoPet(){const c=cuid(),rec=Date.now()-(c.brinc||0)<90000;
-  if(c.ene<20)return "sonolento";if(c.ene<40)return "cansado";if(c.sac<30)return "fome";
-  if(rec||(c.fel>=85&&c.ene>=60))return "animado";return c.fel>=50?"feliz":"quieto"}
-function aplicarCuidado(i){const c=cuid();c.sac=lim(c.sac+(i.sac||10));c.fel=lim(c.fel+(i.fel||4));c.satis=lim((c.satis||0)+(c.ult===i.id?4:12));c.ult=i.id;save()}
-function estudou(ok){const c=cuid();c.fel=lim(c.fel+(ok?5:2));c.ene=lim(c.ene-3);save()}
-function checarDesb(){
-  S.desb=S.desb||{};S.maxStreak=Math.max(S.maxStreak||0,S.streak);
-  for(const i of LOJA)if(i.req&&!S.desb[i.id]&&i.req.ok()){S.desb[i.id]=1;S.inv[i.id]=(S.inv[i.id]||0)+2;toast("🔓 Desbloqueou: "+nomeIn(i)+"! +2 na mochila")}
-  const ch=S.inicio+":"+S.streak;
-  if(S.streak>0&&S.premio!==ch){
-    if(S.streak%7===0){S.premio=ch;S.inv.bloco=(S.inv.bloco||0)+1;toast("🔥 "+S.streak+" dias seguidos! +1 Poké Block")}
-    else if(S.streak%3===0){S.premio=ch;S.inv.poffin=(S.inv.poffin||0)+1;toast("🔥 "+S.streak+" dias seguidos! +1 Poffin")}
-  }
-  save();
-}
-function presenteFruta(){
-  const l=["oran","sitrus","pecha","cheri","rawst","lum"].filter(id=>!trava(LOJA.find(i=>i.id===id)));
-  const id=l[Math.floor(Math.random()*l.length)];S.inv[id]=(S.inv[id]||0)+1;toast("🎁 Prêmio do desafio: "+nomeIn(LOJA.find(i=>i.id===id)))
-}
-
-/* --- carregar Three.js só quando entrar no Cuidar --- */
-const carregarScript=src=>new Promise((ok,er)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=er;document.head.append(s)});
-async function garantirThree(){
-  if(window.THREE&&THREE.OrbitControls)return true;
-  const B="https://cdn.jsdelivr.net/npm/three@0.128.0/";
-  try{
-    await Promise.race([(async()=>{await carregarScript(B+"build/three.min.js");await Promise.all([carregarScript(B+"examples/js/controls/OrbitControls.js"),carregarScript(B+"examples/js/loaders/GLTFLoader.js")])})(),new Promise((_,er)=>setTimeout(er,P3.timeout))]);
-    return !!(window.THREE&&THREE.OrbitControls);
-  }catch{return false}
-}
-
-/* --- construtores 3D: criatura, comidas, brinquedos, acessórios e decorações --- */
-const mat=(c,r)=>new THREE.MeshStandardMaterial({color:c,roughness:r??.65});
-function criarPet(id,tipos){
-  const T=THREE,cor=new T.Color(TCOR[tipos[0]]||"#e9b44c"),cor2=new T.Color(TCOR[tipos[1]]||TCOR[tipos[0]]||"#fff2d0").lerp(new T.Color("#ffffff"),.4);
-  const g=new T.Group(),corpo=new T.Group();g.add(corpo);
-  const body=new T.Mesh(new T.SphereGeometry(.8,24,18),mat(cor));body.scale.set(1,.9,.95);body.position.y=.8;corpo.add(body);
-  const barriga=new T.Mesh(new T.SphereGeometry(.55,20,14),mat(cor2));barriga.position.set(0,.72,.42);barriga.scale.set(1,1,.6);corpo.add(barriga);
-  const cabeca=new T.Group();cabeca.position.y=1.65;corpo.add(cabeca);
-  cabeca.add(new T.Mesh(new T.SphereGeometry(.62,24,18),mat(cor)));
-  const estilo=id%3,olhos=[],bochechas=[],bracos=[],pernas=[];
-  for(const sx of[-1,1]){
-    const o=new T.Mesh(estilo===0?new T.ConeGeometry(.2,.55,12):new T.SphereGeometry(.22,12,10),mat(cor));o.position.set(sx*.38,.55,0);o.rotation.z=-sx*.35;if(estilo===2)o.scale.set(1,1.5,.6);cabeca.add(o);
-    const e=new T.Mesh(new T.SphereGeometry(.09,12,10),mat("#1b1b2f",.3));e.position.set(sx*.24,.08,.55);cabeca.add(e);olhos.push(e);
-    const b=new T.Mesh(new T.SphereGeometry(.03,8,6),new T.MeshBasicMaterial({color:"#ffffff"}));b.position.set(.03,.04,.07);e.add(b);
-    const ch=new T.Mesh(new T.SphereGeometry(.1,10,8),mat("#ff8aa0"));ch.position.set(sx*.4,-.12,.48);ch.scale.set(1,.7,.4);cabeca.add(ch);bochechas.push(ch);
-    const br=new T.Group();br.position.set(sx*.78,1.0,.1);const bm=new T.Mesh(new T.SphereGeometry(.2,12,10),mat(cor));bm.position.y=-.15;bm.scale.set(.8,1.2,.8);br.add(bm);corpo.add(br);bracos.push(br);
-    const pe=new T.Mesh(new T.SphereGeometry(.26,12,10),mat(cor2));pe.position.set(sx*.4,.12,.25);pe.scale.set(1,.55,1.3);corpo.add(pe);pernas.push(pe);
-  }
-  const boca=new T.Mesh(new T.SphereGeometry(.1,12,10),mat("#5a1a2a"));boca.position.set(0,-.18,.58);boca.scale.set(1.2,.2,.5);cabeca.add(boca);
-  const cauda=new T.Group();cauda.position.set(0,.6,-.7);
-  const cp=new T.Mesh(id%2?new T.ConeGeometry(.18,.7,12):new T.SphereGeometry(.22,12,10),mat(cor2));cp.position.set(0,.3,-.05);cp.rotation.x=-.5;cauda.add(cp);corpo.add(cauda);
-  const topo=new T.Object3D();topo.position.set(0,.6,.05);cabeca.add(topo);
-  const rosto=new T.Object3D();rosto.position.set(0,.1,.6);cabeca.add(rosto);
-  g.userData={corpo,cabeca,olhos,boca,cauda,bracos,pernas,bochechas,topo,rosto};
-  return g;
-}
-function comida3D(id){
-  const T=THREE,g=new T.Group(),i=LOJA.find(x=>x.id===id),cor=i.cor||COR_DEF[id]||"#d33";
-  if(id==="poffin"){
-    const b=new T.Mesh(new T.CylinderGeometry(.26,.28,.14,24),mat(cor));const r=new T.Mesh(new T.TorusGeometry(.18,.045,10,24),mat("#fff0a8"));r.rotation.x=Math.PI/2;r.position.y=.09;
-    const c=new T.Mesh(new T.SphereGeometry(.07,10,8),mat("#ffd54f"));c.position.y=.14;g.add(b,r,c);
-  }else if(id==="bloco"){
-    const b=new T.Mesh(new T.BoxGeometry(.4,.28,.4),mat(cor));b.position.y=.14;const t=new T.Mesh(new T.BoxGeometry(.3,.06,.3),mat("#ffffff"));t.position.y=.3;g.add(b,t);
-  }else if(id==="petisco"){
-    const b=new T.Mesh(new T.CylinderGeometry(.26,.26,.1,24),mat(cor));b.position.y=.05;g.add(b);
-    for(let k=0;k<5;k++){const p=new T.Mesh(new T.SphereGeometry(.035,6,6),mat("#4a2c17"));p.position.set(Math.cos(k*1.26)*.14,.11,Math.sin(k*1.26)*.14);g.add(p)}
-  }else{
-    const f={oran:[1,1],sitrus:[1.12,.85],pecha:[1,1],cheri:[.85,1],rawst:[.8,1.3],lum:[1,1],fruta:[1,1]}[id]||[1,1];
-    const b=new T.Mesh(new T.SphereGeometry(.22,20,16),mat(cor,.45));b.scale.set(f[0],f[1],f[0]);b.position.y=.22;g.add(b);
-    const fo=new T.Mesh(new T.ConeGeometry(.07,.2,6),mat("#4caf50"));fo.position.set(.05,.46,0);fo.rotation.z=-.7;g.add(fo);
-    if(id==="lum")for(let k=0;k<5;k++){const a=k*1.256,s=new T.Mesh(new T.ConeGeometry(.05,.14,6),mat("#ffe27a"));s.position.set(Math.cos(a)*.2,.22,Math.sin(a)*.2);s.rotation.z=-Math.cos(a)*1.2;s.rotation.x=Math.sin(a)*1.2;g.add(s)}
-  }
-  return g;
-}
-function brinquedo3D(id){
-  const T=THREE,g=new T.Group();
-  if(id==="pelucia"){
-    const c=mat("#b9824f"),b=new T.Mesh(new T.SphereGeometry(.24,16,12),c);b.position.y=.24;const h=new T.Mesh(new T.SphereGeometry(.17,16,12),c);h.position.y=.55;g.add(b,h);
-    for(const sx of[-1,1]){const o=new T.Mesh(new T.SphereGeometry(.07,8,6),c);o.position.set(sx*.13,.7,0);g.add(o);const e=new T.Mesh(new T.SphereGeometry(.02,6,6),mat("#111"));e.position.set(sx*.06,.57,.15);g.add(e)}
-  }else{
-    const a=new T.Mesh(new T.SphereGeometry(.28,20,14,0,Math.PI*2,0,Math.PI/2),mat("#d62839")),b=new T.Mesh(new T.SphereGeometry(.28,20,14,0,Math.PI*2,Math.PI/2,Math.PI/2),mat("#ffffff"));
-    const c=new T.Mesh(new T.SphereGeometry(.07,10,8),mat("#ffffff"));c.position.z=.27;g.add(a,b,c);g.position.y=.28;
-  }
-  return g;
-}
-const ACC3={
-  laco:()=>{const g=new THREE.Group(),m=mat("#ff5fa2");for(const s of[-1,1]){const c=new THREE.Mesh(new THREE.ConeGeometry(.12,.28,10),m);c.rotation.z=s*Math.PI/2;c.position.set(s*.16,.1,.3);g.add(c)}const n=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),m);n.position.set(0,.1,.3);g.add(n);return g},
-  oculos:()=>{const g=new THREE.Group(),m=mat("#111",.3);for(const s of[-1,1]){const t=new THREE.Mesh(new THREE.TorusGeometry(.13,.025,8,18),m);t.position.set(s*.24,0,.0);g.add(t)}const b=new THREE.Mesh(new THREE.BoxGeometry(.12,.02,.02),m);g.add(b);return g},
-  cartola:()=>{const g=new THREE.Group(),m=mat("#1b1b1b",.5),a=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.45,20),m);a.position.y=.3;const b=new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,.05,24),m);b.position.y=.06;const f=new THREE.Mesh(new THREE.CylinderGeometry(.285,.285,.08,20),mat("#d62839"));f.position.y=.15;g.add(a,b,f);return g}
-};
-const DECO3={
-  planta:()=>{const g=new THREE.Group(),v=new THREE.Mesh(new THREE.CylinderGeometry(.18,.13,.22,14),mat("#c2703d")),f=new THREE.Mesh(new THREE.SphereGeometry(.26,14,10),mat("#3fae49"));v.position.y=.11;f.position.y=.42;f.scale.y=1.2;g.add(v,f);return g},
-  arvore:()=>{const g=new THREE.Group(),t=new THREE.Mesh(new THREE.CylinderGeometry(.1,.14,.7,10),mat("#7a4a28")),c=new THREE.Mesh(new THREE.SphereGeometry(.5,16,12),mat("#2f9e44"));t.position.y=.35;c.position.y=1.05;g.add(t,c);return g},
-  tenda:()=>{const g=new THREE.Group(),c=new THREE.Mesh(new THREE.ConeGeometry(.7,.9,4),mat("#e8562a"));c.position.y=.45;c.rotation.y=Math.PI/4;g.add(c);return g},
-  fonte:()=>{const g=new THREE.Group(),b=new THREE.Mesh(new THREE.CylinderGeometry(.5,.55,.2,20),mat("#b8c2cc")),a=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.04,20),mat("#4fc3e8",.2)),p=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,.5,10),mat("#b8c2cc")),s=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),mat("#8fdcf5",.2));b.position.y=.1;a.position.y=.2;p.position.y=.4;s.position.y=.7;g.add(b,a,p,s);return g},
-  casa:()=>{const g=new THREE.Group(),b=new THREE.Mesh(new THREE.BoxGeometry(.9,.6,.8),mat("#f1d9a8")),t=new THREE.Mesh(new THREE.ConeGeometry(.75,.45,4),mat("#c0392b")),p=new THREE.Mesh(new THREE.BoxGeometry(.22,.38,.04),mat("#7a4a28"));b.position.y=.3;t.position.y=.82;t.rotation.y=Math.PI/4;p.position.set(0,.19,.42);g.add(b,t,p);return g},
-  arco:()=>{const g=new THREE.Group();["#e74c3c","#f1c40f","#2ecc71","#3498db"].forEach((c,i)=>{const t=new THREE.Mesh(new THREE.TorusGeometry(1.1-i*.13,.07,8,28,Math.PI),mat(c));g.add(t)});return g}
-};
-const DPOS={planta:[-1.8,.7],tenda:[1.9,-.9],arco:[0,-2.1],arvore:[-1.9,-1],fonte:[1.8,.9],casa:[.9,-2]};
-
-/* --- cena, câmera, luzes e controles --- */
-function iniciarCena(){
-  try{
-    const T=THREE,r=new T.WebGLRenderer({antialias:false,alpha:true,powerPreference:"high-performance"});
-    r.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
-    const cv=r.domElement;cv.style.cssText="display:block;width:100%;height:100%;touch-action:none";
-    const sc=new T.Scene(),cam=new T.PerspectiveCamera(40,1,.1,50);cam.position.set(0,1.7,4.8);
-    sc.add(new T.HemisphereLight(0xffffff,0x8899aa,1.05));const dl=new T.DirectionalLight(0xffffff,.9);dl.position.set(2,4,3);sc.add(dl);
-    const chao=new T.Mesh(new T.CircleGeometry(2.6,40),new T.MeshStandardMaterial({color:CHAO.grama,roughness:1}));chao.rotation.x=-Math.PI/2;sc.add(chao);
-    const sombra=new T.Mesh(new T.CircleGeometry(.9,24),new T.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.22}));sombra.rotation.x=-Math.PI/2;sombra.position.y=.01;sc.add(sombra);
-    const decos=new T.Group();sc.add(decos);
-    const ctl=new T.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.dampingFactor=.12;ctl.enablePan=false;ctl.minDistance=2.4;ctl.maxDistance=7;ctl.minPolarAngle=.35;ctl.maxPolarAngle=1.55;ctl.target.set(0,1.1,0);
-    Object.assign(P3,{rend:r,cv,scene:sc,cam,chao,decos,ctl,rc:new T.Raycaster(),plano:new T.Plane(new T.Vector3(0,1,0),-.28),pronto:true});
-    cv.addEventListener("pointerdown",ptrDown,true);cv.addEventListener("pointermove",ptrMove);cv.addEventListener("pointerup",ptrUp);cv.addEventListener("pointercancel",ptrUp);
-    window.addEventListener("resize",ajustarTamanho);
-    return true;
-  }catch(e){return false}
-}
-function ajustarTamanho(){
-  if(!P3.rend)return;const c=P3.cv.parentElement;if(!c)return;const w=c.clientWidth||360,h=c.clientHeight||400;
-  P3.rend.setSize(w,h,false);P3.cam.aspect=w/h;P3.cam.updateProjectionMatrix();
-}
-async function tentarGLB(id){
-  try{
-    if(!THREE.GLTFLoader)return null;const u=`modelos/${id}.glb`,r=await fetch(u,{method:"HEAD"});if(!r.ok)return null;
-    const gl=await new Promise((ok,er)=>new THREE.GLTFLoader().load(u,ok,undefined,er)),o=gl.scene,bx=new THREE.Box3().setFromObject(o),h=(bx.max.y-bx.min.y)||1;
-    o.scale.setScalar(2.1/h);o.position.y=-bx.min.y*(2.1/h);const g=new THREE.Group();g.add(o);
-    P3.mixer=new THREE.AnimationMixer(o);P3.clips={};gl.animations.forEach(a=>P3.clips[a.name.toLowerCase()]=a);
-    const idle=P3.clips.idle||gl.animations[0];if(idle)P3.mixer.clipAction(idle).play();
-    g.userData={glb:true};return g;
-  }catch{return null}
-}
-async function prepararPet(){
-  if(P3.pet&&P3.id===S.comp)return;
-  const id=S.comp;P3.builds++;
-  if(P3.pet)P3.scene.remove(P3.pet);P3.mixer=null;
-  const d=TIPOSC[id]||(TIPOSC[id]=await dados(id));
-  if(S.comp!==id)return;
-  P3.pet=(await tentarGLB(id))||criarPet(id,d.tipos);P3.id=id;P3.sig=null;P3.scene.add(P3.pet);
-}
-const TIPOSC={};
-
-/* --- palco: montagem, loop e limpeza --- */
-function cuidar(){
-  const c=ent(S.comp);if(!c)return `<p class="aviso">Escolha um companheiro na tela Início.</p>`;
-  if(P3.falhou)return cuidar2D();
-  return `<div class="palco" id="palco"><div class="hud" id="hud"></div><div class="fala3d" id="fala3d"></div></div><div class="mochila" id="mochila"></div>`;
-}
-async function iniciarPalco(){
-  if(!$("#palco"))return;
-  if(!P3.pronto){
-    $("#palco").insertAdjacentHTML("beforeend",`<p class="carregando">Carregando o mundo 3D...</p>`);
-    const ok=await(P3.cp||(P3.cp=garantirThree()))&&(P3.pronto||iniciarCena());P3.cp=null;
-    if(!ok){P3.falhou=true;if(tela==="cuidar")render();return}
-  }
-  if(tela!=="cuidar"||!$("#palco"))return;
-  await prepararPet();
-  const el=$("#palco");if(tela!=="cuidar"||!el)return;
-  el.style.background=CEN[S.cen||"grama"];el.prepend(P3.cv);el.querySelector(".carregando")?.remove();
-  ajustarTamanho();sincronizarCena();atualizarCuidado();atualizarHUD();msg3(FALA[estadoPet()]);
-  $("#mochila").innerHTML=htmlMochila();
-  gerarMiniaturas().then(()=>{const m=$("#mochila");if(m&&tela==="cuidar")m.innerHTML=htmlMochila()});
-  iniciarLoop();
-}
-function iniciarLoop(){
-  cancelAnimationFrame(P3.raf);let u=0;
-  const f=()=>{P3.raf=requestAnimationFrame(f);const dt=Math.min(.05,(P3.rel||(P3.rel=new THREE.Clock())).getDelta());animar(dt);P3.ctl.update();P3.rend.render(P3.scene,P3.cam);
-    u+=dt;if(u>5){u=0;atualizarHUD()}};
-  f();
-}
-function pararPalco(){cancelAnimationFrame(P3.raf);P3.raf=0;P3.arr=null;if(P3.ctl)P3.ctl.enabled=true;document.querySelectorAll(".ghost").forEach(g=>g.remove())}
-function sincronizarCena(){
-  const dc=DECOS.filter(k=>S.inv[k]),sig=[S.acc,S.cen,dc.join()].join("|");if(P3.sig===sig)return;P3.sig=sig;
-  P3.chao.material.color.set(CHAO[S.cen||"grama"]);
-  P3.decos.children.slice().forEach(c=>P3.decos.remove(c));
-  dc.forEach(k=>{const o=DECO3[k]();o.position.set(DPOS[k][0],0,DPOS[k][1]);P3.decos.add(o)});
-  if(P3.accG&&P3.accG.parent)P3.accG.parent.remove(P3.accG);P3.accG=null;
-  const d=P3.pet&&P3.pet.userData;
-  if(S.acc&&ACC3[S.acc]&&d&&d.topo){P3.accG=ACC3[S.acc]();(S.acc==="oculos"?d.rosto:d.topo).add(P3.accG)}
-}
-function gerarMiniaturas(){
-  if(P3.miniOK||!window.THREE)return Promise.resolve();P3.miniOK=true;
-  try{
-    const T=THREE,r=new T.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});r.setSize(96,96);
-    const sc=new T.Scene(),cam=new T.PerspectiveCamera(30,1,.1,10);cam.position.set(0,.6,1.6);cam.lookAt(0,.25,0);
-    sc.add(new T.HemisphereLight(0xffffff,0x888899,1.1));const dl=new T.DirectionalLight(0xffffff,.8);dl.position.set(1,2,2);sc.add(dl);
-    for(const i of LOJA.filter(x=>x.cat==="Comida"||x.cat==="Brinquedo")){const o=i.cat==="Comida"?comida3D(i.id):brinquedo3D(i.id);sc.add(o);r.render(sc,cam);P3.mini[i.id]=r.domElement.toDataURL("image/png");sc.remove(o)}
-    r.dispose();if(r.forceContextLoss)r.forceContextLoss();
-  }catch{}
-  return Promise.resolve();
-}
-
-/* --- animações: estados, carinho, comida, brincadeira --- */
-function coracao(){
-  if(!P3.pet||P3.corac.length>10)return;
-  if(!P3.geoC){const s=new THREE.Shape();s.moveTo(0,0);s.bezierCurveTo(0,.3,-.5,.3,-.5,0);s.bezierCurveTo(-.5,-.3,0,-.4,0,-.7);s.bezierCurveTo(0,-.4,.5,-.3,.5,0);s.bezierCurveTo(.5,.3,0,.3,0,0);P3.geoC=new THREE.ShapeGeometry(s)}
-  const m=new THREE.Mesh(P3.geoC,new THREE.MeshBasicMaterial({color:0xff5f8f,transparent:true,side:THREE.DoubleSide}));
-  m.scale.setScalar(.2);m.position.set((Math.random()-.5)*.9,2.4+Math.random()*.4,.6);m.userData.t=0;P3.scene.add(m);P3.corac.push(m);
-}
-function rea(n,q,a){
-  const s=Math.sin(q*Math.PI);
-  switch(n){
-    case"pulo":a.y=Math.abs(Math.sin(q*Math.PI*3))*.5;a.boca=.6;a.cauda=Math.sin(q*40);break;
-    case"doce":a.olho=.05;a.cz=Math.sin(q*Math.PI*3)*.35;a.bochecha=1.6;a.boca=.35;if(Math.random()<.08)coracao();break;
-    case"picante":a.ry=Math.sin(q*50)*.25*(1-q);a.olho=.25;a.cx=-.2*s;a.bochecha=2.2;a.boca=.9;break;
-    case"amargo":a.olho=.2;a.cx=.25*s;a.boca=.05;a.cz=Math.sin(q*30)*.1*(1-q);break;
-    case"giro":a.ry=q*Math.PI*2;a.y=s*.35;a.boca=.6;break;
-    case"festa":a.ry=q*Math.PI*4;a.y=Math.abs(Math.sin(q*Math.PI*3))*.5;a.boca=.8;a.cauda=Math.sin(q*60);if(Math.random()<.12)coracao();break;
-    default:a.cz=Math.sin(q*Math.PI*4)*.25*s;a.y=s*.15;a.boca=.5;
-  }
-}
-const _v=()=>new THREE.Vector3();
-function animar(dt){
-  const pet=P3.pet;if(!pet)return;P3.T+=dt;const t=P3.T,d=pet.userData,st=estadoPet(),V=P3.v;
-  const a={olho:1,cx:0,cz:0,boca:0,y:0,ry:0,rz:0,cauda:Math.sin(t*3)*.3,bochecha:.7};
-  if(st==="sonolento"){a.olho=.06;a.cx=.4+Math.sin(t*1.1)*.05}
-  else if(st==="cansado"){a.olho=.4;a.cx=.2;a.cauda=0}
-  else if(st==="fome"){a.olho=.85;a.cz=Math.sin(t*3)*.12;a.rz=Math.sin(t*14)*.015}
-  else if(st==="animado"){a.y=Math.abs(Math.sin(t*4.5))*.2;a.cauda=Math.sin(t*12)*.6;a.boca=.25}
-  else if(st==="feliz"){a.cauda=Math.sin(t*6)*.5;a.boca=.12;a.cz=Math.sin(t*1.5)*.05}
-  P3.pisca=(P3.pisca??2)-dt;if(P3.pisca<-.12)P3.pisca=2+Math.random()*3;if(P3.pisca<0&&a.olho>.3)a.olho=.08;
-  if(P3.afago>0){P3.afago=Math.max(0,P3.afago-dt*.7);const f=P3.afago;a.olho=Math.min(a.olho,1-f*.95);a.cz=(P3.afagoDir||0)*.3*f;a.cx=.1*f;a.bochecha=.7+f*.8;a.cauda=Math.sin(t*14)*.7*f+a.cauda*(1-f);a.boca=Math.max(a.boca,.3*f)}
-  if(P3.bocaPerto||(P3.sel&&!P3.fx))a.boca=Math.max(a.boca,.7);
-  const fx=P3.fx;
-  if(fx){
-    const p=Math.min(1,(t-fx.t0)/fx.dur);
-    if(fx.nome==="comer"){const come=p<.7;a.boca=come?.5+.5*Math.sin(p*Math.PI*8):.15;a.cx=come?Math.sin(p*Math.PI*8)*.12:0;a.olho=.5;if(p>.55)rea(fx.rea,(p-.55)/.45,a);
-      if(P3.comida){const q=Math.min(1,p/.3);P3.comida.position.lerpVectors(P3.comidaIni,P3.boca3||P3.comidaIni,q);P3.comida.scale.setScalar(Math.max(.01,1-Math.max(0,(p-.25)/.25)))}}
-    else if(fx.nome==="brincar"){a.y=Math.abs(Math.sin(p*Math.PI*4))*.35;a.cauda=Math.sin(t*14);a.boca=.4}
-    else if(fx.nome==="dormir"){a.olho=.05;a.cx=.45}
-    else if(fx.nome==="cansaco"){a.olho=.1;a.cx=.3;a.boca=.8*Math.sin(p*Math.PI)}
-    else if(fx.nome==="afago"){a.y=Math.abs(Math.sin(p*Math.PI*2))*.12;a.boca=.4}
-    else rea(fx.nome,p,a);
-    if(p>=1){P3.fx=null;if(P3.comida){P3.scene.remove(P3.comida);P3.comida=null}atualizarHUD();msg3(FALA[estadoPet()])}
-  }
-  const k=1-Math.exp(-dt*12);for(const n in a){if(n==="ry")continue;V[n]=(V[n]??a[n])+(a[n]-(V[n]??a[n]))*k}
-  let ry=a.ry;
-  if(P3.toy&&!fx){const dx=P3.toy.position.x-pet.position.x,dz=P3.toy.position.z-pet.position.z;ry=Math.max(-.9,Math.min(.9,Math.atan2(dx,dz)))*.5}
-  pet.rotation.y+=((ry)-pet.rotation.y)*(fx&&a.ry?1:k);pet.position.y=V.y;
-  if(d.corpo){
-    d.corpo.scale.y=1+.025*Math.sin(t*(st==="sonolento"?1.2:2.4));d.corpo.rotation.z=V.rz;d.cabeca.rotation.x=V.cx;d.cabeca.rotation.z=V.cz;
-    d.olhos.forEach(e=>e.scale.y=Math.max(.06,V.olho));d.boca.scale.y=.12+V.boca*.5;d.cauda.rotation.z=V.cauda;
-    d.bochechas.forEach(b=>b.scale.set(1+(V.bochecha-.7)*.5,.7,.4));d.bracos.forEach((b,i)=>b.rotation.z=(i?1:-1)*(.25+Math.abs(V.y)*2));
-    d.boca.getWorldPosition(P3.boca3||(P3.boca3=_v()));
-  }else if(P3.mixer){P3.mixer.update(dt);P3.boca3=P3.boca3||_v();P3.boca3.set(0,1.4,.5)}
-  if(P3.toy&&!P3.arr){P3.toy.rotation.y+=dt*.8}
-  for(let i=P3.corac.length-1;i>=0;i--){const m=P3.corac[i];m.userData.t+=dt;m.position.y+=dt*.7;m.material.opacity=Math.max(0,1-m.userData.t/1.6);m.quaternion.copy(P3.cam.quaternion);if(m.userData.t>1.6){P3.scene.remove(m);P3.corac.splice(i,1)}}
-}
-
-/* --- toques: carinho, arrastar brinquedo e alimentar --- */
-function ptrXY(e){const r=P3.cv.getBoundingClientRect(),w=r.width||400,h=r.height||400;return new THREE.Vector2((e.clientX-r.left)/w*2-1,-(e.clientY-r.top)/h*2+1)}
-function alvoToque(e){
-  P3.cam.updateMatrixWorld(true);P3.scene.updateMatrixWorld(true);P3.rc.setFromCamera(ptrXY(e),P3.cam);
-  if(P3.toy&&P3.rc.intersectObject(P3.toy,true).length)return "toy";
-  return P3.pet&&P3.rc.intersectObject(P3.pet,true).length?"pet":null;
-}
-function ptrDown(e){
-  if(!P3.pet)return;const t=alvoToque(e);if(!t)return;
-  P3.ctl.enabled=false;P3.arr={tipo:t,x:e.clientX,y:e.clientY,mov:0,dist:0};
-  try{P3.cv.setPointerCapture(e.pointerId)}catch{}
-}
-function ptrMove(e){
-  const A=P3.arr;if(!A)return;const dx=e.clientX-A.x,dy=e.clientY-A.y,m=Math.hypot(dx,dy);A.x=e.clientX;A.y=e.clientY;A.mov+=m;
-  if(A.tipo==="pet"){
-    if(A.mov<8)return;A.dist+=m;P3.afago=1;P3.afagoDir=Math.sign(dx)||P3.afagoDir||1;
-    if(A.dist>110){A.dist=0;carinhoPet()}
-  }else if(A.tipo==="toy"&&P3.toy){
-    P3.cam.updateMatrixWorld(true);P3.rc.setFromCamera(ptrXY(e),P3.cam);const pt=_v();
-    if(P3.rc.ray.intersectPlane(P3.plano,pt)){const r=Math.hypot(pt.x,pt.z);if(r>2.3){pt.x*=2.3/r;pt.z*=2.3/r}P3.toy.position.x=pt.x;P3.toy.position.z=pt.z;P3.toy.position.y=.28+Math.abs(Math.sin(P3.T*8))*.08}
-  }
-}
-function ptrUp(e){
-  const A=P3.arr;P3.arr=null;if(P3.ctl)P3.ctl.enabled=true;if(!A)return;save();
-  if(A.tipo==="pet"&&A.mov<8){if(P3.sel)darComida(P3.sel);else if(!P3.fx){P3.fx={nome:"afago",t0:P3.T,dur:.8};coracao()}}
-  else if(A.tipo==="toy"){brincarToque()}
-}
-function carinhoPet(){
-  const c=cuid();c.fel=lim(c.fel+1.5);if(usoDia("car",5))amizade(1);coracao();bip([587]);atualizarHUD();
-  msg3("Hmm, que gostoso! 💕");
-}
-function brincarToque(){
-  if(P3.fx||!P3.toy)return;const c=cuid(),pet=P3.pet;
-  if(Math.hypot(P3.toy.position.x-pet.position.x,P3.toy.position.z-pet.position.z)>1.9){msg3("Chegue o brinquedo mais perto de mim!");return}
-  if(c.ene<20){P3.fx={nome:"cansaco",t0:P3.T,dur:1.6};msg3("Estou com sono... vamos descansar um pouquinho?");return}
-  const i=LOJA.find(x=>x.id===P3.toyId);c.ene=lim(c.ene-8);c.fel=lim(c.fel+7);c.sac=lim(c.sac-2);c.brinc=Date.now();
-  if(usoDia("brin",3))amizade(i?i.amz:3);save();
-  P3.fx={nome:"brincar",t0:P3.T,dur:1.8};bip([523,659]);atualizarHUD();msg3("Que divertido! 🎉");
-}
-function soltarBrinquedo(id,x,z){
-  if(P3.toy)P3.scene.remove(P3.toy);P3.toy=brinquedo3D(id);P3.toyId=id;P3.toy.position.set(x??1.3,P3.toy.position.y||.28,z??1.1);P3.toy.position.y=.28;P3.scene.add(P3.toy);
-  msg3("Arraste o brinquedo até o Pokémon para brincar!");
-}
-function darComida(id){
-  const i=LOJA.find(x=>x.id===id);if(!i||!(S.inv[id]>0)||P3.fx)return false;
-  const c=cuid();if(c.sac>=95){msg3("Estou cheinho! Vamos brincar?");P3.sel=null;aba3D(P3.aba);return false}
-  S.inv[id]--;aplicarCuidado(i);amizade(i.amz||3);P3.sel=null;
-  P3.comida=comida3D(id);P3.boca3=P3.boca3||_v();P3.comidaIni=P3.boca3.clone().add(new THREE.Vector3(.5,.5,.9));P3.comida.position.copy(P3.comidaIni);P3.scene.add(P3.comida);
-  P3.fx={nome:"comer",t0:P3.T,dur:2.8,rea:i.rea||"feliz"};
-  bip([660,784]);atualizarHUD();aba3D(P3.aba);
-  msg3({feliz:"Nham, que delícia!",pulo:"Que energia! Uhuuu!",doce:"Docinho demais! 💕",picante:"Ui, que picante! 🔥",amargo:"Hmm... meio amargo, mas gostei!",giro:"Radiante! Olha eu girando!",festa:"UAU! Isso é especial! 🎉"}[i.rea]||"Nham!");
-  return true;
-}
-function selecionar(id){
-  const i=LOJA.find(x=>x.id===id);if(!i)return;
-  if(i.cat==="Brinquedo"){soltarBrinquedo(id);return}
-  P3.sel=P3.sel===id?null:id;aba3D(P3.aba);msg3(P3.sel?"Agora toque no Pokémon para dar de comer!":FALA[estadoPet()]);
-}
-function perto(e){
-  if(!P3.pet||!P3.cv)return false;P3.cam.updateMatrixWorld(true);P3.scene.updateMatrixWorld(true);
-  const r=P3.cv.getBoundingClientRect(),w=r.width||400,h=r.height||400,v=(P3.boca3||_v()).clone().project(P3.cam);
-  const x=r.left+(v.x+1)/2*w,y=r.top+(1-v.y)/2*h;return Math.hypot(e.clientX-x,e.clientY-y)<Math.max(70,w*.2);
-}
-function iniciarArraste(e,id){
-  e.preventDefault();const i=LOJA.find(x=>x.id===id);if(!i||!(S.inv[id]>0))return;
-  const g=document.createElement("div");g.className="ghost";
-  g.style.backgroundImage=P3.mini[id]?`url(${P3.mini[id]})`:"none";g.style.backgroundColor=P3.mini[id]?"transparent":(i.cor||COR_DEF[id]||"#aaa");
-  document.body.append(g);let mov=0;const x0=e.clientX,y0=e.clientY;
-  const pos=ev=>{g.style.left=ev.clientX+"px";g.style.top=ev.clientY+"px";mov=Math.max(mov,Math.hypot(ev.clientX-x0,ev.clientY-y0));P3.bocaPerto=i.cat==="Comida"&&perto(ev)};
+/* ---------- expressões do Pokémon (boca, carinho) ---------- */
+const semMov=()=>S.cfg.reduzir||sysReduz;
+let comendo=false;
+function posCena(){const e=$("#cena img");return e?e.getBoundingClientRect():null}
+function dentro(ev,r,m=14){return !!r&&ev.clientX>=r.left-m&&ev.clientX<=r.right+m&&ev.clientY>=r.top-m&&ev.clientY<=r.bottom+m}
+function particula(txt,x,y){const p=document.createElement("div");p.className="part";p.textContent=txt;p.style.left=x+"px";p.style.top=y+"px";document.body.append(p);setTimeout(()=>p.remove(),1100)}
+function expressao(emoji){const c=$("#cena");if(!c)return;c.querySelectorAll(".expr").forEach(x=>x.remove());const e=document.createElement("span");e.className="expr";e.textContent=emoji;c.append(e);setTimeout(()=>e.remove(),1800)}
+function animCena(cls,ms){const c=$("#cena");if(!c)return;c.classList.remove("nham","festa","feliz2");void c.offsetWidth;c.classList.add(cls);setTimeout(()=>c.classList.remove(cls),ms)}
+function criarBoca(x,y){const r=posCena(),w=Math.max(46,(r?r.width:180)*.3),b=document.createElement("div");b.className="boca";b.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${Math.round(w*.72)}px`;b.innerHTML="<u></u>";document.body.append(b);return b}
+function arrastarComida(e,x){
+  e.preventDefault();const i=LOJA[x];if(comendo||!i||!S.inv[i.id])return;
+  const g=document.createElement("div");g.className="ghost2";g.textContent=i.emoji||"🍎";document.body.append(g);
+  const x0=e.clientX,y0=e.clientY;let mov=0,boca=null;
+  const pos=ev=>{
+    g.style.left=ev.clientX+"px";g.style.top=ev.clientY+"px";mov=Math.max(mov,Math.hypot(ev.clientX-x0,ev.clientY-y0));
+    const n=dentro(ev,posCena());
+    if(n&&!boca){boca=criarBoca(ev.clientX,ev.clientY+14);expressao("😮")}
+    if(boca){if(n){boca.style.left=ev.clientX+"px";boca.style.top=(ev.clientY+14)+"px"}else{boca.remove();boca=null}}
+  };
   const fim=ev=>{
     window.removeEventListener("pointermove",pos);window.removeEventListener("pointerup",fim);window.removeEventListener("pointercancel",fim);
-    g.remove();P3.bocaPerto=false;
-    if(mov<10){selecionar(id);return}
-    if(i.cat==="Comida"){if(perto(ev))darComida(id);else msg3("Leve a comida até a boca do Pokémon!")}
-    else{const r=P3.cv.getBoundingClientRect();if(ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom){
-      P3.cam.updateMatrixWorld(true);P3.rc.setFromCamera(ptrXY(ev),P3.cam);const pt=_v();
-      if(P3.rc.ray.intersectPlane(P3.plano,pt))soltarBrinquedo(id,Math.max(-2.2,Math.min(2.2,pt.x)),Math.max(-2.2,Math.min(2.2,pt.z)));else soltarBrinquedo(id)}}
+    const r=posCena();if(!r){g.remove();if(boca)boca.remove();return}
+    if(mov<10){comer(x,g,null,{x:r.left+r.width/2,y:r.top+r.height*.42});return}
+    if(dentro(ev,r))comer(x,g,boca,{x:ev.clientX,y:ev.clientY+14});
+    else{g.remove();if(boca)boca.remove();toast("Leve a comida até a boca do Pokémon!")}
   };
   pos(e);window.addEventListener("pointermove",pos);window.addEventListener("pointerup",fim);window.addEventListener("pointercancel",fim);
 }
-
-/* --- interface: indicadores e mochila --- */
-function msg3(t){const e=$("#fala3d");if(e)e.textContent=t}
-function atualizarHUD(){
-  const h=$("#hud");if(!h)return;const c=cuid(),e=ESTADOS[estadoPet()],a=(ent(S.comp)||{}).amizade||0,v=a>=80?"Inseparáveis":a>=50?"Companheiros":a>=25?"Amigos":"Conhecidos";
-  const b=(n,x,cor)=>`<div class="hb"><span>${n}</span><div class="barra"><i style="width:${Math.round(x)}%;background:${cor}"></i></div></div>`;
-  h.innerHTML=`<div class="chips"><span class="chip">${e[0]} ${e[1]}</span><span class="chip">❤ ${v} · ${a}/100</span></div>${b("Saciedade",c.sac,"#ffb347")}${b("Felicidade",c.fel,"#ff7aa8")}${b("Energia",c.ene,"#7fd1ff")}${b("Satisfação",c.satis||0,"#9be37a")}`;
+function comer(x,g,boca,pt){
+  const i=LOJA[x];if(comendo||!i||!S.inv[i.id]){g.remove();if(boca)boca.remove();return}
+  comendo=true;S.inv[i.id]--;amizade(i.amz);save();bip([660,784]);
+  g.style.transition="left .35s,top .35s,transform .35s";g.style.left=pt.x+"px";g.style.top=pt.y+"px";g.style.transform="translate(-50%,-50%) scale(.3)";
+  if(!boca)boca=criarBoca(pt.x,pt.y);
+  setTimeout(()=>{g.remove();boca.classList.add("mastiga");animCena("nham",1100);expressao("😋")},350);
+  setTimeout(()=>{boca.classList.remove("mastiga");boca.classList.add("fecha")},1450);
+  setTimeout(()=>{
+    boca.remove();msgC=`Nham! Adorei o ${i.nome.toLowerCase()}. ❤ +${i.amz}`;animCena("festa",800);expressao("😍");
+    particula("❤️",pt.x-20,pt.y-20);particula("✨",pt.x+24,pt.y-30);particula("💕",pt.x,pt.y-40);
+    setTimeout(()=>{comendo=false;if(tela==="cuidar")render()},900);
+  },1650);
 }
-function aba3D(k){P3.aba=k;const m=$("#mochila");if(m)m.innerHTML=htmlMochila()}
-function htmlMochila(){
-  const ab=P3.aba,tab=(k,n)=>`<button class="tab ${ab===k?"on":""}" onclick="aba3D('${k}')">${n}</button>`;
-  const lista=cat=>LOJA.filter(i=>i.cat===cat&&S.inv[i.id]>0);
-  const cart=(i,tipo)=>`<div class="bag ${P3.sel===i.id?"sel":""}" onpointerdown="iniciarArraste(event,'${i.id}')">${P3.mini[i.id]?`<img src="${P3.mini[i.id]}" alt="">`:`<i style="background:${i.cor||COR_DEF[i.id]||"#aaa"}"></i>`}<b>${nomeIn(i)}</b><small>${nomePt(i)}</small><span>×${S.inv[i.id]}</span>${tipo?(i.esp?"<em>Especial</em>":"<em class='c'>Comum</em>"):""}</div>`;
-  let h=`<div class="tabs">${tab("comida","🍓 Comidas")}${tab("brinq","🎾 Brinquedos")}${tab("itens","🎒 Itens")}</div>`;
-  if(ab==="comida"){const l=lista("Comida");h+=l.length?`<div class="bags">${l.map(i=>cart(i,1)).join("")}</div><p class="dica3">Arraste a comida até a boca do Pokémon (ou toque nela e depois no Pokémon). Mais comidas na Loja e como prêmio do estudo.</p>`:`<p class="dica3">Mochila vazia. Compre comidas na Loja ou ganhe estudando!</p>`}
-  else if(ab==="brinq"){const l=lista("Brinquedo");h+=l.length?`<div class="bags">${l.map(i=>cart(i,0)).join("")}</div><p class="dica3">Toque no brinquedo para colocá-lo no palco, depois arraste até o Pokémon.</p>`:`<p class="dica3">Sem brinquedos. Compre na Loja!</p>`}
-  else{
-    const b=(f,t)=>`<button class="lin" onclick="${f}">${t}</button>`;
-    h+=`<div class="itens">${S.inv.doce>0?b("doce3()",`🍬 Doce Raro ×${S.inv.doce} (+30 XP)`):""}${b("descansar()","😴 Descansar")}${LOJA.filter(i=>i.cat==="Acessório"&&S.inv[i.id]).map(i=>b(`equip3('${i.id}')`,`${i.emoji} ${i.nome}${S.acc===i.id?" ✔":""}`)).join("")}${LOJA.filter(i=>i.cat==="Cenário"&&S.inv[i.id]).map(i=>{const k=i.id.slice(4);return b(`cen3('${k}')`,`${i.emoji} ${i.nome.replace("Cenário: ","")}${S.cen===k?" ✔":""}`)}).join("")}${b("cen3(null)","🌿 Gramado")}</div>`;
-  }
-  return h;
-}
-function doce3(){if(!(S.inv.doce>0)||P3.fx)return;S.inv.doce--;ganharXP(30,true);P3.fx={nome:"pulo",t0:P3.T,dur:1.6};msg3("Que energia! +30 XP");aba3D("itens")}
-function equip3(id){S.acc=S.acc===id?null:id;save();P3.sig=null;sincronizarCena();aba3D("itens")}
-function cen3(k){S.cen=S.cen===k||!k?null:k;save();const p=$("#palco");if(p)p.style.background=CEN[S.cen||"grama"];sincronizarCena();aba3D("itens")}
-function descansar(){
-  const c=cuid();if(P3.fx)return;
-  if(c.ene>=90){msg3("Ainda estou cheio de energia!");return}
-  if(!usoDia("desc",4)){msg3("Já descansei bastante hoje!");return}
-  c.ene=lim(c.ene+30);save();P3.fx={nome:"dormir",t0:P3.T,dur:4};msg3("Zzz... que soneca boa.");atualizarHUD();
+function carinhoDown(e){
+  if(e.button>0||comendo)return;e.preventDefault();const r=posCena(),c=$("#cena");if(!r||!c)return;
+  const A={x:e.clientX,y:e.clientY,dist:0,mov:0,cx:r.left+r.width/2,cy:r.top+r.height/2};
+  const mv=ev=>{
+    const dx=ev.clientX-A.x,dy=ev.clientY-A.y,m=Math.hypot(dx,dy);A.x=ev.clientX;A.y=ev.clientY;A.mov+=m;if(A.mov<8)return;A.dist+=m;
+    if(!semMov()){const ox=(ev.clientX-A.cx)/r.width,oy=(ev.clientY-A.cy)/r.height;c.style.transform=`translate(${ox*14}px,${oy*8}px) rotate(${ox*10}deg) scale(1.04,.97)`}
+    if(A.dist>70){A.dist=0;particula("💕",ev.clientX,ev.clientY-10)}
+    if(!A.rea&&A.mov>120){A.rea=1;expressao("😊");if(usoDia("car",5))amizade(1);msgC="Hmm, que gostoso! 💕";bip([587])}
+  };
+  const up=ev=>{
+    window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up);
+    c.style.transform="";
+    if(A.mov<8){animCena("feliz2",700);expressao("😊");particula("💕",ev.clientX,ev.clientY-10)}
+    else if(A.rea)setTimeout(()=>{if(tela==="cuidar"&&!comendo)render()},1200);
+  };
+  window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up);
 }
 
 /* ---------- pokédex ---------- */
