@@ -1,0 +1,4 @@
+Testes automáticos (rodam num navegador simulado, sem precisar de celular).
+  npm install jsdom
+  node tests/teste_lote1.js        -> fases, animações, trilha, tentativas por dia e recompensas
+  node tests/teste_jogo_antigo.js  -> tabuada, ofensiva, captura, loja, evolução, backup (o app que já existia)

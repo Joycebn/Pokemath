@@ -1,0 +1,33 @@
+/* Estilos novos do Pokemath: trilha de fases, explicação com o Pyri e exercícios. */
+nav button{padding:10px 1px;font-size:.7rem}
+.faseTop{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:6px}
+.dots{display:flex;gap:6px;justify-content:center;margin:6px 0}.dots i{width:10px;height:10px;border-radius:50%;background:#3b4a80}.dots i.on{background:var(--amar)}
+.pyriBox{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.pyriAv{flex:none;width:64px;height:64px;border-radius:50%;background:radial-gradient(#ffb347,#ff6a2f);display:flex;align-items:center;justify-content:center;font-size:2rem;border:3px solid #fff}
+.balao{background:#fff;color:var(--tinta);border-radius:14px;padding:10px 12px;font-weight:700;flex:1}
+.termos{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.termos span{background:var(--card);border-radius:10px;padding:4px 10px;font-size:.82rem}
+.palcoExp{background:var(--tela);color:var(--tinta);border-radius:14px;border:4px solid #0c1433;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;overflow:hidden}
+.contav,.frutas,.reparte{position:relative}
+.cel{position:absolute;width:50px;height:54px;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-size:2.2rem;font-weight:800;transition:transform .9s ease,opacity .5s}
+.cel.dest{color:var(--verm);outline:3px solid var(--verm);border-radius:10px}
+.cel.voa{color:var(--verm);z-index:3}.cel.res{color:#1a7f37}.cel.carry{font-size:1.3rem;color:var(--verm);height:30px}
+.pop{animation:surge .4s}
+.linha{position:absolute;height:4px;background:#222;border-radius:3px}
+.cap{font-weight:800;font-size:1.15rem;margin:10px 0 0;text-align:center;min-height:1.4em}
+.fr{position:absolute;width:38px;height:38px;font-size:1.9rem;line-height:38px;text-align:center;transition:transform .9s ease,opacity .5s}
+.mais{position:absolute;font-size:2rem;font-weight:800}.fr.sai{opacity:.25;filter:grayscale(1)}
+.iguais{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.cx{border:3px dashed #5b6ab3;border-radius:14px;padding:6px 8px;font-size:1.5rem;max-width:130px;transition:all .3s}.cx.on{border-color:var(--verm);background:#fff3cd}
+.prato{position:absolute;width:104px;height:104px;border-radius:50%;background:#fff;border:4px solid #5b6ab3}
+.casas{display:flex;gap:8px}.casa{background:#fff;border:3px solid #0c1433;border-radius:12px;padding:6px 12px;text-align:center;min-width:92px}
+.casa b{display:block;font-size:2.4rem;font-family:'Baloo 2',sans-serif}.casa small{font-weight:700}.decomp{font-size:1.6rem;font-weight:800;margin-top:8px}
+.navExp{display:flex;gap:8px;margin:10px 0}.navExp button{flex:1;margin-top:0}.navExp .grande{flex:2}
+.trilha{display:flex;flex-direction:column;gap:10px}
+.no{display:flex;align-items:center;gap:10px;width:calc(100% - 70px);text-align:left;background:var(--card);color:#fff;border-radius:16px;padding:10px 12px;border-bottom:5px solid #0c1433}
+.no.ab{background:var(--verm);border-bottom-color:var(--vermesc)}.no.ok{background:#2b8a4d;border-bottom-color:#1c5e34}.no.perf{background:#c99a00;color:#111}.no.bl{opacity:.55}
+.no .ic{font-size:1.8rem}.no small{display:block;font-weight:400;opacity:.85}.no .est{margin-left:auto;font-size:1.3rem}
+.emBreve{opacity:.75;font-size:.9rem}
+.enun{font-family:'Baloo 2',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:8px}
+.fb{margin-top:12px;border-radius:14px;padding:10px 12px;font-weight:700}.fb.ok{background:#d4f5dd;color:#17602e}.fb.err{background:#fde2e0;color:#8a1c1c}
+.contaTxt{font-family:'Baloo 2',sans-serif;font-size:2rem;line-height:1.1;display:inline-block;text-align:right;background:#fff;border-radius:10px;padding:6px 14px;margin:6px 0}
+.resumoFim{background:var(--card);border-radius:14px;padding:12px;margin:10px 0}.resumoFim p{margin:4px 0}

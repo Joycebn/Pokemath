@@ -1,26 +1,2 @@
-{
- "name": "Aventura da Tabuada",
- "short_name": "Tabuada",
- "description": "Treine a tabuada e capture Pokémon",
- "lang": "pt-BR",
- "start_url": "./",
- "scope": "./",
- "display": "standalone",
- "orientation": "portrait",
- "background_color": "#16224a",
- "theme_color": "#16224a",
- "icons": [
-  {
-   "src": "icon-192.png",
-   "sizes": "192x192",
-   "type": "image/png",
-   "purpose": "any maskable"
-  },
-  {
-   "src": "icon-512.png",
-   "sizes": "512x512",
-   "type": "image/png",
-   "purpose": "any maskable"
-  }
- ]
-}
+{"name":"Pokemath","short_name":"Pokemath","description":"Aprenda matemática capturando Pokémon","lang":"pt-BR","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"#16224a","theme_color":"#16224a",
+"icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}

@@ -1,0 +1,404 @@
+FALAS DOS POKEMON - LOTE 2 (152 a 251, segunda geracao)
+Formato: numero, nome, tipo, grito (onomatopeia aproximada, o som original toca do PokeAPI).
+Momentos entre colchetes: [capturado] [companheiro] [alimentado] [evolui] [desafio] [fome] [pokedex]
+
+152 Chikorita | Grama | grito: "Chi-ko-ri"
+  [capturado] "Chiko! Eu cheiro a flores frescas!"
+  [alimentado] "Chi! Que delícia!"
+
+153 Bayleef | Grama | grito: "Bay-leef"
+  [evolui] "Bayleef! Minha folha ficou maior!"
+  [desafio] "Vou balançar as folhas para vencer!"
+
+154 Meganium | Grama | grito: "Me-ga-ni-um"
+  [evolui] "Meganium! Minha flor perfuma o campo todo!"
+  [companheiro] "Eu cuido de você com carinho."
+
+155 Cyndaquil | Fogo | grito: "Cyn-da-quil"
+  [capturado] "Cyndaquil! Minhas chamas estão acesas!"
+  [alimentado] "Cyn! Que delícia!"
+
+156 Quilava | Fogo | grito: "Qui-la-va"
+  [evolui] "Quilava! Minha chama ficou mais forte!"
+  [desafio] "Vou esquentar o desafio!"
+
+157 Typhlosion | Fogo | grito: "Ty-phlo-sion"
+  [evolui] "Typhlosion! Minha explosão de fogo é enorme!"
+  [companheiro] "Eu aqueco você nos dias frios."
+
+158 Totodile | Água | grito: "To-to-di-le"
+  [capturado] "Totodile! Vamos nadar juntos?"
+  [alimentado] "Toto! Que delícia!"
+
+159 Croconaw | Água | grito: "Cro-co-naw"
+  [evolui] "Croconaw! Meus dentes estão afiados!"
+  [desafio] "Vou morder o desafio!"
+
+160 Feraligatr | Água | grito: "Fe-ra-li-gatr"
+  [evolui] "Feraligatr! Sou forte e rápido na água!"
+  [companheiro] "Eu protejo você no rio e no mar."
+
+161 Sentret | Normal | grito: "Sen-tret"
+  [capturado] "Sentret! Eu sou curioso e gosto de olhar tudo!"
+  [alimentado] "Sen! Que delícia!"
+
+162 Furret | Normal | grito: "Fur-ret"
+  [evolui] "Furret! Eu fico comprido e rápido!"
+  [desafio] "Corro entre as árvores!"
+
+163 Hoothoot | Normal/Voador | grito: "Hoo-thoot"
+  [capturado] "Hoo! Você quer ver as estrelas comigo?"
+  [alimentado] "Hoo! Que delícia!"
+
+164 Noctowl | Normal/Voador | grito: "Noc-towl"
+  [evolui] "Noctowl! Eu enxergo no escuro!"
+  [desafio] "Vejo tudo na noite!"
+
+165 Ledyba | Inseto/Voador | grito: "Le-dy-ba"
+  [capturado] "Ledyba! Vamos voar juntos?"
+  [alimentado] "Le! Que delícia!"
+
+166 Ledian | Inseto/Voador | grito: "Le-di-an"
+  [evolui] "Ledian! Minhas estrelas brilham no escuro!"
+  [desafio] "Vou voar em grupo!"
+
+167 Spinarak | Inseto/Veneno | grito: "Spi-na-rak"
+  [capturado] "Spinarak! Eu adoro tecer teias e fico feliz!"
+  [alimentado] "Spi! Que delícia!"
+
+168 Ariados | Inseto/Veneno | grito: "A-ri-a-dos"
+  [evolui] "Ariados! Minha teia é muito forte!"
+  [desafio] "Você não escapa da minha teia!"
+
+169 Crobat | Veneno/Voador | grito: "Cro-bat"
+  [evolui] "Crobat! Voo rápido e silencioso!"
+  [companheiro] "Eu sempre encontro o caminho para você."
+
+170 Chinchou | Água/Elétrico | grito: "Chin-chou"
+  [capturado] "Chinchou! Vamos nadar com as luzes?"
+  [alimentado] "Chin! Que delícia!"
+
+171 Lanturn | Água/Elétrico | grito: "Lan-turn"
+  [evolui] "Lanturn! Minha luz ilumina o mar!"
+  [desafio] "Vou brilhar mais forte que o adversário!"
+
+172 Pichu | Elétrico | grito: "Pi-chu"
+  [capturado] "Pichu! Pii! Você quer brincar?"
+  [alimentado] "Pi! Que delícia!"
+
+173 Cleffa | Fada | grito: "Clef-fa"
+  [capturado] "Cleffa! Eu sou pequenino e fofinho!"
+  [alimentado] "Cle! Que delícia!"
+
+174 Igglybuff | Normal/Fada | grito: "Ig-gly-buff"
+  [capturado] "Iggly! Vamos cantar juntos?"
+  [alimentado] "Iggly! Que delícia!"
+
+175 Togepi | Fada | grito: "To-ge-pi"
+  [capturado] "Togepi! Eu trago sorte para você!"
+  [alimentado] "To! Que delícia!"
+
+176 Togetic | Fada/Voador | grito: "To-ge-tic"
+  [evolui] "Togetic! Eu voo trazendo felicidade!"
+  [companheiro] "Eu espalho alegria para todos."
+
+177 Natu | Psíquico/Voador | grito: "Na-tu"
+  [capturado] "Natu! Eu observo tudo em silencio."
+  [alimentado] "Na! Que delícia!"
+
+178 Xatu | Psíquico/Voador | grito: "Xa-tu"
+  [evolui] "Xatu! Eu enxergo o passado e o futuro!"
+  [pokedex] "Eu fico parado olhando as estrelas."
+
+179 Mareep | Elétrico | grito: "Ma-reep"
+  [capturado] "Mareep! Meu lã brilha quando eu fico feliz!"
+  [alimentado] "Ma! Que delícia!"
+
+180 Flaaffy | Elétrico | grito: "Flaf-fy"
+  [evolui] "Flaaffy! Meu lã está cheio de energia!"
+  [desafio] "Vou dar um choque leve no adversário!"
+
+181 Ampharos | Elétrico | grito: "Am-pha-ros"
+  [evolui] "Ampharos! Minha luz ilumina a noite!"
+  [companheiro] "Eu sou um farol para você."
+
+182 Bellossom | Grama | grito: "Be-lo-som"
+  [evolui] "Bellossom! Minhas flores dancam ao vento!"
+  [pokedex] "Eu gosto de dança e de sol."
+
+183 Marill | Água/Fada | grito: "Ma-ril"
+  [capturado] "Marill! Vamos nadar?"
+  [alimentado] "Ma! Que delícia!"
+
+184 Azumarill | Água/Fada | grito: "A-zu-ma-ril"
+  [evolui] "Azumarill! Minha bolinha boia na água!"
+  [desafio] "Vou rolar e vencer!"
+
+185 Sudowoodo | Pedra | grito: "Su-do-wood"
+  [capturado] "Sudowoodo! Sou um tronco que não se mexe!"
+  [alimentado] "Su! Que delícia!"
+
+186 Politoed | Água | grito: "Po-li-toed"
+  [evolui] "Politoed! Minha voz é muito alta!"
+  [desafio] "Vou cantar e te deixar tonto!"
+
+187 Hoppip | Grama/Voador | grito: "Hop-pip"
+  [capturado] "Hoppip! Eu flutuo com o vento!"
+  [alimentado] "Hop! Que delícia!"
+
+188 Skiploom | Grama/Voador | grito: "Ski-ploom"
+  [evolui] "Skiploom! Eu voo leve como uma pena!"
+  [pokedex] "Eu gosto de dias de vento."
+
+189 Jumpluff | Grama/Voador | grito: "Jump-luff"
+  [evolui] "Jumpluff! Eu flutuo longe com o vento!"
+  [companheiro] "Eu levo você para lugares bonitos."
+
+190 Aipom | Normal | grito: "Ai-pom"
+  [capturado] "Aipom! Eu sou esperto e adoro brincar!"
+  [alimentado] "Ai! Que delícia!"
+
+191 Sunkern | Grama | grito: "Sun-kern"
+  [capturado] "Sunkern! Eu espero o sol nascer."
+  [alimentado] "Sun! Que delícia!"
+
+192 Sunflora | Grama | grito: "Sun-flo-ra"
+  [evolui] "Sunflora! Minhas flores seguem o sol!"
+  [desafio] "Com o sol, eu fico forte!"
+
+193 Yanma | Inseto/Voador | grito: "Yan-ma"
+  [capturado] "Yanma! Vamos voar rápido?"
+  [alimentado] "Yan! Que delícia!"
+
+194 Wooper | Água/Terra | grito: "Woo-per"
+  [capturado] "Wooper! Eu moro na água e na lama!"
+  [alimentado] "Woo! Que delícia!"
+
+195 Quagsire | Água/Terra | grito: "Quag-sire"
+  [evolui] "Quagsire! Sou tranquilo e feliz!"
+  [pokedex] "Eu fico bem perto da lama."
+
+196 Espeon | Psíquico | grito: "Es-pe-on"
+  [evolui] "Espeon! Eu sinto o que você sente!"
+  [companheiro] "De dia, eu fico ao seu lado."
+
+197 Umbreon | Sombrio | grito: "Um-bre-on"
+  [evolui] "Umbreon! Eu brilho no escuro!"
+  [companheiro] "A noite, eu cuido de você."
+
+198 Murkrow | Sombrio/Voador | grito: "Mur-krow"
+  [capturado] "Murkrow! Eu adoro coisas que brilham!"
+  [alimentado] "Mur! Que delícia!"
+
+199 Slowking | Água/Psíquico | grito: "Slow-king"
+  [evolui] "Slowking! Eu penso com calma e sabedoria."
+  [desafio] "Pensar bem e a minha arma!"
+
+200 Misdreavus | Fantasma | grito: "Mis-dre-a-vus"
+  [capturado] "Misdreavus! Eu faço barulhos no escuro!"
+  [alimentado] "Mis! Que delícia!"
+
+201 Unown | Psíquico | grito: "U-nown"
+  [capturado] "Unown! Eu escrevo mensagens de letras!"
+  [pokedex] "Eu tenho muitas formas, como as letras."
+
+202 Wobbuffet | Psíquico | grito: "Wob-buf-fet"
+  [capturado] "Wobbuffet! Eu vou esperar com você!"
+  [alimentado] "Wob! Que delícia!"
+
+203 Girafarig | Normal/Psíquico | grito: "Gi-ra-fa-rig"
+  [capturado] "Girafarig! Tenho duas cabeças!"
+  [alimentado] "Gi! Que delícia!"
+
+204 Pineco | Inseto | grito: "Pi-ne-co"
+  [capturado] "Pineco! Eu fico escondido nas árvores."
+  [alimentado] "Pi! Que delícia!"
+
+205 Forretress | Inseto/Aço | grito: "For-re-tress"
+  [evolui] "Forretress! Minha casca é forte como aço!"
+  [desafio] "Ninguém atravessa a minha casca!"
+
+206 Dunsparce | Normal | grito: "Dun-spar-ce"
+  [capturado] "Dunsparce! Eu cavo buracos bem fundos!"
+  [alimentado] "Dun! Que delícia!"
+
+207 Gligar | Terra/Voador | grito: "Gli-gar"
+  [capturado] "Gligar! Eu deslizo pelo ar!"
+  [alimentado] "Gli! Que delícia!"
+
+208 Steelix | Aço/Terra | grito: "Stee-lix"
+  [evolui] "Steelix! Sou uma cobra de metal!"
+  [companheiro] "Eu protejo você como uma muralha."
+
+209 Snubbull | Fada | grito: "Snub-bull"
+  [capturado] "Snubbull! Eu sou fofinho e corajoso!"
+  [alimentado] "Snub! Que delícia!"
+
+210 Granbull | Fada | grito: "Gran-bull"
+  [evolui] "Granbull! Meus dentes são grandes e fortes!"
+  [desafio] "Vou defender o meu time!"
+
+211 Qwilfish | Água/Veneno | grito: "Qwil-fish"
+  [capturado] "Qwilfish! Cuidado com meus espinhos!"
+  [alimentado] "Qwil! Que delícia!"
+
+212 Scizor | Inseto/Aço | grito: "Sci-zor"
+  [evolui] "Scizor! Minhas pinças são de aço!"
+  [desafio] "Vou cortar o adversário!"
+
+213 Shuckle | Inseto/Pedra | grito: "Shuc-kle"
+  [capturado] "Shuckle! Eu guardo as minhas frutas com cuidado."
+  [alimentado] "Shuc! Que delícia!"
+
+214 Heracross | Inseto/Lutador | grito: "He-ra-cross"
+  [capturado] "Heracross! Eu sou forte como um besouro!"
+  [alimentado] "He! Que delícia!"
+  [desafio] "Vou levantar o adversário com o chifre!"
+
+215 Sneasel | Sombrio/Gelo | grito: "Sne-a-sel"
+  [capturado] "Sneasel! Eu sou esperto e rápido!"
+  [alimentado] "Sne! Que delícia!"
+
+216 Teddiursa | Normal | grito: "Ted-di-ur-sa"
+  [capturado] "Teddiursa! Eu sou um ursinho de pelucia!"
+  [alimentado] "Ted! Que delícia!"
+
+217 Ursaring | Normal | grito: "Ur-sa-ring"
+  [evolui] "Ursaring! Sou um urso grande e forte!"
+  [companheiro] "Pode me abraçar, eu sou quentinho."
+
+218 Slugma | Fogo | grito: "Slug-ma"
+  [capturado] "Slugma! Eu sou quentinho por dentro!"
+  [alimentado] "Slug! Que delícia!"
+
+219 Magcargo | Fogo/Pedra | grito: "Mag-car-go"
+  [evolui] "Magcargo! Minha casca esquenta muito!"
+  [desafio] "Vou derreter o adversário!"
+
+220 Swinub | Gelo/Terra | grito: "Swi-nub"
+  [capturado] "Swinub! Eu cavo a neve para achar comida!"
+  [alimentado] "Swi! Que delícia!"
+
+221 Piloswine | Gelo/Terra | grito: "Pi-lo-swine"
+  [evolui] "Piloswine! Meus pelos são bem grossos!"
+  [desafio] "Vou atacar com força!"
+
+222 Corsola | Água/Pedra | grito: "Cor-so-la"
+  [capturado] "Corsola! Eu moro no mar e sou fofinho!"
+  [alimentado] "Cor! Que delícia!"
+
+223 Remoraid | Água | grito: "Re-mo-raid"
+  [capturado] "Remoraid! Vamos nadar?"
+  [alimentado] "Re! Que delícia!"
+
+224 Octillery | Água | grito: "Oc-til-lery"
+  [evolui] "Octillery! Meus tentaculos são muito fortes!"
+  [desafio] "Vou jogar água no adversário!"
+
+225 Delibird | Gelo/Voador | grito: "De-li-bird"
+  [capturado] "Delibird! Eu trago presentes para você!"
+  [alimentado] "De! Que delícia!"
+
+226 Mantine | Água/Voador | grito: "Man-tine"
+  [capturado] "Mantine! Eu voo debaixo da água!"
+  [alimentado] "Man! Que delícia!"
+
+227 Skarmory | Aço/Voador | grito: "Skar-mo-ry"
+  [capturado] "Skarmory! Minhas asas são de aço!"
+  [desafio] "Ninguém me corta no ar!"
+
+228 Houndour | Sombrio/Fogo | grito: "Hound-our"
+  [capturado] "Houndour! Eu sou leal e esperto!"
+  [alimentado] "Hou! Que delícia!"
+
+229 Houndoom | Sombrio/Fogo | grito: "Hound-doom"
+  [evolui] "Houndoom! Minhas chamas estão acesas!"
+  [companheiro] "Eu protejo você na noite."
+
+230 Kingdra | Água/Dragão | grito: "King-dra"
+  [evolui] "Kingdra! Sou o rei do mar!"
+  [desafio] "Vou mostrar a força do mar!"
+
+231 Phanpy | Terra | grito: "Phan-py"
+  [capturado] "Phanpy! Eu sou um elefantinho fofo!"
+  [alimentado] "Phan! Que delícia!"
+
+232 Donphan | Terra | grito: "Don-phan"
+  [evolui] "Donphan! Sou forte como uma parede!"
+  [desafio] "Vou empurrar o adversário!"
+
+233 Porygon2 | Normal | grito: "Po-ry-gon-two"
+  [evolui] "Porygon2! Eu sou mais esperto agora!"
+  [pokedex] "Eu sou feito de codigos novos."
+
+234 Stantler | Normal | grito: "Stan-tler"
+  [capturado] "Stantler! Meus chifres são grandes!"
+  [alimentado] "Stan! Que delícia!"
+
+235 Smeargle | Normal | grito: "Smear-gle"
+  [capturado] "Smeargle! Eu desenho com a minha cauda!"
+  [alimentado] "Smear! Que delícia!"
+
+236 Tyrogue | Lutador | grito: "Ty-ro-gue"
+  [capturado] "Tyrogue! Eu treino todos os dias!"
+  [alimentado] "Ty! Que delícia!"
+
+237 Hitmontop | Lutador | grito: "Hit-mon-top"
+  [evolui] "Hitmontop! Eu giro muito rápido!"
+  [desafio] "Vou girar e atacar!"
+
+238 Smoochum | Gelo/Psíquico | grito: "Smoo-chum"
+  [capturado] "Smoochum! Eu sou fofinho e sinto frio!"
+  [alimentado] "Smoo! Que delícia!"
+
+239 Elekid | Elétrico | grito: "E-le-kid"
+  [capturado] "Elekid! Eu tenho energia de sobra!"
+  [alimentado] "E! Que delícia!"
+
+240 Magby | Fogo | grito: "Mag-by"
+  [capturado] "Magby! Eu esquento as coisas!"
+  [alimentado] "Mag! Que delícia!"
+
+241 Miltank | Normal | grito: "Mil-tank"
+  [capturado] "Miltank! Eu sou fofinha e gosto de ajudar!"
+  [alimentado] "Mil! Que delícia!"
+
+242 Blissey | Normal | grito: "Bliss-ey"
+  [capturado] "Blissey! Eu trago alegria para quem está triste!"
+  [alimentado] "Bliss! Que delícia!"
+
+243 Raikou | Elétrico | grito: "Rai-kou"
+  [capturado] "Raikou! Sou rápido como um trovão!"
+  [desafio] "Vou atacar como um raio!"
+
+244 Entei | Fogo | grito: "En-tei"
+  [capturado] "Entei! Minha chama é forte!"
+  [desafio] "Vou atacar com fogo!"
+
+245 Suicune | Água | grito: "Su-i-cune"
+  [capturado] "Suicune! Eu corro pelo vento e pela água!"
+  [pokedex] "Eu protejo as águas puras."
+
+246 Larvitar | Pedra/Terra | grito: "Lar-vi-tar"
+  [capturado] "Larvitar! Eu cresco debaixo da terra!"
+  [alimentado] "Lar! Que delícia!"
+
+247 Pupitar | Pedra/Terra | grito: "Pu-pi-tar"
+  [evolui] "Pupitar! Minha casca está mais dura!"
+  [desafio] "Vou resistir a tudo!"
+
+248 Tyranitar | Pedra/Sombrio | grito: "Ty-ran-i-tar"
+  [evolui] "Tyranitar! Sou um monstro de força!"
+  [companheiro] "Eu sou forte e protejo você."
+
+249 Lugia | Psíquico/Voador | grito: "Lu-gi-a"
+  [capturado] "Lugia! Eu protejo o mar e o céu!"
+  [desafio] "Com o vento do mar, eu venco!"
+
+250 Ho-Oh | Fogo/Voador | grito: "Ho-oh"
+  [capturado] "Ho-Oh! Minhas penas trazem sorte!"
+  [desafio] "Depois da chuva, vem o arco-iris!"
+
+251 Celebi | Psíquico/Grama | grito: "Ce-le-bi"
+  [capturado] "Celebi! Eu viajo pelo tempo!"
+  [pokedex] "Eu trago flores para quem precisa."

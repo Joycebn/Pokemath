@@ -1,0 +1,37 @@
+FALAS DE RESERVA - usadas quando um Pokemon nao tem fala especifica para o momento.
+Use {nome} para o nome do Pokemon. O app escolhe uma das frases ao acaso.
+
+[capturado]
+"{nome}! Cheguei! Estou muito feliz de conhecer você!"
+"{nome}! Oba! Agora somos um time!"
+"{nome}! Que alegria estar com você!"
+
+[companheiro]
+"Vamos juntos! Eu fico ao seu lado."
+"Pode contar comigo, eu vou com você."
+"Eu gosto de estudar com você!"
+
+[alimentado]
+"Que delícia! Muito obrigado!"
+"Nham, nham! Estava uma delícia!"
+"Hmm, que gostoso! Obrigado!"
+
+[evolui]
+"{nome}! Estou mais forte do que nunca!"
+"{nome}! Olha como eu cresci!"
+"{nome}! Eu mudei, mas continuo sendo seu amigo!"
+
+[desafio]
+"Vamos lá! Eu acredito em você!"
+"Eu estou pronto! Vamos vencer juntos!"
+"Respire fundo e vamos com calma!"
+
+[fome]
+"Minha barriguinha está roncando... será que tem uma fruta?"
+"Estou com fome! Você tem algo gostoso para mim?"
+"Hum... bem que eu comeria um petisco!"
+
+[pokedex]
+"Esse sou eu! Prazer em te conhecer!"
+"Olha só, estou na sua Pokédex!"
+"Eu gosto de fazer novos amigos."

@@ -1,0 +1,123 @@
+Trocas feitas: 1100
+
+== Palavras corrigidas ==
+  125 voce→você
+   80 adversario→adversário
+   62 rapido→rápido
+   44 agua→água
+   43 forca→força
+   41 esta→está
+   39 sao→são
+   28 ceu→céu
+   24 estao→estão
+   20 ninguem→ninguém
+   19 dragao→dragão
+   12 nao→não
+    8 espirito→espírito
+    7 tres→três
+    7 faco→faço
+    6 ate→até
+    6 cabecas→cabeças
+    6 arvore→árvore
+    6 guardiao→guardião
+    6 eletrico→elétrico
+    5 lamina→lâmina
+    4 vitoria→vitória
+    4 arvores→árvores
+    3 coracao→coração
+    3 so→só
+    3 (frase corrigida)
+    3 trovao→trovão
+    3 musica→música
+    3 ferrao→ferrão
+    2 delicia→delícia
+    2 danca→dança
+    2 cabeca→cabeça
+    2 rapidos→rápidos
+    2 rapida→rápida
+    2 historias→histórias
+    2 pinca→pinça
+    2 mimica→mímica
+    2 la→lã
+    2 aco→aço
+    2 maos→mãos
+    2 elegancia→elegância
+    2 chao→chão
+    2 algodao→algodão
+    2 familia→família
+    1 la→lá
+    1 canhoes→canhões
+    1 paciencia→paciência
+    1 cancao→canção
+    1 escuridao→escuridão
+    1 proximo→próximo
+    1 imas→ímãs
+    1 apareco→apareço
+    1 mae→mãe
+    1 bebe→bebê
+    1 rapidas→rápidas
+    1 vulcoes→vulcões
+    1 explosao→explosão
+    1 aguas→águas
+    1 atras→atrás
+    1 alcanca→alcança
+    1 simpatico→simpático
+    1 vulcao→vulcão
+    1 ha→há
+    1 alguem→alguém
+    1 pes→pés
+    1 magica→mágica
+    1 confortavel→confortável
+    1 sofa→sofá
+    1 confiavel→confiável
+    1 determinacao→determinação
+    1 reuniao→reunião
+    1 estacoes→estações
+    1 eletrica→elétrica
+    1 furacao→furacão
+    1 leao→leão
+    1 sabio→sábio
+    1 mecanico→mecânico
+    1 pao→pão
+    1 magico→mágico
+    1 cha→chá
+
+== 'e' virou 'é' (35) ==
+falas_pokemon_001_151.txt:225: ...gloom meu cheiro e forte agora...
+falas_pokemon_001_151.txt:395: ...rapidash minha chama e rapida como...
+falas_pokemon_001_151.txt:556: ...minha nuvem e forte...
+falas_pokemon_001_151.txt:600: ...seaking meu chifre e muito bonito...
+falas_pokemon_001_151.txt:705: ...kabuto minha concha e muito dura...
+falas_pokemon_001_151.txt:730: ...zapdos minha energia e enorme...
+falas_pokemon_152_251.txt:26: ...explosao de fogo e enorme...
+falas_pokemon_152_251.txt:70: ...ariados minha teia e muito forte...
+falas_pokemon_152_251.txt:142: ...politoed minha voz e muito alta...
+falas_pokemon_152_251.txt:218: ...forretress minha casca e forte como...
+falas_pokemon_152_251.txt:375: ...entei minha chama e forte...
+falas_pokemon_252_386.txt:122: ...kirlia minha dança e cheia de...
+falas_pokemon_252_386.txt:186: ...hariyama minha forca e enorme...
+falas_pokemon_252_386.txt:210: ...mawile minha mordida e muito forte...
+falas_pokemon_387_493.txt:66: ...kricketune minha musica e bonita...
+falas_pokemon_387_493.txt:90: ...cranidos minha cabeça e muito dura...
+falas_pokemon_387_493.txt:102: ...bastiodon minha defesa e enorme...
+falas_pokemon_387_493.txt:110: ...wormadam minha roupa e bem bonita...
+falas_pokemon_387_493.txt:198: ...skuntank meu cheiro e muito forte...
+falas_pokemon_387_493.txt:329: ...magmortar minha chama e enorme...
+falas_pokemon_494_649.txt:82: ...pansear minha chama e quentinha...
+falas_pokemon_494_649.txt:94: ...simipour minha agua e forte...
+falas_pokemon_494_649.txt:226: ...lilligant minha flor e linda...
+falas_pokemon_494_649.txt:262: ...crustle minha casa e enorme...
+falas_pokemon_494_649.txt:290: ...carracosta minha casca e muito dura...
+falas_pokemon_494_649.txt:414: ...galvantula minha teia e eletrica...
+falas_pokemon_650_721.txt:18: ...fennekin minha chama e quentinha...
+falas_pokemon_650_721.txt:118: ...meowstic minha mente e muito forte...
+falas_pokemon_650_721.txt:138: ...aromatisse meu perfume e muito gostoso...
+falas_pokemon_650_721.txt:174: ...clauncher minha pinça e forte...
+falas_pokemon_722_809.txt:38: ...primarina minha voz e linda como...
+falas_pokemon_722_809.txt:126: ...araquanid minha bolha e enorme...
+falas_pokemon_722_809.txt:134: ...lurantis minha flor e muito bonita...
+falas_pokemon_722_809.txt:142: ...shiinotic minha luz e suave...
+falas_pokemon_722_809.txt:190: ...golisopod minha armadura e forte...
+
+== 'e' mantido, mas vale revisar (0) ==
+

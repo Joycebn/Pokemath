@@ -1,0 +1,628 @@
+FALAS DOS POKEMON - LOTE 5 (494 a 649, quinta geracao)
+Formato: numero, nome, tipo, grito (onomatopeia aproximada, o som original toca do PokeAPI).
+Momentos entre colchetes: [capturado] [companheiro] [alimentado] [evolui] [desafio] [fome] [pokedex]
+
+494 Victini | Psíquico/Fogo | grito: "Vic-ti-ni"
+  [capturado] "Victini! Eu trago a vitória para você!"
+  [desafio] "Vitória! Vou vencer esse desafio!"
+
+495 Snivy | Grama | grito: "Sni-vy"
+  [capturado] "Snivy! Vamos explorar juntos?"
+  [alimentado] "Sni! Que delícia!"
+
+496 Servine | Grama | grito: "Ser-vine"
+  [evolui] "Servine! Eu fico mais elegante!"
+  [desafio] "Vou deslizar rápido pela grama!"
+
+497 Serperior | Grama | grito: "Ser-pe-ri-or"
+  [evolui] "Serperior! Sou forte e elegante!"
+  [companheiro] "Eu cuido de você com calma."
+
+498 Tepig | Fogo | grito: "Te-pig"
+  [capturado] "Tepig! Vamos correr juntos?"
+  [alimentado] "Te! Que delícia!"
+
+499 Pignite | Fogo/Lutador | grito: "Pig-nite"
+  [evolui] "Pignite! Minha chama esquenta o meu corpo!"
+  [desafio] "Vou atacar com fogo!"
+
+500 Emboar | Fogo/Lutador | grito: "Em-boar"
+  [evolui] "Emboar! Sou um javali de fogo!"
+  [companheiro] "Eu protejo você com força."
+
+501 Oshawott | Água | grito: "O-sha-wott"
+  [capturado] "Oshawott! Vamos nadar?"
+  [alimentado] "Osha! Que delícia!"
+
+502 Dewott | Água | grito: "De-wott"
+  [evolui] "Dewott! Minha concha está mais forte!"
+  [desafio] "Vou nadar com coragem!"
+
+503 Samurott | Água | grito: "Sa-mu-rott"
+  [evolui] "Samurott! Sou um guerreiro do mar!"
+  [companheiro] "Pode contar comigo no mar."
+
+504 Patrat | Normal | grito: "Pa-trat"
+  [capturado] "Patrat! Eu sou esperto e rápido!"
+  [alimentado] "Pa! Que delícia!"
+
+505 Watchog | Normal | grito: "Watch-og"
+  [evolui] "Watchog! Eu observo tudo!"
+  [desafio] "Nada escapa dos meus olhos!"
+
+506 Lillipup | Normal | grito: "Lil-li-pup"
+  [capturado] "Lillipup! Eu sou um cachorrinho fofinho!"
+  [alimentado] "Lil! Que delícia!"
+
+507 Herdier | Normal | grito: "Her-dier"
+  [evolui] "Herdier! Sou um cachorro leal!"
+  [companheiro] "Eu nunca deixo você sozinho."
+
+508 Stoutland | Normal | grito: "Stout-land"
+  [evolui] "Stoutland! Eu sou forte e protetor!"
+  [desafio] "Vou defender você com tudo!"
+
+509 Purrloin | Sombrio | grito: "Pur-loin"
+  [capturado] "Purrloin! Eu adoro coisas brilhantes!"
+  [alimentado] "Pur! Que delícia!"
+
+510 Liepard | Sombrio | grito: "Lie-pard"
+  [evolui] "Liepard! Eu me escondo bem!"
+  [desafio] "Ataco de surpresa!"
+
+511 Pansage | Grama | grito: "Pan-sage"
+  [capturado] "Pansage! Eu gosto de cantar com as plantas!"
+  [alimentado] "Pan! Que delícia!"
+
+512 Simisage | Grama | grito: "Si-mi-sage"
+  [evolui] "Simisage! Minhas folhas são fortes!"
+  [desafio] "Vou crescer e vencer!"
+
+513 Pansear | Fogo | grito: "Pan-sear"
+  [capturado] "Pansear! Minha chama é quentinha!"
+  [alimentado] "Pan! Que delícia!"
+
+514 Simisear | Fogo | grito: "Si-mi-sear"
+  [evolui] "Simisear! Minha chama está forte!"
+  [desafio] "Vou esquentar o desafio!"
+
+515 Panpour | Água | grito: "Pan-pour"
+  [capturado] "Panpour! Eu adoro água fresquinha!"
+  [alimentado] "Pan! Que delícia!"
+
+516 Simipour | Água | grito: "Si-mi-pour"
+  [evolui] "Simipour! Minha água é forte!"
+  [desafio] "Vou jogar água no adversário!"
+
+517 Munna | Psíquico | grito: "Mun-na"
+  [capturado] "Munna! Eu sonho com você!"
+  [alimentado] "Mun! Que delícia!"
+
+518 Musharna | Psíquico | grito: "Mu-shar-na"
+  [evolui] "Musharna! Meus sonhos são doces!"
+  [pokedex] "Eu durmo e sonho com as estrelas."
+
+519 Pidove | Normal/Voador | grito: "Pi-dove"
+  [capturado] "Pidove! Vamos voar juntos?"
+  [alimentado] "Pi! Que delícia!"
+
+520 Tranquill | Normal/Voador | grito: "Tran-quill"
+  [evolui] "Tranquill! Eu voo com tranquilidade!"
+  [desafio] "Vou voar rápido!"
+
+521 Unfezant | Normal/Voador | grito: "Un-fe-zant"
+  [evolui] "Unfezant! Minhas asas são grandes!"
+  [companheiro] "Eu levo você pelo céu."
+
+522 Blitzle | Elétrico | grito: "Blitz-le"
+  [capturado] "Blitzle! Eu sou rápido como um trovão!"
+  [alimentado] "Blitz! Que delícia!"
+
+523 Zebstrika | Elétrico | grito: "Zeb-strika"
+  [evolui] "Zebstrika! Corro com energia!"
+  [desafio] "Vou dar um choque no adversário!"
+
+524 Roggenrola | Pedra | grito: "Rog-gen-ro-la"
+  [capturado] "Roggenrola! Eu sou uma pedra com coração!"
+  [alimentado] "Rog! Que delícia!"
+
+525 Boldore | Pedra | grito: "Bol-dore"
+  [evolui] "Boldore! Estou ficando mais duro!"
+  [desafio] "Nada me quebra!"
+
+526 Gigalith | Pedra | grito: "Gi-ga-lith"
+  [evolui] "Gigalith! Sou uma montanha de pedra!"
+  [companheiro] "Eu protejo você como uma muralha."
+
+527 Woobat | Psíquico/Voador | grito: "Woo-bat"
+  [capturado] "Woobat! Eu voo e faço carinho!"
+  [alimentado] "Woo! Que delícia!"
+
+528 Swoobat | Psíquico/Voador | grito: "Swoo-bat"
+  [evolui] "Swoobat! Eu voo mais alto!"
+  [desafio] "Vou voar e vencer!"
+
+529 Drilbur | Terra | grito: "Dril-bur"
+  [capturado] "Drilbur! Eu cavo buracos bem fundos!"
+  [alimentado] "Dril! Que delícia!"
+
+530 Excadrill | Terra/Aço | grito: "Ex-ca-drill"
+  [evolui] "Excadrill! Minhas brocas são de aço!"
+  [desafio] "Vou cavar o adversário!"
+
+531 Audino | Normal | grito: "Au-di-no"
+  [capturado] "Audino! Eu cuido de quem está machucado!"
+  [alimentado] "Au! Que delícia!"
+
+532 Timburr | Lutador | grito: "Tim-burr"
+  [capturado] "Timburr! Eu treino com um tronco!"
+  [alimentado] "Tim! Que delícia!"
+
+533 Gurdurr | Lutador | grito: "Gur-durr"
+  [evolui] "Gurdurr! Meus bracos estão fortes!"
+  [desafio] "Vou levantar o adversário!"
+
+534 Conkeldurr | Lutador | grito: "Con-kel-durr"
+  [evolui] "Conkeldurr! Eu sou muito forte!"
+  [companheiro] "Eu luto ao seu lado."
+
+535 Tympole | Água | grito: "Tym-pole"
+  [capturado] "Tympole! Vamos nadar juntos?"
+  [alimentado] "Tym! Que delícia!"
+
+536 Palpitoad | Água/Terra | grito: "Pal-pi-toad"
+  [evolui] "Palpitoad! Minha voz faz barulho!"
+  [desafio] "Vou cantar e vencer!"
+
+537 Seismitoad | Água/Terra | grito: "Seis-mi-toad"
+  [evolui] "Seismitoad! Minha voz treme o chão!"
+  [companheiro] "Eu cuido de você com a minha voz."
+
+538 Throh | Lutador | grito: "Throh"
+  [capturado] "Throh! Eu sou forte e gosto de lutar!"
+  [alimentado] "Throh! Que delícia!"
+
+539 Sawk | Lutador | grito: "Sawk"
+  [capturado] "Sawk! Eu treino com cuidado!"
+  [alimentado] "Sawk! Que delícia!"
+
+540 Sewaddle | Inseto/Grama | grito: "Se-wad-dle"
+  [capturado] "Sewaddle! Eu tenho folhas nas costas!"
+  [alimentado] "Se! Que delícia!"
+
+541 Swadloon | Inseto/Grama | grito: "Swad-loon"
+  [evolui] "Swadloon! Minhas folhas estão grandes!"
+  [pokedex] "Eu gosto de dormir nas folhas."
+
+542 Leavanny | Inseto/Grama | grito: "Lea-van-ny"
+  [evolui] "Leavanny! Eu tenho prazer em tecer lindas folhas!"
+  [companheiro] "Eu cuido de você com carinho."
+
+543 Venipede | Inseto/Veneno | grito: "Ve-ni-pede"
+  [capturado] "Venipede! Eu rolo pelo chão!"
+  [alimentado] "Ve! Que delícia!"
+
+544 Whirlipede | Inseto/Veneno | grito: "Whir-li-pede"
+  [evolui] "Whirlipede! Eu giro como uma bola!"
+  [desafio] "Vou rolar e atacar!"
+
+545 Scolipede | Inseto/Veneno | grito: "Sco-li-pede"
+  [evolui] "Scolipede! Sou rápido e forte!"
+  [companheiro] "Eu corro com você."
+
+546 Cottonee | Grama/Fada | grito: "Cot-to-nee"
+  [capturado] "Cottonee! Eu sou fofinho como algodão!"
+  [alimentado] "Cot! Que delícia!"
+
+547 Whimsicott | Grama/Fada | grito: "Whim-si-cott"
+  [evolui] "Whimsicott! Eu voo com o vento!"
+  [desafio] "Vou deslizar pelo campo!"
+
+548 Petilil | Grama | grito: "Pe-ti-lil"
+  [capturado] "Petilil! Eu tenho uma flor na cabeça!"
+  [alimentado] "Pe! Que delícia!"
+
+549 Lilligant | Grama | grito: "Li-li-gant"
+  [evolui] "Lilligant! Minha flor é linda!"
+  [pokedex] "Eu gosto de perfume doce."
+
+550 Basculin | Água | grito: "Bas-cu-lin"
+  [capturado] "Basculin! Eu nado muito rápido!"
+  [alimentado] "Bas! Que delícia!"
+
+551 Sandile | Terra/Sombrio | grito: "San-dile"
+  [capturado] "Sandile! Eu me escondo na areia!"
+  [alimentado] "San! Que delícia!"
+
+552 Krokorok | Terra/Sombrio | grito: "Kro-ko-rok"
+  [evolui] "Krokorok! Meus dentes são afiados!"
+  [desafio] "Vou morder o adversário!"
+
+553 Krookodile | Terra/Sombrio | grito: "Kroo-ko-dile"
+  [evolui] "Krookodile! Sou forte como um crocodilo!"
+  [companheiro] "Eu protejo você no deserto."
+
+554 Darumaka | Fogo | grito: "Da-ru-ma-ka"
+  [capturado] "Darumaka! Eu sou quentinho!"
+  [alimentado] "Da! Que delícia!"
+
+555 Darmanitan | Fogo | grito: "Dar-ma-ni-tan"
+  [evolui] "Darmanitan! Eu fico muito bravo!"
+  [desafio] "Vou atacar com fogo!"
+
+556 Maractus | Grama | grito: "Ma-rac-tus"
+  [capturado] "Maractus! Eu canto no deserto!"
+  [alimentado] "Ma! Que delícia!"
+
+557 Dwebble | Inseto/Pedra | grito: "Dwe-bble"
+  [capturado] "Dwebble! Eu moro dentro de uma pedra!"
+  [alimentado] "Dwe! Que delícia!"
+
+558 Crustle | Inseto/Pedra | grito: "Crus-tle"
+  [evolui] "Crustle! Minha casa é enorme!"
+  [desafio] "Ninguém me derruba!"
+
+559 Scraggy | Sombrio/Lutador | grito: "Scrag-gy"
+  [capturado] "Scraggy! Eu sou um pouco rebelde!"
+  [alimentado] "Scrag! Que delícia!"
+
+560 Scrafty | Sombrio/Lutador | grito: "Scraf-ty"
+  [evolui] "Scrafty! Eu sou forte e esperto!"
+  [desafio] "Vou lutar sem medo!"
+
+561 Sigilyph | Psíquico/Voador | grito: "Si-gil-yph"
+  [capturado] "Sigilyph! Eu voo observando tudo!"
+  [pokedex] "Eu sou antigo e misterioso."
+
+562 Yamask | Fantasma | grito: "Ya-mask"
+  [capturado] "Yamask! Eu sou um espírito antigo!"
+  [alimentado] "Ya! Que delícia!"
+
+563 Cofagrigus | Fantasma | grito: "Co-fa-gri-gus"
+  [evolui] "Cofagrigus! Sou um sarcofago assustador!"
+  [desafio] "Vou assustar o adversário!"
+
+564 Tirtouga | Água/Pedra | grito: "Tir-tou-ga"
+  [capturado] "Tirtouga! Eu sou muito antigo!"
+  [alimentado] "Tir! Que delícia!"
+
+565 Carracosta | Água/Pedra | grito: "Car-ra-cos-ta"
+  [evolui] "Carracosta! Minha casca é muito dura!"
+  [companheiro] "Eu nado com você pelo mar."
+
+566 Archen | Pedra/Voador | grito: "Ar-chen"
+  [capturado] "Archen! Eu quero voar como os antigos!"
+  [alimentado] "Ar! Que delícia!"
+
+567 Archeops | Pedra/Voador | grito: "Ar-che-ops"
+  [evolui] "Archeops! Voo muito rápido!"
+  [desafio] "Vou atacar do céu!"
+
+568 Trubbish | Veneno | grito: "Trub-bish"
+  [capturado] "Trubbish! Eu sou um saco de lixo fofinho!"
+  [alimentado] "Tru! Que delícia!"
+
+569 Garbodor | Veneno | grito: "Gar-bo-dor"
+  [evolui] "Garbodor! Eu sou grande e cheiroso!"
+  [desafio] "Ninguém chega perto de mim!"
+
+570 Zorua | Sombrio | grito: "Zo-rua"
+  [capturado] "Zorua! Eu me transformo em outras formas!"
+  [alimentado] "Zo! Que delícia!"
+
+571 Zoroark | Sombrio | grito: "Zo-ro-ark"
+  [evolui] "Zoroark! Eu me disfarço muito bem!"
+  [desafio] "Vou enganar o adversário!"
+
+572 Minccino | Normal | grito: "Min-ci-no"
+  [capturado] "Minccino! Eu sou fofinho e macio!"
+  [alimentado] "Min! Que delícia!"
+
+573 Cinccino | Normal | grito: "Cin-ci-no"
+  [evolui] "Cinccino! Eu fico bem elegante!"
+  [pokedex] "Eu gosto de carinho."
+
+574 Gothita | Psíquico | grito: "Go-thi-ta"
+  [capturado] "Gothita! Eu observo tudo com cuidado!"
+  [alimentado] "Go! Que delícia!"
+
+575 Gothorita | Psíquico | grito: "Go-tho-ri-ta"
+  [evolui] "Gothorita! Minha mente está mais forte!"
+  [desafio] "Vou pensar rápido!"
+
+576 Gothitelle | Psíquico | grito: "Go-thi-tel"
+  [evolui] "Gothitelle! Sou muito sabia!"
+  [companheiro] "Eu cuido de você com a mente."
+
+577 Solosis | Psíquico | grito: "So-lo-sis"
+  [capturado] "Solosis! Eu tenho um olho só!"
+  [alimentado] "So! Que delícia!"
+
+578 Duosion | Psíquico | grito: "Duo-sion"
+  [evolui] "Duosion! Agora eu tenho dois olhos!"
+  [desafio] "Vou usar a mente!"
+
+579 Reuniclus | Psíquico | grito: "Re-u-ni-clus"
+  [evolui] "Reuniclus! Somos muitos em um!"
+  [pokedex] "Eu sou uma reunião de mentes."
+
+580 Ducklett | Água/Voador | grito: "Duck-lett"
+  [capturado] "Ducklett! Eu voo sobre a água!"
+  [alimentado] "Duck! Que delícia!"
+
+581 Swanna | Água/Voador | grito: "Swan-na"
+  [evolui] "Swanna! Sou elegante no céu!"
+  [companheiro] "Eu levo você com elegância."
+
+582 Vanillite | Gelo | grito: "Va-nil-lite"
+  [capturado] "Vanillite! Eu sou um sorvete fofinho!"
+  [alimentado] "Va! Que delícia!"
+
+583 Vanillish | Gelo | grito: "Va-nil-lish"
+  [evolui] "Vanillish! Eu fico mais gelado!"
+  [desafio] "Vou congelar o adversário!"
+
+584 Vanilluxe | Gelo | grito: "Va-nil-luxe"
+  [evolui] "Vanilluxe! Sou um sorvete gigante!"
+  [pokedex] "Eu gosto de neve."
+
+585 Deerling | Normal/Grama | grito: "Deer-ling"
+  [capturado] "Deerling! Eu mudo de cor com as estações!"
+  [alimentado] "Deer! Que delícia!"
+
+586 Sawsbuck | Normal/Grama | grito: "Saws-buck"
+  [evolui] "Sawsbuck! Meus chifres são grandes!"
+  [companheiro] "Eu corro pelos campos com você."
+
+587 Emolga | Elétrico/Voador | grito: "E-mol-ga"
+  [capturado] "Emolga! Eu voo e solto eletricidade!"
+  [alimentado] "E! Que delícia!"
+
+588 Karrablast | Inseto | grito: "Kar-ra-blast"
+  [capturado] "Karrablast! Eu sou rápido e esperto!"
+  [alimentado] "Kar! Que delícia!"
+
+589 Escavalier | Inseto/Aço | grito: "Es-ca-va-lier"
+  [evolui] "Escavalier! Eu sou um cavaleiro de aço!"
+  [desafio] "Vou atacar com a lança!"
+
+590 Foongus | Grama/Veneno | grito: "Foon-gus"
+  [capturado] "Foongus! Eu sou um cogumelo esperto!"
+  [alimentado] "Foon! Que delícia!"
+
+591 Amoonguss | Grama/Veneno | grito: "A-moon-gus"
+  [evolui] "Amoonguss! Eu espalho esporos!"
+  [desafio] "Vou deixar o adversário tonto!"
+
+592 Frillish | Água/Fantasma | grito: "Fril-lish"
+  [capturado] "Frillish! Eu flutuo na água escura!"
+  [alimentado] "Fril! Que delícia!"
+
+593 Jellicent | Água/Fantasma | grito: "Jel-li-cent"
+  [evolui] "Jellicent! Eu sou leve como uma água-viva!"
+  [pokedex] "Eu gosto do fundo do mar."
+
+594 Alomomola | Água | grito: "A-lo-mo-mo-la"
+  [capturado] "Alomomola! Eu cuido de quem está perdido no mar!"
+  [alimentado] "Alo! Que delícia!"
+
+595 Joltik | Inseto/Elétrico | grito: "Jol-tik"
+  [capturado] "Joltik! Eu tenho eletricidade nas patas!"
+  [alimentado] "Jol! Que delícia!"
+
+596 Galvantula | Inseto/Elétrico | grito: "Gal-van-tu-la"
+  [evolui] "Galvantula! Minha teia é elétrica!"
+  [desafio] "Vou prender o adversário na teia!"
+
+597 Ferroseed | Grama/Aço | grito: "Fe-rro-seed"
+  [capturado] "Ferroseed! Eu sou uma semente de aço!"
+  [alimentado] "Fe! Que delícia!"
+
+598 Ferrothorn | Grama/Aço | grito: "Fe-rro-thorn"
+  [evolui] "Ferrothorn! Meus espinhos são de aço!"
+  [desafio] "Ninguém chega perto de mim!"
+
+599 Klink | Aço | grito: "Klink"
+  [capturado] "Klink! Eu sou uma engrenagem!"
+  [alimentado] "Klink! Que delícia!"
+
+600 Klang | Aço | grito: "Klang"
+  [evolui] "Klang! Eu giro cada vez mais rápido!"
+  [desafio] "Vou girar e vencer!"
+
+601 Klinklang | Aço | grito: "Klink-klang"
+  [evolui] "Klinklang! Sou uma maquina poderosa!"
+  [companheiro] "Eu funciono bem com você."
+
+602 Tynamo | Elétrico | grito: "Ty-na-mo"
+  [capturado] "Tynamo! Eu sou um peixinho elétrico!"
+  [alimentado] "Ty! Que delícia!"
+
+603 Eelektrik | Elétrico | grito: "E-lek-trik"
+  [evolui] "Eelektrik! Minha energia está forte!"
+  [desafio] "Vou dar um choque no adversário!"
+
+604 Eelektross | Elétrico | grito: "E-lek-tross"
+  [evolui] "Eelektross! Eu sou muito forte e elétrico!"
+  [companheiro] "Eu dou energia para você."
+
+605 Elgyem | Psíquico | grito: "El-gyem"
+  [capturado] "Elgyem! Eu sou pequeno e muito esperto!"
+  [alimentado] "El! Que delícia!"
+
+606 Beheeyem | Psíquico | grito: "Be-hee-yem"
+  [evolui] "Beheeyem! Eu leio a mente com facilidade!"
+  [desafio] "Vou pensar antes de agir!"
+
+607 Litwick | Fantasma/Fogo | grito: "Lit-wick"
+  [capturado] "Litwick! Eu sou uma vela que brilha!"
+  [alimentado] "Lit! Que delícia!"
+
+608 Lampent | Fantasma/Fogo | grito: "Lam-pent"
+  [evolui] "Lampent! Minha chama está mais forte!"
+  [desafio] "Vou iluminar o caminho!"
+
+609 Chandelure | Fantasma/Fogo | grito: "Chan-de-lure"
+  [evolui] "Chandelure! Sou um lustre de chamas!"
+  [pokedex] "Eu brilho no escuro."
+
+610 Axew | Dragão | grito: "A-xew"
+  [capturado] "Axew! Vou virar um dragão!"
+  [alimentado] "A! Que delícia!"
+
+611 Fraxure | Dragão | grito: "Frax-ure"
+  [evolui] "Fraxure! Minhas presas estão crescendo!"
+  [desafio] "Vou morder o adversário!"
+
+612 Haxorus | Dragão | grito: "Hax-o-rus"
+  [evolui] "Haxorus! Minhas presas são fortes e afiadas!"
+  [companheiro] "Eu sou corajoso e protejo você."
+  [desafio] "Quer lutar comigo? Eu aceito o desafio!"
+
+613 Cubchoo | Gelo | grito: "Cub-choo"
+  [capturado] "Cubchoo! Eu espirro neve!"
+  [alimentado] "Cub! Que delícia!"
+
+614 Beartic | Gelo | grito: "Bear-tic"
+  [evolui] "Beartic! Sou um urso de gelo!"
+  [desafio] "Vou congelar o adversário!"
+
+615 Cryogonal | Gelo | grito: "Cry-o-go-nal"
+  [capturado] "Cryogonal! Eu sou feito de gelo cristalino!"
+  [pokedex] "Eu gosto do frio."
+
+616 Shelmet | Inseto | grito: "Shel-met"
+  [capturado] "Shelmet! Eu me escondo na concha!"
+  [alimentado] "Shel! Que delícia!"
+
+617 Accelgor | Inseto | grito: "Ac-cel-gor"
+  [evolui] "Accelgor! Sou muito rápido!"
+  [desafio] "Vou correr mais que o adversário!"
+
+618 Stunfisk | Terra/Elétrico | grito: "Stun-fisk"
+  [capturado] "Stunfisk! Eu me escondo na lama!"
+  [alimentado] "Stun! Que delícia!"
+
+619 Mienfoo | Lutador | grito: "Mi-en-foo"
+  [capturado] "Mienfoo! Eu luto com as pernas!"
+  [alimentado] "Mi! Que delícia!"
+
+620 Mienshao | Lutador | grito: "Mi-en-shao"
+  [evolui] "Mienshao! Meus golpes são rápidos!"
+  [desafio] "Vou atacar sem parar!"
+
+621 Druddigon | Dragão | grito: "Drud-di-gon"
+  [capturado] "Druddigon! Eu sou um dragão forte!"
+  [alimentado] "Drud! Que delícia!"
+
+622 Golett | Terra/Fantasma | grito: "Go-lett"
+  [capturado] "Golett! Eu sou uma estatua que anda!"
+  [alimentado] "Go! Que delícia!"
+
+623 Golurk | Terra/Fantasma | grito: "Go-lurk"
+  [evolui] "Golurk! Sou um gigante de pedra!"
+  [desafio] "Vou esmagar o adversário!"
+
+624 Pawniard | Sombrio/Aço | grito: "Paw-niard"
+  [capturado] "Pawniard! Eu tenho laminas afiadas!"
+  [alimentado] "Paw! Que delícia!"
+
+625 Bisharp | Sombrio/Aço | grito: "Bi-sharp"
+  [evolui] "Bisharp! Sou um guerreiro afiado!"
+  [desafio] "Vou cortar o adversário!"
+
+626 Bouffalant | Normal | grito: "Bou-fa-lant"
+  [capturado] "Bouffalant! Eu tenho um cabelo bem grande!"
+  [alimentado] "Bou! Que delícia!"
+
+627 Rufflet | Normal/Voador | grito: "Ruf-flet"
+  [capturado] "Rufflet! Vou voar com a minha asa!"
+  [alimentado] "Ruf! Que delícia!"
+
+628 Braviary | Normal/Voador | grito: "Bra-vi-ary"
+  [evolui] "Braviary! Sou corajoso no céu!"
+  [companheiro] "Eu protejo você do alto."
+
+629 Vullaby | Sombrio/Voador | grito: "Vul-la-by"
+  [capturado] "Vullaby! Eu tenho uma caveira na cabeça!"
+  [alimentado] "Vul! Que delícia!"
+
+630 Mandibuzz | Sombrio/Voador | grito: "Man-di-buzz"
+  [evolui] "Mandibuzz! Eu voo sobre a noite!"
+  [desafio] "Vou atacar do céu!"
+
+631 Heatmor | Fogo | grito: "Heat-mor"
+  [capturado] "Heatmor! Eu como fogo!"
+  [alimentado] "Heat! Que delícia!"
+
+632 Durant | Inseto/Aço | grito: "Du-rant"
+  [capturado] "Durant! Eu sou forte e resistente!"
+  [alimentado] "Du! Que delícia!"
+
+633 Deino | Sombrio/Dragão | grito: "De-i-no"
+  [capturado] "Deino! Eu sou um dragão pequeno!"
+  [alimentado] "De! Que delícia!"
+
+634 Zweilous | Sombrio/Dragão | grito: "Zwei-lous"
+  [evolui] "Zweilous! Tenho duas cabeças agora!"
+  [desafio] "Vou atacar com as duas cabeças!"
+
+635 Hydreigon | Sombrio/Dragão | grito: "Hy-drei-gon"
+  [evolui] "Hydreigon! Tenho três cabeças!"
+  [companheiro] "Eu protejo você com força."
+
+636 Larvesta | Inseto/Fogo | grito: "Lar-ves-ta"
+  [capturado] "Larvesta! Eu sou quentinha como uma chama!"
+  [alimentado] "Lar! Que delícia!"
+
+637 Volcarona | Inseto/Fogo | grito: "Vol-car-o-na"
+  [evolui] "Volcarona! Minhas asas são de fogo!"
+  [desafio] "Vou voar com fogo!"
+
+638 Cobalion | Aço/Lutador | grito: "Co-ba-li-on"
+  [capturado] "Cobalion! Eu sou feito de metal forte!"
+  [desafio] "Vou lutar com honra!"
+
+639 Terrakion | Pedra/Lutador | grito: "Ter-ra-ki-on"
+  [capturado] "Terrakion! Eu sou feito de rocha!"
+  [desafio] "Vou cortar a rocha do adversário!"
+
+640 Virizion | Grama/Lutador | grito: "Vi-ri-zi-on"
+  [capturado] "Virizion! Eu sou forte como a floresta!"
+  [desafio] "Vou vencer com a natureza!"
+
+641 Tornadus | Voador | grito: "Tor-na-dus"
+  [capturado] "Tornadus! Eu sou um vento forte!"
+  [desafio] "Vou girar como um furacão!"
+
+642 Thundurus | Elétrico/Voador | grito: "Thun-du-rus"
+  [capturado] "Thundurus! Eu sou um trovão!"
+  [desafio] "Vou dar um raio no adversário!"
+
+643 Reshiram | Dragão/Fogo | grito: "Re-shi-ram"
+  [capturado] "Reshiram! Eu trago a chama da verdade!"
+  [desafio] "Vou queimar com toda a minha força!"
+
+644 Zekrom | Dragão/Elétrico | grito: "Ze-krom"
+  [capturado] "Zekrom! Eu trago o raio da verdade!"
+  [desafio] "Vou dar um raio que nunca para!"
+
+645 Landorus | Terra/Voador | grito: "Lan-do-rus"
+  [capturado] "Landorus! Eu sou o guardião da terra!"
+  [desafio] "Vou balançar a terra!"
+
+646 Kyurem | Dragão/Gelo | grito: "Ky-u-rem"
+  [capturado] "Kyurem! Eu sou feito de gelo!"
+  [desafio] "Vou congelar o adversário!"
+
+647 Keldeo | Água/Lutador | grito: "Kel-de-o"
+  [capturado] "Keldeo! Eu corro com coragem!"
+  [desafio] "Vou nadar e lutar!"
+
+648 Meloetta | Normal/Psíquico | grito: "Me-lo-et-ta"
+  [capturado] "Meloetta! Eu canto com alegria!"
+  [pokedex] "Eu gosto de música."
+
+649 Genesect | Inseto/Aço | grito: "Ge-ne-sect"
+  [capturado] "Genesect! Eu sou um besouro de aço!"
+  [desafio] "Vou atacar com força!"
