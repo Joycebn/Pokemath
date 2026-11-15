@@ -1,5 +1,14 @@
-const V="pokemath-v2",BASE=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","css/legado.css","css/novo.css",
-"js/conteudo/matriz.js","js/conteudo/ano3.js","js/motor/geradores.js","js/motor/explicacao.js","js/pokemon/falas.js","js/motor/trilha.js","js/legado/jogo.js"];
+const V="pokemath-v3",BASE=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png",
+"css/legado.css","css/novo.css",
+"js/conteudo/matriz.js","js/conteudo/ano3.js",
+"js/motor/geradores.js","js/motor/explicacao.js","js/motor/trilha.js",
+"js/pokemon/falas.js","js/legado/jogo.js",
+"dados/falas/falas_reserva.txt","dados/falas/textos_pokemon.txt",
+"dados/falas/falas_pokemon_001_151.txt","dados/falas/falas_pokemon_152_251.txt",
+"dados/falas/falas_pokemon_252_386.txt","dados/falas/falas_pokemon_387_493.txt",
+"dados/falas/falas_pokemon_494_649.txt","dados/falas/falas_pokemon_650_721.txt",
+"dados/falas/falas_pokemon_722_809.txt","dados/falas/falas_pokemon_810_905.txt",
+"dados/falas/falas_pokemon_906_1025.txt"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(BASE)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==V).map(n=>caches.delete(n)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{
