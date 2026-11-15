@@ -1,8 +1,9 @@
 /* Falas dos Pokémon: lê dados/falas/falas_pokemon_*.txt (corrigidos) e, para quem não tem fala no momento
    (ou não está nos arquivos), usa dados/falas/falas_reserva.txt. Momentos: capturado, companheiro, alimentado,
    evolui, desafio, fome, pokedex. */
-const FALAS_ARQ=[[1,151,"001_151"],[152,251,"152_251"],[252,386,"252_386"],[387,493,"387_493"],[494,649,"494_649"],[650,721,"650_721"],[722,809,"722_809"],[906,1025,"906_1025"]];
-const FALAS_MEM={};let RESERVA_MEM=null;
+const FALAS_MEM={};
+let RESERVA_MEM=null;
+const FALAS_ARQ=[[1,151,"001_151"],[152,251,"152_251"],[252,386,"252_386"],[387,493,"387_493"],[494,649,"494_649"],[650,721,"650_721"],[722,809,"722_809"],[810,905,"810_905"],[906,1025,"906_1025"]];
 const FALAS_FIXAS={capturado:["Que alegria conhecer você!"],companheiro:["Eu gosto de estudar com você!"],alimentado:["Que delícia! Obrigado!"],evolui:["Estou mais forte do que nunca!"],
   desafio:["Vamos lá! Eu acredito em você!"],fome:["Estou com fome! Você tem algo gostoso para mim?"],pokedex:["Olha só, estou na sua Pokédex!"]};
 function parsearFalas(txt){
