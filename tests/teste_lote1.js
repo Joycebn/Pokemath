@@ -140,18 +140,68 @@ await ev("(async()=>{const ctx={stage:document.getElementById('exp-stage'),insta
 t("8 + 5: o 'pacote de dezena' é verde e está na coluna das dezenas (vai um)",ev("__R.pac.className.includes('bgd')&&__R.pac._x===__R.X(0)+4&&__R.pac.textContent==='1'"));
 await passos("subEmp","32,15");fin=ev("[...document.querySelectorAll('#exp-stage .pm-res')].map(e=>e.textContent+':'+(e.className.match(/ c[udcm]/)||[''])[0].trim()).join()");
 t("32 − 15: 12 − 5 = 7 (azul), 2 − 1 = 1 (verde), resultado 17 (com empréstimo)",fin==="7:cu,1:cd"&&ev("document.querySelector('#exp-stage #cap').textContent")==="32 − 15 = 17",fin);
-await passos("mult","3,4");t("3 × 4: 12 bolinhas alinhadas em 3 grupos, contagem 4, 8, 12 e resultado 12",ev("document.querySelectorAll('#exp-stage .pm-ponto').length")===12&&ev("[...document.querySelectorAll('#exp-stage .pm-cel')].filter(e=>e._y>=70&&['4','8','12'].includes(e.textContent)&&!e.className.includes('pm-res')).map(e=>e.textContent).join()")==="4,8,12"&&ev("document.querySelector('#exp-stage .pm-res').textContent")==="12");
+await passos("mult","3,4");t("3 × 4: 12 maçãs alinhadas em 3 grupos, contagem 4, 8, 12 e resultado 12",ev("document.querySelectorAll('#exp-stage .pm-fruta').length")===12&&ev("[...document.querySelectorAll('#exp-stage .pm-cel')].filter(e=>e._y>=70&&['4','8','12'].includes(e.textContent)&&!e.className.includes('pm-res')).map(e=>e.textContent).join()")==="4,8,12"&&ev("document.querySelector('#exp-stage .pm-res').textContent")==="12");
 await passos("divide","12,3");
 t("12 ÷ 3: 12 frutas caem uma a uma em 3 pratos, 4 em cada, resultado 4",ev("document.querySelectorAll('#exp-stage .pm-fruta').length")===12&&ev("(()=>{const f=[...document.querySelectorAll('#exp-stage .pm-fruta')],pr=[...document.querySelectorAll('#exp-stage .pm-prato')];return pr.map(p=>{const l=parseFloat(p.style.left);return f.filter(x=>x._x>=l&&x._x<l+80&&x._y>=130).length}).join()})()")==="4,4,4"&&ev("document.querySelector('#exp-stage .pm-res').textContent")==="4");
 // números nunca prontos: antes do voo não há resultado
 await ev("(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:true,gasto:0};const rot=ROT.soma(23,12),R=rot.montar(ctx);for(let i=0;i<=1;i++)await rot.passos[i].acao(ctx,R);window.__R=R;return true})()");
 t("o resultado nunca aparece pronto: depois de os números chegarem ainda não há resultado até a soma",ev("document.querySelectorAll('#exp-stage .pm-res').length")===0&&ev("__R.clones[0].length")===2);
 t("os operandos começam fora do lugar (fora da conta) e viajam até ele",ev("(()=>{const ctx={stage:document.getElementById('exp-stage'),instant:true,gasto:0};const R=ROT.soma(23,12).montar(ctx);return R.a[0]._y<0&&R.a[0]._y!==R.a[0]._fy})()"));
+
+// ================= apoio visual: maçãs, pacotes e bandejas (as imagens não substituem os números) =================
+s.w.__anims.length=0;ev("S.cfg.reduzir=false;FS.vel=0.001");
+const cont=sel=>ev(`document.querySelectorAll('#exp-stage ${sel}').length`);
+const ateOPasso=async(nome,args,i)=>{await ev(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:true,gasto:0};const rot=ROT.${nome}(${args}),R=rot.montar(ctx);for(let k=0;k<=${i};k++)await rot.passos[k].acao(ctx,R);window.__R=R;return true})()`);};
+// adição 23 + 12: unidades viram maçãs, dezenas viram pacotes de 10; as quantidades se juntam
+await ateOPasso("soma","23,12",1);
+t("soma: as unidades viram maçãs (3 e 2) nascendo dos algarismos, em bandejas azuis",cont(".pm-ap")===5&&cont(".pm-bandeja.cu")===2&&ev("[...document.querySelectorAll('#exp-stage .pm-ap')].every(e=>{const[x,y]=e.dataset.de.split(',').map(Number);const d=[...Object.values(__R.a),...Object.values(__R.b)];return d.some(z=>Math.abs(z._fx+14-x)<=30&&Math.abs(z._fy+12-y)<=30)})"));
+t("soma: nada aparece do nada (ainda não há resultado nem nova quantidade)",cont(".pm-res")===0&&ev("__R.ap.res.length")===0);
+await ateOPasso("soma","23,12",2);
+t("soma: as 3 + 2 maçãs se juntam numa nova quantidade (5) na zona do resultado, e só depois nasce o 5",cont(".pm-ap")===5&&ev("__R.ap.res.length")===5&&ev("__R.ap.res.every(e=>e._y>=__R.ap.r2)")&&cont(".pm-res")===1&&cont(".pm-bandeja.cu")===0);
+await ateOPasso("soma","23,12",3);
+t("soma: as dezenas viram pacotes verdes (2 e 1)",cont(".pm-pacote.bgd")===3&&cont(".pm-bandeja.cd")===2);
+await ateOPasso("soma","23,12",5);
+t("soma: no fim há 3 pacotes verdes + 5 maçãs azuis (35, acima de 30 em pacotes)",cont(".pm-pacote.bgd")===3&&cont(".pm-ap")===5&&ev("__R.ap.res.length")===8);
+// 8 + 5
+await ateOPasso("vaiUm","8,5",1);
+t("8 + 5: nascem 8 e 5 maçãs; as 5 se dividem em 2 e 3",cont(".pm-ap")===13&&ev("__R.ap.eB.slice(0,2).every(e=>e._y>__R.ap.eB[4]._y)"));
+await ateOPasso("vaiUm","8,5",2);
+t("8 + 5: as 10 maçãs se transformam em UM pacote verde de dezena (sobram 3 maçãs)",cont(".pm-ap")===3&&cont(".pm-pacote.bgd")===1);
+await ateOPasso("vaiUm","8,5",3);
+t("8 + 5: o pacote viaja para a casa das dezenas do resultado (vai um)",ev("__R.ap.pacote._x")===14&&ev("__R.ap.pacote._y")===ev("__R.ap.r2+14"));
+await ateOPasso("vaiUm","8,5",6);
+t("8 + 5: no fim, 1 pacote (dezena) + 3 maçãs (unidades) = 13",cont(".pm-pacote")===1&&cont(".pm-ap")===3&&ev("__R.ap.res.length")===4);
+// 32 − 15
+await ateOPasso("subEmp","32,15",1);
+t("32 − 15: o 32 aparece em pacotes (3 dezenas + 2 maçãs) e o 15 como 1 pacote + 5 maçãs; nada de 32 maçãs soltas",cont(".pm-pacote")===4&&cont(".pm-ap")===7&&cont(".pm-bandeja")===2);
+await ateOPasso("subEmp","32,15",3);
+t("32 − 15: a dezena se parte em 10 unidades ANTES da conta (12 maçãs no 32)",cont(".pm-pacote")===3&&ev("__R.ap.um.length")===12&&cont(".pm-ap")===17);
+await ateOPasso("subEmp","32,15",4);
+t("32 − 15: 12 − 5: as 5 maçãs se apagam junto com as 5 que saem (sobram 7)",cont(".pm-ap")===7&&ev("__R.ap.um.length")===7);
+await ateOPasso("subEmp","32,15",5);
+t("32 − 15: o pacote que sai se apaga com o de baixo (sobra 1 dezena)",cont(".pm-pacote")===1);
+await ateOPasso("subEmp","32,15",6);
+t("32 − 15: no fim, 1 pacote + 7 maçãs = 17",cont(".pm-pacote")===1&&cont(".pm-ap")===7&&ev("__R.ap.res.length")===8);
+// multiplicação e divisão: maçãs e pratos
+await passos("mult","3,4");t("3 × 4: 3 grupos de 4 maçãs (imagens) junto com a contagem 4, 8, 12",cont(".pm-fruta")===12&&cont(".pm-caixa")===3);
+await passos("mult","4,9");t("acima de 30 objetos (4 × 9 = 36) os grupos viram pacotes",cont(".pm-pacote")===4&&cont(".pm-fruta")===0);
+await passos("divide","12,3");t("12 ÷ 3: 12 maçãs e 3 pratos",cont(".pm-fruta")===12&&cont(".pm-prato")===3);
+// layout: painel de apoio e escala
+await ateOPasso("soma","23,12",0);
+t("a cena tem o painel de apoio abaixo da conta e largura mínima de 300",ev("parseFloat(__R.box.style.height)")===5*58+142&&ev("parseFloat(__R.box.style.width)")>=300);
+await ev("(()=>{window.innerHeight=480;const ctx={stage:document.getElementById('exp-stage'),instant:true,gasto:0};const R=ROT.soma(23,12).montar(ctx);window.__sc=R.box.style.transform;window.innerHeight=900;return true})()");
+t("em tela baixa a cena é reduzida para caber (altura)",/scale\(0\.[0-9]+\)/.test(ev("__sc")),ev("__sc"));
+// giros: existem com movimento e somem com 'reduzir movimento'
+await ev("window.__gira=0;const _g=DOMTokenList.prototype.add;DOMTokenList.prototype.add=function(...c){if(c.includes('pm-gira'))window.__gira++;return _g.apply(this,c)};true");
+await passos("vaiUm","8,5");await passos("subEmp","32,15");
+t("a dezena gira (pacote que se forma e dezena que se parte) quando há movimento",ev("__gira")>=2,ev("__gira"));
 // reduzir movimento
 s.w.__anims.length=0;ev("S.cfg.reduzir=true;FS.vel=0.001");
 await ev("window.__pulso=0;const _a=DOMTokenList.prototype.add;DOMTokenList.prototype.add=function(...c){if(c.includes('pm-pulso'))window.__pulso++;return _a.apply(this,c)};true");
 await passos("vaiUm","8,5");fin=ev("[...document.querySelectorAll('#exp-stage .pm-res')].map(e=>e.textContent).join()");
-t("reduzir movimento: mesmo passo a passo, com destaque e SEM voo",s.w.__anims.length===0&&ev("__pulso")>5&&fin==="3,1",s.w.__anims.length+" / "+ev("__pulso"));
+const giraAntes=ev("__gira");
+await passos("subEmp","32,15");
+t("reduzir movimento: mesmo passo a passo (números e imagens), com destaque, SEM voo e SEM giros",s.w.__anims.length===0&&ev("__pulso")>5&&fin==="3,1"&&ev("__gira")===giraAntes&&cont(".pm-pacote")===1&&cont(".pm-ap")===7,s.w.__anims.length+" / "+ev("__pulso")+" / "+(ev("__gira")-giraAntes));
 ev("S.cfg.reduzir=false");
 
 // ================= player: auto, pausa, controles =================
@@ -161,13 +211,13 @@ ev("S.fases={'a3-posicional':{niveis:{bronze:{ok:true,perfeito:true}}},'a3-adica
 ev("FS.auto=false;ir('fases');abrirExplicacao('a3-vai-um')");await sleep(100);
 t("botões da explicação: Repetir, Pausar, Anterior e Próximo",["exp-rep","exp-pausa","exp-ant","exp-prox"].every(id=>ev(`!!document.getElementById('${id}')`))&&ev("document.getElementById('exp-prox').textContent")==="Próximo ▶");
 t("Anterior começa desativado no 1º passo",ev("document.getElementById('exp-ant').disabled")===true);
-ev("__LOG.length=0;FS.auto=true;FS.vel=0.004;FS.passo=0;mostrarPasso()");await sleep(4500);
+ev("__LOG.length=0;FS.log=[];FS.auto=true;FS.vel=0.004;FS.passo=0;mostrarPasso()");await sleep(4500);
 const n=ev("roteiroDaFase(FS.fase).passos.length");
 t("toca sozinho até o último passo",ev("FS.passo")===n-1&&ev("document.getElementById('exp-prox').textContent").includes("Praticar")&&ev("document.getElementById('exp-prox').classList.contains('pm-destaque')"),ev("FS.passo")+"/"+(n-1));
-const grupos=[];let cur=null;for(const x of ev("__LOG")){if(x==="P"){cur=[];grupos.push(cur)}else if(cur)cur.push(x)}
-const totais=grupos.map(g=>g.reduce((a,b)=>a+b,0));
-t("cada passo dura de 3 a 5 s, mais 1 s de pausa entre os passos",grupos.length===n&&totais.slice(0,-1).every(x=>x>=4000&&x<=6000)&&totais[n-1]>=3000&&totais[n-1]<=5000,totais.join());
-t("a pausa de 1 s existe entre todos os passos",grupos.slice(0,-1).every(g=>g[g.length-1]===1000));
+const grupos=[];let cur=null;for(const v of ev("__LOG")){if(v==="P"){cur=[];grupos.push(cur)}else if(cur)cur.push(v)}
+const flog=ev("FS.log.map(x=>x.gasto)");
+t("cada passo dura de 3 a 5 s (tempo real do passo, com ações simultâneas contadas uma vez só)",flog.length===n&&flog.every(x=>x>=3000&&x<=5000),flog.join());
+t("a pausa de 1 s existe entre todos os passos (e não depois do último)",grupos.length===n&&grupos.slice(0,-1).every(g=>g[g.length-1]===1000)&&grupos[n-1][grupos[n-1].length-1]!==1000);
 // pausar
 ev("FS.vel=0.05;FS.passo=0;FS.auto=true;mostrarPasso()");await sleep(100);
 const p0=ev("FS.passo");ev("pausar()");t("Pausar muda o botão para Continuar",ev("document.getElementById('exp-pausa').textContent").includes("Continuar")&&ev("FS.pausado")===true);
