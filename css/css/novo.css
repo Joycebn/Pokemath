@@ -1,0 +1,69 @@
+/* Estilos novos do Pokemath: trilha de fases com níveis, explicação animada com o Pyri e exercícios. */
+nav button{padding:10px 1px;font-size:.7rem}
+.faseTop{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:6px}
+.dots{display:flex;gap:6px;justify-content:center;margin:6px 0;flex-wrap:wrap}.dots i{width:10px;height:10px;border-radius:50%;background:#3b4a80}.dots i.on{background:var(--amar)}
+.pyriBox{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.pyriAv{flex:none;width:64px;height:64px;border-radius:50%;background:radial-gradient(#ffb347,#ff6a2f);display:flex;align-items:center;justify-content:center;font-size:2rem;border:3px solid #fff}
+.balao{background:#fff;color:var(--tinta);border-radius:14px;padding:10px 12px;font-weight:700;flex:1}
+.termos{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.termos span{background:var(--card);border-radius:10px;padding:4px 10px;font-size:.82rem}
+.palcoExp{background:var(--tela);color:var(--tinta);border-radius:14px;border:4px solid #0c1433;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 8px 10px;overflow:hidden}
+.cap{font-weight:800;font-size:1.15rem;margin:10px 0 0;text-align:center;min-height:1.4em}
+.pm-passo{text-align:center;font-size:.85rem;opacity:.85;margin-top:6px}
+.pm-ctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.pm-bt{min-height:58px;font-size:1.05rem;margin:0;padding:10px 6px;background:var(--card);color:#fff;border-bottom:4px solid #0c1433}
+.pm-bt-prox{background:var(--verm);border-bottom-color:var(--vermesc)}.pm-bt:disabled{opacity:.4}
+.pm-destaque{animation:pm-glow 1s ease-in-out infinite}
+.pm-pular{width:100%;margin-top:4px}
+.trilha{display:flex;flex-direction:column;gap:10px}
+.faseCard{background:var(--card);border-radius:16px;padding:10px 12px;border-bottom:5px solid #0c1433}.faseCard.bl{opacity:.6}
+.fHead{display:flex;align-items:center;gap:10px}.fHead .ic{font-size:1.8rem}.fTxt{flex:1}.fTxt b{display:block}.fTxt small{opacity:.85}
+.pm-livro{padding:8px 12px;font-size:1.2rem}
+.niveis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.nv{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:12px;font-size:.78rem;border-bottom:4px solid rgba(0,0,0,.35);min-height:78px}
+.nv .nvi{font-size:1.5rem}.nv b{font-size:.95rem}.nv small{font-weight:700;text-align:center;line-height:1.15}
+.nv.bloqueado{opacity:.55;background:#2b3a70;color:#fff}.nv.disponivel{background:var(--amar);color:var(--tinta)}
+.nv.concluido{background:#2b8a4d;color:#fff}.nv.refazer{background:#e8862a;color:#111}
+.emBreve{opacity:.75;font-size:.9rem}
+.enun{font-family:'Baloo 2',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:8px}
+.pkFala{align-items:center;gap:10px;margin:8px 0}.pkFala img{width:56px;height:56px;object-fit:contain}
+.dicaBox{background:#fff3cd;color:#5a4300;border-radius:10px;padding:8px 10px;margin:8px 0;font-weight:700}
+.fb{margin-top:12px;border-radius:14px;padding:10px 12px;font-weight:700}.fb.ok{background:#d4f5dd;color:#17602e}.fb.err{background:#fde2e0;color:#8a1c1c}
+.contaTxt{font-family:'Baloo 2',sans-serif;font-size:2rem;line-height:1.1;display:inline-block;text-align:right;background:#fff;border-radius:10px;padding:6px 14px;margin:6px 0}
+.iguais{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.cx{border:3px dashed #5b6ab3;border-radius:14px;padding:6px 8px;font-size:1.5rem;max-width:130px}
+.resumoFim{background:var(--card);border-radius:14px;padding:12px;margin:10px 0}.resumoFim p{margin:4px 0}
+/* ---- animações e cores das contas (o mesmo bloco existe em js/motor/explicacao.js como reserva) ---- */
+.pm-cena{position:relative;margin:0 auto}
+.pm-cel{position:absolute;display:flex;align-items:center;justify-content:center;width:54px;height:56px;font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;font-size:2.1rem;line-height:1;will-change:transform;z-index:2;transition:opacity .5s}
+.pm-d.cu{color:#1e6fe0}.pm-d.cd{color:#1f9d4a}.pm-d.cc{color:#f28c1b}.pm-d.cm{color:#8e44ad}.pm-d.cn{color:#16224a}
+.pm-op{color:#16224a}
+.pm-linha{position:absolute;height:5px;background:#16224a;border-radius:3px;transition:opacity .5s}
+.pm-res{background:rgba(255,255,255,.75);border-radius:12px}
+.pm-chip{width:38px;height:38px;border-radius:50%;font-size:1.2rem}
+.pm-pac{width:46px;height:46px;border-radius:12px;font-size:1.3rem;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.bgu{background:#1e6fe0;color:#fff}.bgd{background:#1f9d4a;color:#fff}.bgc{background:#f28c1b;color:#fff}.bgm{background:#8e44ad;color:#fff}
+.pm-dest{outline:4px solid #ffcb05;border-radius:12px;background:rgba(255,203,5,.35)}
+.pm-erro{outline:4px solid #d62839;border-radius:12px;animation:pm-tremer .5s 2}
+.pm-risc{opacity:.45;text-decoration:line-through}
+.pm-mini{font-size:1.4rem;height:34px}
+.pm-voo{z-index:6;filter:drop-shadow(0 4px 4px rgba(0,0,0,.35))}
+.pm-pulso{outline:4px solid #ffcb05;border-radius:12px;background:rgba(255,203,5,.45)}
+.pm-pop{animation:pm-pop .45s ease-out}
+.pm-glow{animation:pm-glow 1s ease-in-out 2;background:rgba(255,203,5,.5);border-radius:12px}
+.pm-ponto{width:26px;height:26px;border-radius:50%;background:#e64a8d;border:3px solid #fff;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.pm-fruta{font-size:1.5rem;width:30px;height:30px}
+.pm-caixa{position:absolute;border:3px dashed #5b6ab3;border-radius:12px}
+.pm-prato{position:absolute;border-radius:50%;background:#fff;border:4px solid #5b6ab3}
+.pm-casa{position:absolute;border:4px solid #5b6ab3;border-radius:14px;background:#fff;text-align:center;font-weight:800;font-size:.72rem;color:#16224a}
+.pm-casa small{position:absolute;left:0;right:0;bottom:4px}
+.pm-casa.cu{border-color:#1e6fe0}.pm-casa.cd{border-color:#1f9d4a}.pm-casa.cc{border-color:#f28c1b}.pm-casa.cm{border-color:#8e44ad}
+.pm-legenda{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font-size:.8rem;font-weight:800;margin-top:8px;color:#16224a}
+.pm-legenda i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+@keyframes pm-pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.25)}100%{transform:scale(1);opacity:1}}
+@keyframes pm-glow{50%{transform:scale(1.2)}}
+@keyframes pm-tremer{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* ---- telas pequenas e modo paisagem: nenhum botão fica cortado ---- */
+@media (max-height:520px) and (orientation:landscape){
+  .palcoExp{min-height:220px;padding-top:30px}.pyriAv{width:44px;height:44px;font-size:1.4rem}.balao{font-size:.9rem;padding:6px 10px}
+  .pm-ctrl{grid-template-columns:repeat(4,1fr)}.pm-bt{min-height:48px;font-size:.9rem}.niveis{gap:4px}.nv{min-height:64px}
+}
+@media (max-width:360px){.pm-bt{font-size:.95rem}.nv b{font-size:.88rem}.nv small{font-size:.68rem}}
