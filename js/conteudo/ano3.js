@@ -7,7 +7,7 @@ FASES.push(
 {id:"a3-adicao",ano:3,ordem:2,area:"Aritmética",icone:"➕",titulo:"Somar",resumo:"Juntar quantidades",gerador:"adicao",
  topicos:["Adição de números naturais","Significados das operações: juntar","Fatos fundamentais da adição"],roteiro:["soma",23,12]},
 {id:"a3-vai-um",ano:3,ordem:3,area:"Aritmética",icone:"🚀",titulo:"Somar com “vai um”",resumo:"Quando a soma passa de 9",gerador:"adicaoVaiUm",
- topicos:["Adição de números naturais","Composição e decomposição de números"],roteiro:["vaiUm",8,5]},
+ topicos:["Adição de números naturais","Composição e decomposição de números"],roteiro:["vaiUm",15,8]},
 {id:"a3-subtracao",ano:3,ordem:4,area:"Aritmética",icone:"➖",titulo:"Subtrair",resumo:"Tirar, com empréstimo",gerador:"subtracao",
  topicos:["Subtração de números naturais","Significados das operações: retirar, comparar"],roteiro:["subEmp",32,15]},
 {id:"a3-multiplicacao",ano:3,ordem:5,area:"Aritmética",icone:"✖️",titulo:"Multiplicar",resumo:"Parcelas iguais",gerador:"multiplicacao",

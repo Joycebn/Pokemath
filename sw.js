@@ -1,5 +1,5 @@
-const V="pokemath-v2",BASE=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","css/legado.css","css/novo.css",
-"js/conteudo/matriz.js","js/conteudo/ano3.js","js/motor/geradores.js","js/motor/explicacao.js","js/pokemon/falas.js","js/motor/trilha.js","js/legado/jogo.js"];
+const V="pokemath-v3",BASE=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","css/legado.css","css/novo.css",
+"js/conteudo/matriz.js","js/conteudo/ano3.js","js/motor/geradores.js","js/motor/explicacao.js","js/pokemon/falas.js","js/pokemon/pyri.js","js/motor/trilha.js","js/legado/jogo.js"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(BASE)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==V).map(n=>caches.delete(n)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{

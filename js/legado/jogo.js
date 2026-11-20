@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s), app=$("#app");
-const IMG=id=>`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const IMG=id=>id>=PYRI_ID?PYRI_IMG:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 const POOL={comum:[10,13,16,19,21,41,43,46,52,54,60,66,72,74,79,92,96,116,129,161],
   raro:[1,4,7,25,37,39,58,63,133,143,147,152,155,158],lendario:[144,145,146,150,243,244,245]};
 const ALL=[...POOL.comum,...POOL.raro,...POOL.lendario], INICIAIS=[1,4,7,25,133,152,155,158,252,255,258,387,390,393,495,498,501,650,653,656,722,725,728,810,813,816,906,909,912];
@@ -34,12 +34,13 @@ function render(){
 
 /* ---------- início ---------- */
 function inicio(){
+  if(!S.comp&&typeof garantirPyri==="function")garantirPyri();
   if(!S.comp)return `<h2>Escolha seu primeiro companheiro</h2><div class="grade">${INICIAIS.map(i=>`<div class="card"><img src="${IMG(i)}" alt=""><button class="mini" onclick="escolher(${i})">Escolher</button></div>`).join("")}</div>`;
   const aceso=S.last===hoje(),n=Math.min(feitasHoje(),S.cfg.meta);
   return `<div class="topo"><div class="fogo ${aceso?"on":""}">🔥<b>${S.streak}</b><small>${S.streak===1?"dia":"dias"}</small></div><div class="moedas">🪙 ${S.coins}</div></div>
   ${S.perdeu&&!aceso?`<p class="aviso">Vamos recomeçar? Cada dia novo é uma chance de acender o foguinho de novo. Seus Pokémon e moedas continuam todos aqui.</p>`:""}
   <div class="tela"><button class="pet" id="pet" onclick="carinho()"><img src="${IMG(S.comp)}" alt="Seu companheiro"></button>
-  <div class="nome">${S.caught[S.comp]?.nome||""}</div><div id="fala">${aceso?"Foguinho aceso! Você está arrasando.":"Seu companheiro está pronto para mais uma aventura de tabuada!"}</div></div>
+  <div class="nome">${S.caught[S.comp]?.nome||""}</div>${S.comp!==PYRI_ID?`<button class="mini" onclick="comp(PYRI_ID)">Voltar a ter o Pyri como companheiro</button>`:""}<div id="fala">${aceso?"Foguinho aceso! Você está arrasando.":"Seu companheiro está pronto para mais uma aventura de tabuada!"}</div></div>
   <div class="info"><p><b>Meta de hoje:</b> ${n} de ${S.cfg.meta} contas</p><div class="barra"><i style="width:${n/S.cfg.meta*100}%"></i></div></div>
   <div class="info">${painelXP()}</div>${S.diario===hoje()?`<p class="aviso">Desafio diário concluído hoje ✔ Volte amanhã!</p>`:`<button class="grande" onclick="iniciar('diario',0)">Desafio diário (XP extra)</button>`}<button class="grande" onclick="ir('fases')">Estudar agora</button><p style="opacity:.7;font-size:.8rem;text-align:center">💾 O progresso fica salvo neste aparelho.</p>`;
 }
@@ -147,12 +148,14 @@ async function revelar(id,d,tit,dup,rar){
   const ov=document.createElement("div");ov.className="ov";
   ov.innerHTML=`<h2>${tit}</h2><div class="balls">${"<div class='ball'><i class='t'></i><i class='b'></i></div>".repeat(5)}</div><p>Sorteando...</p>`;
   document.body.append(ov);
+  const falaP=typeof falaCaptura==="function"?falaCaptura(id,d.nome):Promise.resolve("");
   const bs=[...ov.querySelectorAll(".ball")],e=Math.floor(Math.random()*5);
   await esp(1300);bs.forEach((b,i)=>{if(i!==e)b.classList.add("fora")});
   await esp(700);bs[e].classList.add("bal");
   await esp(1600);bs[e].classList.remove("bal");bs[e].classList.add("abre");bip([523,659,784,1046]);await esp(800);ov.insertAdjacentHTML("beforeend","<div class='flash'></div>");
   await esp(350);
-  ov.innerHTML=`<div class="reveal"><img src="${IMG(id)}" alt="${d.nome}"><div class="nome">${d.nome}</div><div>${d.tipos.map(t=>`<span class="tipo">${t}</span>`).join("")}</div>
+  const fala=await falaP;
+  ov.innerHTML=`<div class="reveal"><img src="${IMG(id)}" alt="${d.nome}"><div class="nome">${d.nome}</div>${fala?`<div class="falaCap">“${fala}”</div>`:""}<div>${d.tipos.map(t=>`<span class="tipo">${t}</span>`).join("")}</div>
   <p>${dup?"Você já tinha este Pokémon! Ganhou 🪙 "+S.cfg.bonusRepet+" de bônus.":"Novo na sua Pokédex! Parabéns, treinadora!"} (${rar})</p>
   <button class="grande" onclick="this.closest('.ov').remove();render()">Continuar</button></div>`;
 }
@@ -176,6 +179,7 @@ function regra(id){
   const c=ent(id),e=EVO[id];if(!e)return null;
   if(id===133){const h=new Date().getHours();return{alvo:h>=6&&h<18?196:197,ok:c.amizade>=80,item:null,txt:`Evolui com amizade alta (${c.amizade} de 80): Espeon de dia e Umbreon à noite.`}}
   const [alvo,r]=e;
+  if(r==="breve")return{alvo,ok:false,item:null,txt:"A evolução do Pyri chega em uma próxima versão!"};
   if(typeof r==="number"){const f=r-c.nivel;return{alvo,ok:f<=0,item:null,txt:f<=0?"Pronto para evoluir!":`Evolui no nível ${r}. Faltam ${f} ${f===1?"nível":"níveis"}.`}}
   if(r==="amizade")return{alvo,ok:c.amizade>=80,item:null,txt:`Evolui com amizade alta (${c.amizade} de 80). Cuide dele na aba Cuidar.`};
   if(r==="especial")return{alvo,ok:false,item:null,txt:"Esta evolução tem uma condição especial (local, golpe ou horário) que o app ainda não tem."};
@@ -480,5 +484,5 @@ function prof(){if(S.cfg.pin&&!profOk)return telaPin();
   <button class="sec" onclick="aplicar($('#colar').value)">Restaurar do texto</button>
   <button class="sec" onclick="if(confirm('Apagar todo o progresso?')){localStorage.removeItem(KEY);location.reload()}">Apagar progresso</button></div>`;
 }
-render();checarLembrete();
+garantirPyri();render();checarLembrete();criarBotaoPyri();tutorialInicial();
 if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});

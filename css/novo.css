@@ -70,9 +70,45 @@ nav button{padding:10px 1px;font-size:.7rem}
 .pm-cel.pm-sumir{opacity:0;transform:scale(.4);transition:opacity .5s,transform .5s}
 .pm-gira{animation:pm-gira .6s ease-in-out}
 @keyframes pm-gira{to{transform:rotate(360deg) scale(1.25)}}
+.pm-cubo{background:#1e6fe0;border:1px solid #8ec0ff;border-radius:2px;box-shadow:inset -2px -2px 0 rgba(0,0,0,.25)}
+.pm-barra{border:1px solid #14702f;border-radius:3px;background:linear-gradient(90deg,#1f9d4a calc(100% - 1px),#a5e6b9 calc(100% - 1px)) 0 0/10% 100% repeat-x}
+.pm-placa{border:2px solid #c46a00;border-radius:4px;background:linear-gradient(90deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/10% 100%,linear-gradient(0deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/100% 10%,#f28c1b}
+.pm-milhar{border:2px solid #5e2a7e;border-radius:6px;background:#8e44ad;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3)}
 /* ---- telas pequenas e modo paisagem: nenhum botão fica cortado ---- */
 @media (max-height:520px) and (orientation:landscape){
   .palcoExp{min-height:220px;padding-top:30px}.pyriAv{width:44px;height:44px;font-size:1.4rem}.balao{font-size:.9rem;padding:6px 10px}
   .pm-ctrl{grid-template-columns:repeat(4,1fr)}.pm-bt{min-height:48px;font-size:.9rem}.niveis{gap:4px}.nv{min-height:64px}
 }
 @media (max-width:360px){.pm-bt{font-size:.95rem}.nv b{font-size:.88rem}.nv small{font-size:.68rem}}
+
+/* ---- vidas, tipos de questão, relacionar, lacuna e botão de explicação ---- */
+.vidas{font-size:1.1rem;white-space:nowrap}
+.pm-expl{width:100%;margin:2px 0 6px}
+.tipoQ{display:inline-block;background:var(--card);color:#fff;border-radius:99px;padding:3px 12px;font-size:.78rem;font-weight:800;margin-bottom:6px}
+.lacuna{display:inline-block;min-width:44px;padding:0 10px;border:3px dashed var(--verm);border-radius:10px;color:var(--verm);background:#fff}
+.relGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}.relCol{display:flex;flex-direction:column;gap:8px}
+.rel{background:#fff;color:var(--tinta);border:3px solid #5b6ab3;font-size:1.15rem;font-weight:800;padding:10px 6px;border-radius:12px}
+.rel.sel{outline:4px solid var(--amar)}
+.rel.lig.c0{border-color:#d62839;background:#ffe3e6}.rel.lig.c1{border-color:#1e6fe0;background:#e2eeff}.rel.lig.c2{border-color:#1f9d4a;background:#def6e6}.rel.lig.c3{border-color:#f28c1b;background:#fff0dc}
+.relDica{font-size:.8rem;opacity:.8;margin:2px 0 6px;text-align:center}
+.pm-repr{display:flex;gap:6px;align-items:center;justify-content:center;margin:6px 0;font-size:.8rem}
+.pm-repr button{padding:6px 10px;font-size:.8rem;margin:0;background:var(--card);color:#fff}.pm-repr button.on{background:var(--amar);color:var(--tinta)}
+.falaCap{background:#fff;color:var(--tinta);border-radius:14px;padding:8px 12px;font-weight:800;margin:8px 0;max-width:320px}
+/* ---- Pyri: tutorial e botão “Pyri, me explica” ---- */
+.pm-pyri-btn{position:fixed;right:10px;bottom:70px;z-index:30;background:var(--amar);color:var(--tinta);font-weight:800;border-radius:99px;padding:8px 14px;font-size:.85rem;box-shadow:0 3px 8px rgba(0,0,0,.4)}
+.pm-tut{position:fixed;inset:0;z-index:60;background:radial-gradient(#22346b,#0c1433);display:flex;align-items:center;justify-content:center;overflow:auto;padding:14px}
+.pm-tut-titulo{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:clamp(4rem,22vw,8rem);color:var(--amar);text-shadow:0 6px 0 #b35a00,0 0 30px rgba(255,203,5,.6);letter-spacing:.04em}
+.pm-tut-titulo span{display:inline-block;animation:pm-letra .7s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pm-letra{from{transform:translateY(-120px) scale(.3);opacity:0}}
+.pm-tut-palco{flex-direction:column;align-items:center;gap:10px;width:100%;max-width:420px}
+.pm-tut-pyri{animation:pm-pyri-entra 1.3s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes pm-pyri-entra{from{transform:translateX(-120vw) rotate(-30deg)}60%{transform:translateX(12px) rotate(8deg)}to{transform:none}}
+.pm-pyri-corpo{width:150px;height:150px;border-radius:50%;background:radial-gradient(#ffd27a,#ff6a2f);border:6px solid #fff;display:flex;align-items:center;justify-content:center;font-size:5rem;animation:pm-pyri-bob 1.6s ease-in-out infinite}
+@keyframes pm-pyri-bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+.pm-tut-pyri.falando .pm-pyri-corpo{animation:pm-pyri-fala .35s ease-in-out infinite}
+@keyframes pm-pyri-fala{50%{transform:scale(1.1) translateY(-6px)}}
+.pm-tut-balao{background:#fff;color:var(--tinta);border-radius:18px;padding:14px 16px;width:100%;text-align:center;font-weight:800;font-size:1.1rem;min-height:96px}
+.pm-tut-ico{font-size:2rem;margin-top:6px}
+.pm-tut-pontos{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.pm-tut-pontos i{width:10px;height:10px;border-radius:50%;background:#3b4a80}.pm-tut-pontos i.on{background:var(--amar)}
+.pm-tut-btns{display:grid;grid-template-columns:1fr 2fr;gap:8px;width:100%}.pm-tut-pular{margin:0}
+@media (max-height:520px){.pm-pyri-corpo{width:90px;height:90px;font-size:3rem}.pm-tut-balao{min-height:70px;font-size:.95rem;padding:8px 10px}.pm-tut-palco{gap:6px}}

@@ -1,9 +1,8 @@
 /* Falas dos Pokémon: lê dados/falas/falas_pokemon_*.txt (corrigidos) e, para quem não tem fala no momento
    (ou não está nos arquivos), usa dados/falas/falas_reserva.txt. Momentos: capturado, companheiro, alimentado,
    evolui, desafio, fome, pokedex. */
-const FALAS_MEM={};
-let RESERVA_MEM=null;
-const FALAS_ARQ=[[1,151,"001_151"],[152,251,"152_251"],[252,386,"252_386"],[387,493,"387_493"],[494,649,"494_649"],[650,721,"650_721"],[722,809,"722_809"],[810,905,"810_905"],[906,1025,"906_1025"]];
+const FALAS_ARQ=[[1,151,"001_151"],[152,251,"152_251"],[252,386,"252_386"],[387,493,"387_493"],[494,649,"494_649"],[650,721,"650_721"],[722,809,"722_809"],[906,1025,"906_1025"]];
+const FALAS_MEM={};let RESERVA_MEM=null;
 const FALAS_FIXAS={capturado:["Que alegria conhecer você!"],companheiro:["Eu gosto de estudar com você!"],alimentado:["Que delícia! Obrigado!"],evolui:["Estou mais forte do que nunca!"],
   desafio:["Vamos lá! Eu acredito em você!"],fome:["Estou com fome! Você tem algo gostoso para mim?"],pokedex:["Olha só, estou na sua Pokédex!"]};
 function parsearFalas(txt){
@@ -29,10 +28,19 @@ async function reservaFalas(){
   if(!RESERVA_MEM||!Object.keys(RESERVA_MEM).length)RESERVA_MEM=parsearReserva(await lerTextoFalas("dados/falas/falas_reserva.txt"));
   return RESERVA_MEM;
 }
+const FALAS_PYRI={capturado:["Oi, eu sou o Pyri!"],companheiro:["Estou aqui com você! Vamos juntos?","Eu adoro estudar matemática com você!"],alimentado:["Que delícia! Obrigado!"],
+  evolui:["Estou crescendo! Em breve viro o Pyrelis!"],desafio:["Calma, respire fundo. Eu acredito em você!","Um passo de cada vez. Vamos com atenção!","Se errar, não tem problema. Você aprende tentando!"],
+  fome:["Minha barriguinha está roncando... tem uma fruta?"],pokedex:["Eu sou o Pyri, da família Pyron!"]};
 async function falaPokemon(id,momento,nome){
+  if(id>=900000){const l=FALAS_PYRI[momento];return l&&l.length?pick(l):""}
   const e=await falasDe(id),esp=e&&e.f[momento];
   if(esp&&esp.length)return pick(esp);
   const r=(await reservaFalas())[momento],lista=(r&&r.length)?r:(FALAS_FIXAS[momento]||[]);
   const nm=nome||(e&&e.nome)||(S.caught&&S.caught[id]&&S.caught[id].nome)||"Pokémon";
   return lista.length?pick(lista).replace(/\{nome\}/g,nm):"";
+}
+/* fala de captura: sempre diz o nome (ex.: “Pika pika! Você vai ser meu amigo? Eu sou o Pikachu!”) */
+async function falaCaptura(id,nome){
+  const f=await falaPokemon(id,"capturado",nome);if(!f)return`Eu sou o ${nome}!`;
+  return f.toLowerCase().includes(String(nome).toLowerCase())?f:`${f} Eu sou o ${nome}!`;
 }

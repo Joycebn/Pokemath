@@ -10,11 +10,11 @@ const DEF_F={anoEscolar:3,tentativasFaseDia:3,questoesPorFase:8,bonusFase:10};
 const cfgF=k=>(S.cfg&&S.cfg[k]!=null)?S.cfg[k]:DEF_F[k];
 const fasesDoAno=a=>FASES.filter(f=>f.ano===a).sort((x,y)=>x.ordem-y.ordem);
 const anoLiberado=a=>a<=cfgF("anoEscolar");
-/* A próxima fase abre quando o nível Bronze da fase anterior foi concluído (mesmo com erros). */
+/* A próxima fase só abre quando os 3 níveis da fase anterior foram concluídos (o Ouro concluído, sem perder as 2 vidas). */
 function faseLiberada(f){
   if(!anoLiberado(f.ano))return false;
   const l=fasesDoAno(f.ano),i=l.findIndex(x=>x.id===f.id);
   if(i===0)return true;
-  const b=infoNivel(l[i-1],"bronze");
-  return !!(b&&b.ok);
+  const o=infoNivel(l[i-1],"ouro");
+  return !!(o&&o.ok);
 }

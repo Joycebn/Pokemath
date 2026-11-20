@@ -4,7 +4,7 @@
    - Os números sempre VIAJAM em curva até o lugar onde são usados (nunca aparecem prontos).
    - Com “reduzir movimento”: mesmo passo a passo, com troca de cor e destaque, sem o voo.
    - Botões: Repetir, Pausar, Anterior e Próximo. */
-const FS={vista:"trilha",fase:null,nivel:"bronze",passo:0,ses:null,tok:0,vel:1,pausado:false,anims:[],auto:true,rot:null};
+const FS={vista:"trilha",fase:null,nivel:"bronze",passo:0,ses:null,tok:0,vel:1,pausado:false,anims:[],auto:true,rot:null,repr:"dourado"};
 const CW=56,RH=58;
 const clsPos=k=>["cu","cd","cc","cm"][k]||"cm",bgPos=k=>["bgu","bgd","bgc","bgm"][k]||"bgm";
 const nomePos=k=>["unidades","dezenas","centenas","milhares"][k]||"milhares";
@@ -50,7 +50,11 @@ const PM_CSS=`.pm-cena{position:relative;margin:0 auto}
 .pm-bandeja small{position:absolute;right:6px;bottom:1px;font-size:.6rem;font-weight:800;color:#16224a;opacity:.75}
 .pm-cel.pm-sumir{opacity:0;transform:scale(.4);transition:opacity .5s,transform .5s}
 .pm-gira{animation:pm-gira .6s ease-in-out}
-@keyframes pm-gira{to{transform:rotate(360deg) scale(1.25)}}`;
+@keyframes pm-gira{to{transform:rotate(360deg) scale(1.25)}}
+.pm-cubo{background:#1e6fe0;border:1px solid #8ec0ff;border-radius:2px;box-shadow:inset -2px -2px 0 rgba(0,0,0,.25)}
+.pm-barra{border:1px solid #14702f;border-radius:3px;background:linear-gradient(90deg,#1f9d4a calc(100% - 1px),#a5e6b9 calc(100% - 1px)) 0 0/10% 100% repeat-x}
+.pm-placa{border:2px solid #c46a00;border-radius:4px;background:linear-gradient(90deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/10% 100%,linear-gradient(0deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/100% 10%,#f28c1b}
+.pm-milhar{border:2px solid #5e2a7e;border-radius:6px;background:#8e44ad;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3)}`;
 let estilosOk=false;
 function garantirEstilos(){
   if(estilosOk)return true;
@@ -148,6 +152,44 @@ async function junto(ctx,...fns){
   await Promise.all(fns.map(async f=>{const c=Object.create(ctx);c.gasto=0;await f(c);mx=Math.max(mx,c.gasto)}));
   ctx.gasto=g0+mx;
 }
+/* Representações das casas. Material dourado: unidade = cubinho (azul), dezena = barra de 10 cubinhos (verde),
+   centena = placa de 100 (laranja), milhar = cubo (roxo). “maçãs” é a forma anterior (maçãs e pacotes), mantida como alternativa. */
+const bloco=(R,cls,de,tx,ty,w,h)=>{const e=criar(R.box,"",cls,de.x,de.y,w,h);e._tx=tx;e._ty=ty;e.dataset.de=Math.round(de.x)+","+Math.round(de.y);return e};
+const REP={
+  macas:{
+    u:(R,de,tx,ty)=>apMaca(R,de,tx,ty),
+    d:(R,k,de,tx,ty)=>apPacote(R,k,de,tx,ty),
+    gu:(x,y,i)=>apGrade(x,y,i),gd:(x,y,i)=>({x:x+6+i*50,y:y+12}),gr:(i,ry)=>({x:14+i*50,y:ry+14}),
+    async pegar(ctx,R,pk){await voarVarios(ctx,[[pk,96,R.ap.y0+12]],1000)},
+    async fazDezena(ctx,R,todas,y){                              // 10 maçãs se juntam num pacote de dezena
+      const cx=46,cy=y+14,pacote=apPacote(R,1,{x:cx,y:cy},cx,cy);pacote.style.opacity=0;
+      await voarVarios(ctx,todas.map(e=>[e,cx+12,cy+6]),600);todas.forEach(e=>e.remove());
+      pacote.style.opacity=1;pacote.classList.add("pm-pop");await girar(ctx,pacote,500);return pacote;
+    },
+    async partir(ctx,R,pk,um,y){                                 // o pacote gira e se parte em 10 maçãs
+      const c={x:pk._x+12,y:pk._y+10};await girar(ctx,pk,600);
+      const novas=Array.from({length:10},()=>apMaca(R,c,0,0));pk.remove();
+      const todos=[...um,...novas];todos.forEach((e,i)=>{const g=apGrade(150,y,i);e._tx=g.x;e._ty=g.y});
+      await voarVarios(ctx,todos.map(apTo),1000,50);return todos;
+    }
+  },
+  dourado:{
+    u:(R,de,tx,ty)=>bloco(R,"pm-cubo",de,tx,ty,13,13),
+    d:(R,k,de,tx,ty)=>k===1?bloco(R,"pm-barra",de,tx,ty,122,14):k===2?bloco(R,"pm-placa",de,tx,ty,60,60):bloco(R,"pm-milhar",de,tx,ty,56,56),
+    gu:(x,y,i)=>({x:x+6+(i%8)*15,y:y+6+Math.floor(i/8)*15}),gd:(x,y,i)=>({x:x+2,y:y+8+i*18}),gr:(i,ry)=>({x:14,y:ry+6+i*18}),
+    async pegar(ctx,R,pk){pk.classList.add("pm-dest");await esperar(ctx,900);pk.classList.remove("pm-dest")},
+    async fazDezena(ctx,R,todas,y){                              // 10 cubinhos se alinham e viram UMA barra de dezena
+      const bx=14,by=y+22;await voarVarios(ctx,todas.map((e,j)=>[e,bx+2+j*12,by+1]),600);
+      const barra=bloco(R,"pm-barra pm-pop",{x:bx,y:by},bx,by,122,14);todas.forEach(e=>e.remove());await girar(ctx,barra,500);return barra;
+    },
+    async partir(ctx,R,pk,um,y){                                 // a barra gira e se parte em 10 cubinhos
+      await girar(ctx,pk,600);
+      const novas=Array.from({length:10},(_,j)=>bloco(R,"pm-cubo",{x:pk._x+2+j*12,y:pk._y+1},0,0,13,13));pk.remove();
+      const todos=[...um,...novas];todos.forEach((e,i)=>{const g=REP.dourado.gu(150,y,i);e._tx=g.x;e._ty=g.y});
+      await voarVarios(ctx,todos.map(apTo),1000,50);return todos;
+    }
+  }
+};
 const seq=(ap,orig)=>async(ctx,R)=>{await ap(ctx,R);await orig(ctx,R)};        // primeiro a imagem se constrói, depois os números viajam
 const par=(ap,orig)=>(ctx,R)=>junto(ctx,c=>ap(c,R),c=>orig(c,R));
 
@@ -155,7 +197,7 @@ const par=(ap,orig)=>(ctx,R)=>junto(ctx,c=>ap(c,R),c=>orig(c,R));
 function armada(ctx,op,a,b){
   const res=op==="+"?a+b:a-b,sa=String(a),sb=String(b),sr=String(res),cols=Math.max(sa.length,sb.length,sr.length);
   const CWd=(cols+1)*CW,W=Math.max(CWd,300),OX=(W-CWd)/2,X=c=>OX+(c+1)*CW,Y=r=>r*RH,H=5*RH+APH,box=novaCena(ctx,W,H);
-  const R={box,cols,X,Y,res,W,a:{},b:{},clones:{},ap:{y0:5*RH+8,r2:5*RH+8+66,np:0,res:[],q:{}}};
+  const R={box,cols,X,Y,res,W,a:{},b:{},clones:{},rep:REP[FS.repr]||REP.dourado,ap:{y0:5*RH+8,r2:5*RH+8+66,np:0,res:[],q:{}}};
   const fila=(s,row,obj,dx)=>[...s].forEach((d,i)=>{const c=cols-s.length+i,k=cols-1-c,e=criar(box,d,"pm-d "+clsPos(k),X(c)+dx,-70);e._fx=X(c);e._fy=Y(row);e.dataset.k=k;obj[k]=e});
   fila(sa,1,R.a,-50);fila(sb,2,R.b,50);
   R.sinal=criar(box,maisTxt(op),"pm-op",X(-1),Y(2));R.sinal.style.opacity=0;
@@ -176,8 +218,14 @@ function expressaoCena(ctx,box,n1,op,n2){
 const ROT={
   /* ---------- 345: casas e valores ---------- */
   posicional(n){
-    const s=String(n),L=s.length,W=300,H=250,vals=[...s].map((d,i)=>d+"0".repeat(L-1-i)),kk=i=>L-1-i,cx=i=>(W-L*88)/2+i*88;
-    return{montar:ctx=>{const box=novaCena(ctx,W,H),R={box,dig:[],casas:[],termos:[]};
+    const s=String(n),L=s.length,W=300,H=336,vals=[...s].map((d,i)=>d+"0".repeat(L-1-i)),kk=i=>L-1-i,cx=i=>(W-L*88)/2+i*88,PY=250;
+    /* material dourado: placa (centena), barra (dezena) e cubinho (unidade) nascem do algarismo e vão para a casa dele */
+    const apBlocos=i=>async(ctx,R)=>{
+      const k=kk(i),d=+s[i],x=cx(i)-4,de=centro(R.dig[i]);R.blocosBox.push(apBox(R,x,PY,84,70,clsPos(k),nomePos(k)));
+      const itens=Array.from({length:d},(_,j)=>k===2?bloco(R,"pm-placa",de,x+4+j*27,PY+10,25,25):k===1?bloco(R,"pm-barra",de,x+6,PY+8+j*12,72,9):k===0?bloco(R,"pm-cubo",de,x+4+j*15,PY+12,12,12):bloco(R,"pm-milhar",de,x+4+j*27,PY+10,25,25));
+      await voarVarios(ctx,itens.map(apTo),900,120);R.blocos.push(...itens);
+    };
+    return{montar:ctx=>{const box=novaCena(ctx,W,H),R={box,dig:[],casas:[],termos:[],blocos:[],blocosBox:[]};
       [...s].forEach((d,i)=>{const e=criar(box,d,"pm-d "+clsPos(kk(i)),cx(i)+13,-70);e._fx=cx(i)+13;e._fy=50;R.dig.push(e)});return R},
      passos:[
       P("Cada algarismo mora em uma casa. As casas têm nomes e cada uma tem a sua cor!",4500,async(ctx,R)=>{
@@ -185,13 +233,13 @@ const ROT={
           c.innerHTML=`<small>${nomePos(kk(i))}</small>`;R.box.append(c);return c});
         await esperar(ctx,700);await voarVarios(ctx,R.dig.map(e=>[e,e._fx,e._fy]),1600,250)},
         {unidades:"os números soltos, de 0 a 9",dezenas:"grupos de 10",centenas:"grupos de 100"}),
-      ...[...s].map((d,i)=>P(`O ${d} está na casa das ${nomePos(kk(i))}. Ele vale ${vals[i]}.`,4000,async(ctx,R)=>{
+      ...[...s].map((d,i)=>P(`O ${d} está na casa das ${nomePos(kk(i))}: ${d} ${[ "cubinho","barra","placa","cubo"][kk(i)]}${+d>1?"s":""}. Ele vale ${vals[i]}.`,5000,seq(apBlocos(i),async(ctx,R)=>{
         const e=R.dig[i],tx=20+i*92;
         if(i>0){const m=criar(R.box,"+","pm-op pm-pop",tx-30,180);R.termos.push(m)}
         const cl=criar(R.box,d,"pm-d "+clsPos(kk(i)),e._x,e._y);e.classList.add("pm-dest");await esperar(ctx,700);
         await voarVarios(ctx,[[cl,tx,180]],1800);cl.textContent=vals[i];cl.style.width="84px";cl.classList.add("pm-res","pm-pop");R.termos.push(cl);
-        e.classList.remove("pm-dest");dizer(ctx,`${d} ${nomePos(kk(i))} = ${vals[i]}`);await esperar(ctx,900)})),
-      P(`Então ${n} = ${vals.join(" + ")}! Quanto mais à esquerda, maior o valor.`,3500,async(ctx,R)=>{glowRes(R);dizer(ctx,`${n} = ${vals.join(" + ")}`);await esperar(ctx,2000)})
+        e.classList.remove("pm-dest");dizer(ctx,`${d} ${nomePos(kk(i))} = ${vals[i]}`);await esperar(ctx,900)}))),
+      P(`Então ${n} = ${vals.join(" + ")}! Quanto mais à esquerda, maior o valor.`,3500,async(ctx,R)=>{glowRes(R);R.blocos.forEach(e=>e.classList.add("pm-glow"));dizer(ctx,`${n} = ${vals.join(" + ")}`);await esperar(ctx,2000)})
     ]};
   },
   /* ---------- 23 + 12: sem vai-um, coluna por coluna (números + maçãs/pacotes) ---------- */
@@ -206,16 +254,16 @@ const ROT={
         const A=R.a[k],B=R.b[k],y=R.ap.y0,q=R.ap.q[k]={};
         if(!R.ap.zona)R.ap.zona=apBox(R,6,R.ap.r2-4,288,70,"cn","resultado");
         q.tl=apBox(R,14,y,126,62,clsPos(k),nome);q.tr=apBox(R,160,y,126,62,clsPos(k),nome);
-        const mk=(n,x,dg)=>Array.from({length:n},(_,i)=>{const de=centro(dg);if(k===0){const g=apGrade(x,y,i);return apMaca(R,de,g.x,g.y)}return apPacote(R,k,de,x+6+i*50,y+12)});
+        const rp=R.rep,mk=(n,x,dg)=>Array.from({length:n},(_,i)=>{const de=centro(dg);if(k===0){const g=rp.gu(x,y,i);return rp.u(R,de,g.x,g.y)}const g=rp.gd(x,y,i);return rp.d(R,k,de,g.x,g.y)});
         q.eA=mk(da||0,14,A);q.eB=mk(db||0,160,B);
         await voarVarios(ctx,[...q.eA,...q.eB].map(apTo),1200,90);
       };
       /* imagens: as duas quantidades se juntam e viram uma nova quantidade, que segue para o resultado */
       const apJunta=async(ctx,R)=>{
-        const q=R.ap.q[k],y=R.ap.y0,ry=R.ap.r2;
-        await voarVarios(ctx,q.eB.map((e,i)=>{const n=q.eA.length+i,t=k===0?apGrade(14,y,n):{x:20+n*50,y:y+12};return[e,t.x,t.y]}),1000,110);
+        const q=R.ap.q[k],y=R.ap.y0,ry=R.ap.r2,rp=R.rep;
+        await voarVarios(ctx,q.eB.map((e,i)=>{const n=q.eA.length+i,t=k===0?rp.gu(14,y,n):rp.gd(14,y,n);return[e,t.x,t.y]}),1000,110);
         q.tr.remove();const todos=[...q.eA,...q.eB];
-        todos.forEach((e,i)=>{if(k===0){const g=apGrade(160,ry,i);e._tx=g.x;e._ty=g.y+2}else{e._tx=14+(R.ap.np+i)*50;e._ty=ry+14}});
+        todos.forEach((e,i)=>{if(k===0){const g=rp.gu(160,ry,i);e._tx=g.x;e._ty=g.y+2}else{const g=rp.gr(R.ap.np+i,ry);e._tx=g.x;e._ty=g.y}});
         if(k>0)R.ap.np+=todos.length;q.tl.remove();
         await voarVarios(ctx,todos.map(apTo),1000,60);R.ap.res.push(...todos);
       };
@@ -232,44 +280,52 @@ const ROT={
       passos.push(P(`${da==null?0:da} + ${db==null?0:db} = ${s}. As quantidades se juntam e o ${s} fica na coluna das ${nome}.`,4500,seq(apJunta,fundeNum)));
     }
     passos.push(P(`O resultado é ${res}! Confira: ${a} + ${b} tem que dar mais que ${a}.`,3500,async(ctx,R)=>{glowRes(R);apBrilho(R);dizer(ctx,`${a} + ${b} = ${res}`);await esperar(ctx,2000)}));
-    return{montar:ctx=>armada(ctx,"+",a,b),passos};
+    return{montar:ctx=>armada(ctx,"+",a,b),passos,repr:true};
   },
-  /* ---------- 8 + 5: completar 10 e “vai um” (números + maçãs que viram um pacote) ---------- */
+  /* ---------- 15 + 8: elevação (“vai um”) com contas de dois algarismos (também funciona com 8 + 5) ---------- */
   vaiUm(a,b){
-    const falta=10-a,sobra=b-falta,res=a+b;
-    const ap1=async(ctx,R)=>{                       // as maçãs nascem dos algarismos e as 5 se dividem em 2 e 3
-      const y=R.ap.y0,A=R.a[0],B=R.b[0];
+    const ua=a%10,ub=b%10,ta=Math.floor(a/10),tb=Math.floor(b/10),falta=10-ua,sobra=ub-falta,res=a+b,tr=ta+tb+1,temDez=ta>0||tb>0,ds=[ta,tb].filter(x=>x>0);
+    const ap1=async(ctx,R)=>{                       // as unidades nascem dos algarismos e as do ${ub} se dividem
+      const y=R.ap.y0,A=R.a[0],B=R.b[0],rp=R.rep;
       R.ap.zona=apBox(R,6,R.ap.r2-4,288,70,"cn","resultado");R.ap.tl=apBox(R,14,y,126,62,"cu","unidades");R.ap.tr=apBox(R,160,y,126,62,"cu","unidades");
-      R.ap.eA=Array.from({length:a},(_,i)=>{const g=apGrade(14,y,i);return apMaca(R,centro(A),g.x,g.y)});
-      R.ap.eB=Array.from({length:b},(_,i)=>{const g=apGrade(160,y,i);return apMaca(R,centro(B),g.x,g.y)});
+      R.ap.eA=Array.from({length:ua},(_,i)=>{const g=rp.gu(14,y,i);return rp.u(R,centro(A),g.x,g.y)});
+      R.ap.eB=Array.from({length:ub},(_,i)=>{const g=rp.gu(160,y,i);return rp.u(R,centro(B),g.x,g.y)});
       await voarVarios(ctx,[...R.ap.eA,...R.ap.eB].map(apTo),1000,40);
       const sep=R.ap.eB.slice(0,falta);sep.forEach(e=>{e._tx=e._x;e._ty=e._y+28});await voarVarios(ctx,sep.map(apTo),600);
     };
-    const ap2=async(ctx,R)=>{                       // o 8 pega 2 e as 10 maçãs se juntam num pacote de dezena
-      const y=R.ap.y0,mv=R.ap.eB.slice(0,falta);
-      await voarVarios(ctx,mv.map((e,i)=>{const g=apGrade(14,y,a+i);return[e,g.x,g.y]}),900,100);
-      const todas=[...R.ap.eA,...mv],cx=46,cy=y+14;R.ap.pacote=apPacote(R,1,{x:cx,y:cy},cx,cy);R.ap.pacote.style.opacity=0;
-      await voarVarios(ctx,todas.map(e=>[e,cx+12,cy+6]),600);todas.forEach(e=>e.remove());
-      R.ap.pacote.style.opacity=1;R.ap.pacote.classList.add("pm-pop");await girar(ctx,R.ap.pacote,500);R.ap.tl.remove();
+    const ap2=async(ctx,R)=>{                       // o ${ua} pega o que falta e as 10 unidades viram UMA dezena
+      const y=R.ap.y0,mv=R.ap.eB.slice(0,falta),rp=R.rep;
+      await voarVarios(ctx,mv.map((e,i)=>{const g=rp.gu(14,y,ua+i);return[e,g.x,g.y]}),900,100);
+      R.ap.pacote=await rp.fazDezena(ctx,R,[...R.ap.eA,...mv],y);R.ap.tl.remove();
     };
-    const ap3=async(ctx,R)=>{await voarVarios(ctx,[[R.ap.pacote,14,R.ap.r2+14]],1400);R.ap.res.push(R.ap.pacote)};                       // o pacote vai para a coluna das dezenas
-    const ap4=async(ctx,R)=>{const rest=R.ap.eB.slice(falta);await voarVarios(ctx,rest.map((e,i)=>{const g=apGrade(160,R.ap.r2,i);return[e,g.x,g.y+2]}),1000,120);R.ap.tr.remove();R.ap.res.push(...rest)};
-    const ap5=async(ctx,R)=>{R.ap.pacote.classList.add("pm-pop");await esperar(ctx,500)};
-    return{montar:ctx=>armada(ctx,"+",a,b),passos:[
-      P(`Vamos somar ${a} + ${b}. Os dois são unidades, por isso são azuis.`,4000,async(ctx,R)=>{await entradaOperandos(ctx,R)},{unidades:"os números soltos"}),
-      P(`O ${b} vira ${b} maçãs e se divide em ${falta} e ${sobra}.`,5000,seq(ap1,async(ctx,R)=>{
+    const ap3=async(ctx,R)=>{const t=R.rep.gr(R.ap.np,R.ap.r2);await voarVarios(ctx,[[R.ap.pacote,t.x,t.y]],1400);R.ap.res.push(R.ap.pacote);R.ap.np++};      // a dezena vai para a coluna das dezenas
+    const ap4=async(ctx,R)=>{const rest=R.ap.eB.slice(falta);await voarVarios(ctx,rest.map((e,i)=>{const g=R.rep.gu(160,R.ap.r2,i);return[e,g.x,g.y+2]}),1000,120);R.ap.tr.remove();R.ap.res.push(...rest)};
+    const ap5=async(ctx,R)=>{                       // dezenas: a dezena de cima chega e junta com a que veio
+      if(!temDez){R.ap.pacote.classList.add("pm-pop");await esperar(ctx,500);return}
+      const rp=R.rep,novos=[];[[ta,R.a[1]],[tb,R.b[1]]].forEach(([n,dg])=>{for(let i=0;i<n;i++){const g=rp.gr(R.ap.np+novos.length,R.ap.r2);novos.push(rp.d(R,1,centro(dg),g.x,g.y))}});
+      await voarVarios(ctx,novos.map(apTo),1100,150);R.ap.np+=novos.length;R.ap.res.push(...novos);
+    };
+    const orig5=temDez?async(ctx,R)=>{
+      const d=R.dest(1),orig=[R.a[1],R.b[1]].filter(Boolean);orig.forEach(e=>e.classList.add("pm-dest"));await esperar(ctx,800);
+      const cl=orig.map(e=>criar(R.box,e.textContent,"pm-d cd",e._x,e._y));
+      await voarVarios(ctx,[...cl.map((c,i)=>[c,d.x-14+i*10,d.y]),[R.pac,d.x+14,d.y]],1800);
+      cl.forEach(c=>c.remove());R.pac.remove();orig.forEach(e=>e.classList.remove("pm-dest"));
+      criar(R.box,String(tr),"pm-d pm-res pm-pop cd",d.x,d.y);dizer(ctx,`${[...ds,1].join(" + ")} = ${tr}`);await esperar(ctx,800);
+    }:async(ctx,R)=>{const d=R.dest(1);await voarVarios(ctx,[[R.pac,d.x,d.y]],1800);R.pac.remove();criar(R.box,"1","pm-d pm-res pm-pop cd",d.x,d.y);await esperar(ctx,800)};
+    return{montar:ctx=>armada(ctx,"+",a,b),repr:true,passos:[
+      P(`Vamos somar ${a} + ${b}. Começamos pelas unidades: ${ua} + ${ub}.`,4000,async(ctx,R)=>{await entradaOperandos(ctx,R)},{unidades:"os números soltos"}),
+      P(`O ${ub} vira ${ub} unidades e se divide em ${falta} e ${sobra}.`,5000,seq(ap1,async(ctx,R)=>{
         const B=R.b[0];B.style.opacity=.25;R.cF=criar(R.box,String(falta),"pm-chip bgu",B._fx,B._fy+8);R.cS=criar(R.box,String(sobra),"pm-chip bgu",B._fx,B._fy+8);
-        await voarVarios(ctx,[[R.cF,B._fx-34,B._fy+8],[R.cS,B._fx+34,B._fy+8]],1500);dizer(ctx,`${b} = ${falta} + ${sobra}`);await esperar(ctx,800)})),
-      P(`O ${a} pega o ${falta} e as 10 maçãs se juntam num pacote.`,4500,par(ap2,async(ctx,R)=>{
+        await voarVarios(ctx,[[R.cF,B._fx-34,B._fy+8],[R.cS,B._fx+34,B._fy+8]],1500);dizer(ctx,`${ub} = ${falta} + ${sobra}`);await esperar(ctx,800)})),
+      P(`O ${ua} pega o ${falta} e as 10 unidades se juntam numa dezena.`,4500,par(ap2,async(ctx,R)=>{
         const A=R.a[0];await voarVarios(ctx,[[R.cF,A._fx+30,A._fy+8]],1600);R.cF.remove();A.style.opacity=.25;
-        R.pac=criar(R.box,"10","pm-pac bgd pm-pop",A._fx+4,A._fy+6);dizer(ctx,`${a} + ${falta} = 10`);await esperar(ctx,1500)}),{}),
-      P(`10 unidades formam 1 dezena! Esse pacote verde voa para a coluna das dezenas. É o “vai um”.`,4500,seq(ap3,async(ctx,R)=>{
-        R.pac.textContent="1";R.pac.classList.add("pm-pop");await esperar(ctx,800);await voarVarios(ctx,[[R.pac,R.X(0)+4,R.Y(0)+6]],1800);dizer(ctx,"vai 1 dezena")}),
-        {"vai um":"o pacote de 10 que viaja para a casa ao lado"}),
-      P(`Sobraram ${sobra} maçãs. O ${sobra} viaja até o resultado, na coluna das unidades.`,4500,seq(ap4,async(ctx,R)=>{
+        R.pac=criar(R.box,"10","pm-pac bgd pm-pop",A._fx+4,A._fy+6);dizer(ctx,`${ua} + ${falta} = 10`);await esperar(ctx,1500)})),
+      P("10 unidades formam 1 dezena! Esse pacote verde voa para a coluna das dezenas. É o “vai um”: eleve o 1.",4500,seq(ap3,async(ctx,R)=>{
+        R.pac.textContent="1";R.pac.classList.add("pm-pop");await esperar(ctx,800);await voarVarios(ctx,[[R.pac,R.X(0)+4,R.Y(0)+6]],1800);dizer(ctx,"eleva 1 dezena")}),
+        {"vai um":"o pacote de 10 que viaja para a casa ao lado (elevação)"}),
+      P(`Sobraram ${sobra} unidades. O ${sobra} viaja até o resultado, na coluna das unidades.`,4500,seq(ap4,async(ctx,R)=>{
         const d=R.dest(0);await voarVarios(ctx,[[R.cS,d.x,d.y]],1800);R.cS.remove();criar(R.box,String(sobra),"pm-d pm-res pm-pop cu",d.x,d.y);await esperar(ctx,800)})),
-      P("A dezena que veio desce para o resultado: 1 dezena.",4000,seq(ap5,async(ctx,R)=>{
-        const d=R.dest(1);await voarVarios(ctx,[[R.pac,d.x,d.y]],1800);R.pac.remove();criar(R.box,"1","pm-d pm-res pm-pop cd",d.x,d.y);await esperar(ctx,800)})),
+      P(temDez?`Agora as dezenas: o ${ds.join(" e o ")} e o 1 que veio. ${[...ds,1].join(" + ")} = ${tr}.`:"A dezena que veio desce para o resultado: 1 dezena.",temDez?5000:4000,seq(ap5,orig5)),
       P(`${a} + ${b} = ${res}!`,3500,async(ctx,R)=>{glowRes(R);apBrilho(R);dizer(ctx,`${a} + ${b} = ${res}`);await esperar(ctx,2000)})
     ]};
   },
@@ -278,18 +334,15 @@ const ROT={
     const t1=Math.floor(a/10),u1=a%10,t2=Math.floor(b/10),u2=b%10,res=a-b,dozes=10+u1,ru=dozes-u2,rd=t1-1-t2;
     const ap1=async(ctx,R)=>{                       // 32 (acima de 30: em pacotes) e 15 nascem dos algarismos
       const y=R.ap.y0,r2=R.ap.r2;R.ap.cm=apBox(R,6,y,288,62,"cn",String(a));R.ap.cs=apBox(R,6,r2,288,62,"cn","tirar "+b);
-      R.ap.pm=Array.from({length:t1},(_,i)=>apPacote(R,1,centro(R.a[1]),14+i*50,y+12));
-      R.ap.um=Array.from({length:u1},(_,i)=>{const g=apGrade(150,y,i);return apMaca(R,centro(R.a[0]),g.x,g.y)});
-      R.ap.ps=Array.from({length:t2},(_,i)=>apPacote(R,1,centro(R.b[1]),14+i*50,r2+12));
-      R.ap.us=Array.from({length:u2},(_,i)=>{const g=apGrade(150,r2,i);return apMaca(R,centro(R.b[0]),g.x,g.y)});
+      const rp=R.rep;R.ap.pm=Array.from({length:t1},(_,i)=>{const g=rp.gd(8,y,i);return rp.d(R,1,centro(R.a[1]),g.x,g.y)});
+      R.ap.um=Array.from({length:u1},(_,i)=>{const g=rp.gu(150,y,i);return rp.u(R,centro(R.a[0]),g.x,g.y)});
+      R.ap.ps=Array.from({length:t2},(_,i)=>{const g=rp.gd(8,r2,i);return rp.d(R,1,centro(R.b[1]),g.x,g.y)});
+      R.ap.us=Array.from({length:u2},(_,i)=>{const g=rp.gu(150,r2,i);return rp.u(R,centro(R.b[0]),g.x,g.y)});
       await voarVarios(ctx,[...R.ap.pm,...R.ap.um,...R.ap.ps,...R.ap.us].map(apTo),1200,70);
     };
-    const ap2=async(ctx,R)=>{await voarVarios(ctx,[[R.ap.pm[R.ap.pm.length-1],96,R.ap.y0+12]],1000)};          // uma dezena vem para perto das unidades
-    const ap3=async(ctx,R)=>{                       // a dezena gira e se parte em 10 unidades: agora são 12 maçãs
-      const y=R.ap.y0,pk=R.ap.pm.pop(),c={x:pk._x+12,y:pk._y+10};await girar(ctx,pk,600);
-      const novas=Array.from({length:10},()=>apMaca(R,c,0,0));pk.remove();
-      const todos=[...R.ap.um,...novas];todos.forEach((e,i)=>{const g=apGrade(150,y,i);e._tx=g.x;e._ty=g.y});
-      await voarVarios(ctx,todos.map(apTo),1000,50);R.ap.um=todos;
+    const ap2=async(ctx,R)=>{await R.rep.pegar(ctx,R,R.ap.pm[R.ap.pm.length-1])};          // uma dezena é separada para ser emprestada
+    const ap3=async(ctx,R)=>{                       // a dezena gira e se parte em 10 unidades: agora são 12 unidades
+      R.ap.um=await R.rep.partir(ctx,R,R.ap.pm.pop(),R.ap.um,R.ap.y0);
     };
     const ap4=async(ctx,R)=>{                       // 12 − 5: 5 maçãs vão encontrar as 5 que devem sair, e as duas se apagam
       const sai=R.ap.um.slice(-u2);await voarVarios(ctx,sai.map((e,i)=>[e,R.ap.us[i]._x,R.ap.us[i]._y]),1000,50);
@@ -320,7 +373,7 @@ const ROT={
         await voarVarios(ctx,[[R.novo,d.x-12,d.y],[cb,d.x+12,d.y]],1800);R.novo.remove();cb.remove();R.b[1].classList.remove("pm-dest");
         criar(R.box,String(rd),"pm-d pm-res pm-pop cd",d.x,d.y);dizer(ctx,`${t1-1} − ${t2} = ${rd}`);await esperar(ctx,1000)})),
       P(`O resultado é ${res}! Para conferir: ${res} + ${b} = ${a}.`,3500,async(ctx,R)=>{R.ap.res=[...R.ap.pm,...R.ap.um];glowRes(R);apBrilho(R);dizer(ctx,`${a} − ${b} = ${res}`);await esperar(ctx,2000)})
-    ]};
+    ],repr:true};
   },
   /* ---------- 3 × 4: grupos de bolinhas ---------- */
   mult(g,c){
@@ -366,6 +419,7 @@ function htmlExplica(){
   <div class="dots" id="exp-dots"></div>
   <div class="pyriBox"><div class="pyriAv" aria-label="Pyri">🔥</div><div class="balao" id="exp-fala"></div></div>
   <div class="termos" id="exp-termos"></div>
+  <div class="pm-repr" id="exp-repr" style="display:none"><span>Imagens:</span><button data-r="dourado" onclick="trocarRepr('dourado')">🧊 Material dourado</button><button data-r="macas" onclick="trocarRepr('macas')">🍎 Maçãs</button></div>
   <div class="palcoExp" id="exp-stage"></div>
   <div class="pm-passo" id="exp-passo"></div>
   <div class="pm-ctrl">
@@ -374,7 +428,7 @@ function htmlExplica(){
     <button class="pm-bt" id="exp-ant" onclick="passoMenos()">◀ Anterior</button>
     <button class="pm-bt pm-bt-prox" id="exp-prox" onclick="passoMais()">Próximo ▶</button>
   </div>
-  <button class="lin pm-pular" onclick="irExercicios()">Já sei! Ir para os exercícios</button>`;
+  <button class="lin pm-pular" onclick="irExercicios()">${typeof sessaoRetomavel==="function"&&sessaoRetomavel()?"Voltar aos exercícios":"Já sei! Ir para os exercícios"}</button>`;
 }
 function roteiroDaFase(f){const [nome,...args]=f.roteiro;return ROT[nome](...args)}
 async function mostrarPasso(){
@@ -387,6 +441,7 @@ async function mostrarPasso(){
   $("#exp-passo").textContent=`Passo ${i+1} de ${n}`;
   $("#exp-ant").disabled=i===0;$("#exp-prox").textContent=i===n-1?"Praticar 🚀":"Próximo ▶";$("#exp-prox").classList.remove("pm-destaque");
   $("#exp-pausa").textContent=FS.pausado?"▶ Continuar":"⏸ Pausar";
+  const sel=$("#exp-repr");if(sel){sel.style.display=rot.repr?"flex":"none";sel.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.r===FS.repr))}
   const ctx={stage:$("#exp-stage"),instant:true,gasto:0};
   try{
     const R=rot.montar(ctx);
@@ -403,6 +458,7 @@ async function mostrarPasso(){
 const passoMais=()=>{const n=roteiroDaFase(FS.fase).passos.length;if(FS.passo<n-1){FS.passo++;mostrarPasso()}else irExercicios()};
 const passoMenos=()=>{if(FS.passo>0){FS.passo--;mostrarPasso()}};
 const repetirPasso=()=>{FS.pausado=false;mostrarPasso()};
+const trocarRepr=r=>{FS.repr=r;mostrarPasso()};
 function pausar(){
   FS.pausado=!FS.pausado;FS.anims.forEach(a=>{try{FS.pausado?a.pause():a.play()}catch(_){}});
   const b=$("#exp-pausa");if(b)b.textContent=FS.pausado?"▶ Continuar":"⏸ Pausar";
