@@ -2,7 +2,7 @@
 (function(){
   const app=document.getElementById("app"),C=PM_CONFIG,KR="pm-resp";
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const V={modo:"entrar",msg:"",ok:"",criancas:[],progresso:{},config:{},ajustando:null,novo:{avatar:"a1"},codigoNovo:null,termos:"",consents:[],ocupado:false};
+  const V={modo:"entrar",msg:"",ok:"",criancas:[],progresso:{},config:{},ajustando:null,novo:{avatar:"a1"},codigoNovo:null,termos:"",consents:[],ocupado:false,status:null,eu:null};
   const sessao=()=>PM.ler(KR);
 
   async function token(){
@@ -21,11 +21,12 @@
   function desenhar(){
     const aviso=(V.msg?`<div class="erro" role="alert">${esc(V.msg)}</div>`:"")+(V.ok?`<div class="bom" role="status">${esc(V.ok)}</div>`:"");
     if(!sessao()){app.innerHTML=telaEntrada(aviso);ligarEntrada();return}
-    app.innerHTML=telaPainel(aviso);ligarPainel();
+    if(V.status==="aprovado"){app.innerHTML=telaPainel(aviso);ligarPainel();return}
+    app.innerHTML=telaEspera(aviso);ligarEspera();                  // pendente, bloqueado ou ainda conferindo: nenhum dado de criança é pedido nem mostrado
   }
   function telaEntrada(aviso){
     const cad=V.modo==="criar";
-    return `<div class="caixa"><h1>Área do responsável</h1><p>Aqui você cadastra as crianças, vê como estão estudando e ajusta o jogo.</p>
+    return `<div class="caixa"><h1>Área do responsável</h1><p>Aqui você cadastra as crianças, vê como estão estudando e ajusta o jogo.</p>${cad?`<p><b>Todo cadastro novo passa por aprovação.</b> Depois de criar a conta você poderá entrar, mas só usará a área do responsável quando o cadastro for aprovado.</p>`:""}
     <div><button class="${cad?"sec":""}" id="m1">Entrar</button> <button class="${cad?"":"sec"}" id="m2">Criar conta</button></div>${aviso}
     <form id="f" autocomplete="on">
       ${cad?`<label>Seu nome<input name="nome" required maxlength="80" autocomplete="name"></label>`:""}
@@ -44,17 +45,23 @@
   }
   async function carregarTermos(){try{V.termos=await (await fetch(C.termos.arquivo)).text()}catch{V.termos="Não consegui carregar o texto agora. Verifique a internet e tente de novo."}}
 
+  /* Para onde o link de confirmação do e-mail leva. Em produção é SEMPRE o endereço completo do app
+     (a raiz joycebn.github.io dá 404). Em teste local usa a pasta da página atual. */
+  const URL_APP="https://joycebn.github.io/Pokemath/";
+  function emailRedirectTo(){
+    try{return location.hostname==="joycebn.github.io"?URL_APP:new URL("./",location.href).href}catch{return URL_APP}
+  }
   async function cadastrar(f){
     if(!V.termos||V.termos.startsWith("Não consegui"))return dizer("Preciso mostrar o texto do consentimento antes. Verifique a internet.");
     V.ocupado=true;dizer("");
     const email=String(f.get("email")).trim(),hash=await sha256(V.termos);
-    const r=await PM.auth.cadastrar(email,String(f.get("senha")),{nome:String(f.get("nome")).trim(),consentimento_aceito:true,consentimento_versao:C.termos.versao,consentimento_hash:hash});
+    const r=await PM.auth.cadastrar(email,String(f.get("senha")),{nome:String(f.get("nome")).trim(),consentimento_aceito:true,consentimento_versao:C.termos.versao,consentimento_hash:hash},emailRedirectTo());
     V.ocupado=false;
     if(r.rede)return dizer("Sem internet. Tente de novo quando estiver conectado.");
     if(!r.ok){const m=(r.dados&&(r.dados.msg||r.dados.error_description||r.dados.message))||"";
       return dizer(/already|registered/i.test(m)?"Este e-mail já tem conta. Use “Entrar”.":/password/i.test(m)?"A senha precisa ter pelo menos 8 caracteres.":"Não consegui criar a conta agora. Confira os dados e tente de novo.")}
     if(r.dados&&r.dados.access_token){guardar(r.dados,email);V.msg=V.ok="";return abrirPainel()}
-    V.modo="entrar";dizer("",`Conta criada! Enviamos uma mensagem para ${email}. Clique no link dela para confirmar e depois entre aqui.`);
+    V.modo="entrar";dizer("",`Conta criada! Enviamos uma mensagem para ${email}: clique no link dela para confirmar o e-mail e depois entre aqui. Seu cadastro ainda precisa ser aprovado antes do uso.`);
   }
   async function entrar(f){
     V.ocupado=true;const email=String(f.get("email")).trim();
@@ -62,6 +69,43 @@
     if(r.rede)return dizer("Sem internet. Tente de novo quando estiver conectado.");
     if(!r.ok||!r.dados||!r.dados.access_token)return dizer(r.dados&&/confirm/i.test(JSON.stringify(r.dados))?"Falta confirmar o e-mail. Procure a mensagem na sua caixa de entrada.":"E-mail ou senha incorretos.");
     guardar(r.dados,email);V.msg=V.ok="";abrirPainel();
+  }
+
+  /* ---------- aprovação manual ---------- */
+  const dataBR=d=>d?new Date(d).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—";
+  function telaEspera(aviso){
+    const s=sessao()||{},eu=V.eu||{},nome=eu.nome||s.nome||s.email||"";
+    if(V.status===null)return `<div class="caixa"><h1>Área do responsável</h1><p>Conferindo o seu cadastro…</p>${aviso}</div>`;
+    const bloq=V.status==="bloqueado";
+    return `<div class="caixa"><h1>${bloq?"Acesso suspenso":"Aguardando aprovação"}</h1>
+    ${bloq?`<p>O acesso desta conta está suspenso. Se você acha que é um engano, fale com a pessoa responsável pelo Pokemath.</p>`
+          :`<p>Recebemos o seu cadastro. Ele precisa ser aprovado antes de você usar a área do responsável. Assim que for aprovado, toque em <b>Verificar de novo</b> ou entre outra vez.</p>`}
+    <p><b>Nome:</b> ${esc(nome)}<br><b>Cadastro feito em:</b> ${esc(dataBR(eu.criado_em))}<br><b>Situação:</b> ${bloq?"bloqueado":"pendente"}</p>${aviso}
+    <button class="grande" id="ver">Verificar de novo</button> <button class="sec" id="sair">Sair</button><br>
+    <button class="sec perigo" id="exc-conta" style="margin-top:10px">Excluir minha conta e meus dados</button></div>`;
+  }
+  function ligarEspera(){
+    const v=document.getElementById("ver");if(v)v.onclick=()=>{V.msg=V.ok="";abrirPainel()};
+    const s=document.getElementById("sair");if(s)s.onclick=sairConta;
+    const e=document.getElementById("exc-conta");if(e)e.onclick=excluirConta;
+  }
+  async function sairConta(){const t=await token();if(t)PM.auth.sair(t);PM.apagar(KR);limpar();V.status=null;V.eu=null;V.msg=V.ok="";desenhar()}
+  const limpar=()=>{V.criancas=[];V.progresso={};V.config={};V.consents=[];V.ajustando=null;V.codigoNovo=null};
+  /* lê SÓ a própria linha (nome, status, data). Devolve o status, ou null se estiver sem internet. */
+  async function carregarStatus(t){
+    const r=await PM.rest("responsaveis","select=nome,status,criado_em",t);
+    if(r.rede)return null;
+    const l=r.ok&&Array.isArray(r.dados)?r.dados[0]:null;
+    V.eu=l;V.status=l?l.status:"pendente";                       // sem linha = trata como pendente (nunca libera por engano)
+    return V.status;
+  }
+  /* Confere o status ANTES de cada ação: se foi bloqueado enquanto a tela estava aberta, perde o acesso na hora. */
+  async function liberado(){
+    const t=await token();if(!t){desenhar();return null}
+    const st=await carregarStatus(t);
+    if(st===null){dizer("Sem internet. Tente de novo quando estiver conectado.");return null}
+    if(st!=="aprovado"){limpar();desenhar();return null}
+    return t;
   }
 
   function telaPainel(aviso){
@@ -98,7 +142,7 @@
     <button class="grande">Salvar ajustes</button> <button type="button" class="sec" id="aj-x">Fechar</button></form></div>`;
   }
   function ligarPainel(){
-    document.getElementById("sair").onclick=async()=>{const t=await token();if(t)PM.auth.sair(t);PM.apagar(KR);V.criancas=[];V.msg=V.ok="";desenhar()};
+    document.getElementById("sair").onclick=sairConta;
     app.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{V.novo.avatar=b.dataset.av;const form=document.getElementById("nc");V.novo.rascunho=Object.fromEntries(new FormData(form));desenhar();restaurarRascunho()});
     app.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>acao(b.dataset.a,b.dataset.id));
     document.getElementById("nc").onsubmit=e=>{e.preventDefault();criar(new FormData(e.target))};
@@ -110,7 +154,9 @@
   /* ---------- ações ---------- */
   async function abrirPainel(){
     const t=await token();if(!t){desenhar();return}
-    const s=sessao();
+    const st=await carregarStatus(t);
+    if(st===null){dizer("Sem internet. Não consegui conferir o seu cadastro.");return}
+    if(st!=="aprovado"){limpar();desenhar();return}          // pendente/bloqueado: não pede nenhum dado de criança
     const [a,p,k,c]=await Promise.all([
       PM.rest("criancas","select=id,apelido,ano_escolar,idade,avatar,codigo,ativo,ultimo_acesso&order=criado_em",t),
       PM.rest("progresso","select=crianca_id,moedas,pokemon_total,ofensiva_atual,atualizado_em",t),
@@ -127,15 +173,15 @@
     const pin=String(f.get("pin")),pin2=String(f.get("pin2"));
     if(pin!==pin2)return dizer("As duas senhas não são iguais.");
     if(!/^\d{4}$/.test(pin))return dizer("A senha precisa ter 4 números.");
-    const t=await token();if(!t)return desenhar();V.ocupado=true;
+    const t=await liberado();if(!t)return;V.ocupado=true;
     const r=await PM.funcao("gerenciar-crianca",{acao:"criar",apelido:String(f.get("apelido")).trim(),ano_escolar:+f.get("ano"),idade:+f.get("idade"),avatar:V.novo.avatar,pin},t);
     V.ocupado=false;
     if(r.rede)return dizer("Sem internet. Tente de novo quando estiver conectado.");
-    if(!r.ok||!r.dados||!r.dados.ok)return dizer(r.dados&&r.dados.erro==="limite_de_criancas"?"Você já cadastrou o máximo de 10 crianças.":"Não consegui cadastrar agora. Confira os dados e tente de novo.");
+    if(!r.ok||!r.dados||!r.dados.ok)return dizer(r.dados&&r.dados.erro==="limite_de_criancas"?"Você já cadastrou o máximo de 10 crianças.":r.dados&&r.dados.erro==="aguardando_aprovacao"?"Seu cadastro ainda não foi aprovado.":"Não consegui cadastrar agora. Confira os dados e tente de novo.");
     V.codigoNovo={codigo:r.dados.codigo,avatar:V.novo.avatar};V.novo={avatar:"a1"};V.msg=V.ok="";await abrirPainel();
   }
   async function acao(a,id){
-    const c=V.criancas.find(x=>x.id===id);if(!c)return;const t=await token();if(!t)return desenhar();
+    const c=V.criancas.find(x=>x.id===id);if(!c)return;const t=await liberado();if(!t)return;
     if(a==="ajustes"){V.ajustando=id;return desenhar()}
     if(a==="pin"){
       const n=prompt("Nova senha de 4 números para "+c.apelido+":");if(n===null)return;
@@ -156,7 +202,7 @@
     }
   }
   async function salvarAjustes(f){
-    const t=await token();if(!t)return desenhar();const id=V.ajustando,antigo=(V.config[id]||{}).extras||{};
+    const t=await liberado();if(!t)return;const id=V.ajustando,antigo=(V.config[id]||{}).extras||{};
     const num=k=>{const v=f.get(k);return v===null||v===""?undefined:+v};
     const extras={...antigo};for(const k of ["meta","moedaAcerto","bonusMeta","bonusDiario","teto","tetoXP"]){const v=num(k);if(v===undefined)delete extras[k];else extras[k]=v}
     const d=String(f.get("dificuldade")||"");if(d)extras.dificuldade=d;else delete extras.dificuldade;
@@ -171,8 +217,8 @@
     if(dig===null)return;if(dig.trim()!=="EXCLUIR")return dizer("Nada foi apagado.");
     const t=await token();if(!t)return desenhar();
     const r=await PM.funcao("gerenciar-crianca",{acao:"excluir_conta"},t);
-    if(!r.ok)return dizer("Não consegui excluir agora.");PM.apagar(KR);V.criancas=[];dizer("","Sua conta e os dados foram excluídos.");
+    if(!r.ok)return dizer("Não consegui excluir agora.");PM.apagar(KR);limpar();V.status=null;V.eu=null;dizer("","Sua conta e os dados foram excluídos.");
   }
 
-  if(sessao())abrirPainel();else desenhar();
+  if(sessao()){desenhar();abrirPainel()}else desenhar();
 })();

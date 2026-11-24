@@ -21,7 +21,7 @@
   const funcao=(nome,corpo,token)=>http("/functions/v1/"+nome,{metodo:"POST",corpo,token});
 
   const auth={
-    cadastrar:(email,senha,meta)=>http("/auth/v1/signup",{metodo:"POST",corpo:{email,password:senha,data:meta}}),
+    cadastrar:(email,senha,meta,voltar)=>http("/auth/v1/signup"+(voltar?"?redirect_to="+encodeURIComponent(voltar):""),{metodo:"POST",corpo:{email,password:senha,data:meta}}),   // voltar = emailRedirectTo (para onde o link do e-mail leva)
     entrar:(email,senha)=>http("/auth/v1/token?grant_type=password",{metodo:"POST",corpo:{email,password:senha}}),
     renovar:(refresh)=>http("/auth/v1/token?grant_type=refresh_token",{metodo:"POST",corpo:{refresh_token:refresh}}),
     sair:(token)=>http("/auth/v1/logout",{metodo:"POST",token})
