@@ -45,11 +45,11 @@
   }
   async function carregarTermos(){try{V.termos=await (await fetch(C.termos.arquivo)).text()}catch{V.termos="Não consegui carregar o texto agora. Verifique a internet e tente de novo."}}
 
-  /* Para onde o link de confirmação do e-mail leva. Em produção é SEMPRE o endereço completo do app
-     (a raiz joycebn.github.io dá 404). Em teste local usa a pasta da página atual. */
-  const URL_APP="https://joycebn.github.io/Pokemath/";
+  /* Para onde o link de confirmação do e-mail leva: a ÁREA DO RESPONSÁVEL (responsavel.html), com o endereço completo
+     (a raiz joycebn.github.io dá 404). Em teste local usa o responsavel.html da pasta atual. */
+  const URL_APP="https://joycebn.github.io/Pokemath/responsavel.html";
   function emailRedirectTo(){
-    try{return location.hostname==="joycebn.github.io"?URL_APP:new URL("./",location.href).href}catch{return URL_APP}
+    try{return location.hostname==="joycebn.github.io"?URL_APP:new URL("responsavel.html",location.href).href}catch{return URL_APP}
   }
   async function cadastrar(f){
     if(!V.termos||V.termos.startsWith("Não consegui"))return dizer("Preciso mostrar o texto do consentimento antes. Verifique a internet.");
