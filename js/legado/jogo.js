@@ -5,12 +5,12 @@ const POOL={comum:[10,13,16,19,21,41,43,46,52,54,60,66,72,74,79,92,96,116,129,16
 const ALL=[...POOL.comum,...POOL.raro,...POOL.lendario], INICIAIS=[1,4,7,25,133,152,155,158,252,255,258,387,390,393,495,498,501,650,653,656,722,725,728,810,813,816,906,909,912];
 const TP={normal:"Normal",fire:"Fogo",water:"Água",electric:"Elétrico",grass:"Planta",ice:"Gelo",fighting:"Lutador",poison:"Veneno",ground:"Terra",flying:"Voador",psychic:"Psíquico",bug:"Inseto",rock:"Pedra",ghost:"Fantasma",dragon:"Dragão",dark:"Sombrio",steel:"Aço",fairy:"Fada"};
 const DICAS={2:"É o dobro: 2 × 6 é 6 + 6.",3:"É o dobro mais mais um grupo: 3 × 7 = 14 + 7.",4:"É o dobro do dobro.",5:"Termina em 0 ou 5. É metade da tabuada do 10.",6:"Use a do 5 e some mais um grupo: 6 × 7 = 35 + 7.",7:"Decore: 7 × 8 = 56 (5, 6, 7, 8).",8:"É o dobro do dobro do dobro.",9:"Os algarismos do resultado somam 9: 9 × 7 = 63 (6 + 3).",10:"É só acrescentar um zero.",11:"Até 11 × 9 o algarismo se repete: 11 × 4 = 44.",12:"Use a do 10 e some o dobro: 12 × 4 = 40 + 8."};
-const KEY="tabuada-pokemon-v1";
+const KEY=window.PM_KEY||"tabuada-pokemon-v1";   // com a nuvem, cada criança tem a sua cópia local
 const PADRAO={cfg:{tempo:60,meta:10,max:10,teto:40,tetoXP:30,moedaAcerto:2,bonusMeta:15,bonusDiario:20,bonusRepet:25,capDia:2,capSemana:7,dificuldade:"medio",som:true,lembrete:false,hora:"17:00",reduzir:false,tz:(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone}catch{return "America/Fortaleza"}})()},
   coins:0,streak:0,last:null,inicio:null,legFor:null,pendLeg:false,perdeu:false,feitas:{dia:null,n:0},coinsHoje:{dia:null,n:0},caught:{},comp:null,stats:{},hist:{},inv:{},acc:null,uso:{},cap:{dia:null,n:0,tab:{}}};
 let S;
 try{const j=JSON.parse(localStorage.getItem(KEY));S=j?{...PADRAO,...j,cfg:{...PADRAO.cfg,...j.cfg}}:JSON.parse(JSON.stringify(PADRAO))}catch{S=JSON.parse(JSON.stringify(PADRAO))}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch{}};
+const save=()=>{if(window.Nuvem)Nuvem.antes(S);try{localStorage.setItem(KEY,JSON.stringify(S))}catch{}if(window.Nuvem)Nuvem.depois()};
 let tela="inicio",Q=null;
 
 function hoje(){try{return new Date().toLocaleDateString("sv-SE",{timeZone:S.cfg.tz})}catch{return new Date().toLocaleDateString("sv-SE")}}
@@ -367,7 +367,7 @@ function aplicar(txt){
   try{const j=JSON.parse(txt),e=j.estado;
     if(j.app!=="tabuada-pokemon"||!e||typeof e.coins!=="number"||typeof e.caught!=="object"||typeof e.cfg!=="object")throw 0;
     if(!confirm("Isso vai substituir o progresso atual por este backup. Continuar?"))return;
-    localStorage.setItem(KEY,JSON.stringify(e));location.reload();
+    e._ts=Date.now();localStorage.setItem(KEY,JSON.stringify(e));if(window.Nuvem)Nuvem.depois();location.reload();
   }catch{toast("Esse conteúdo não parece um backup válido.")}
 }
 function importar(f){if(f)f.text().then(aplicar)}
@@ -477,12 +477,12 @@ function prof(){if(S.cfg.pin&&!profOk)return telaPin();
   <button class="sec" onclick="pedirNotif()">Permitir notificações</button>
   <label>Senha da área do professor (4 a 6 números; vazio = sem senha)<input type="password" inputmode="numeric" maxlength="6" value="${c.pin||""}" onchange="setPin(this.value)"></label>
   <h2>Backup do progresso</h2>
-  <p class="aviso">O progresso fica salvo <b>somente neste aparelho e neste navegador</b>, neste endereço. Se os dados do navegador forem limpos ou se trocar de celular, ele se perde. Faça um backup de vez em quando.</p>
+  ${window.PM_SESSAO?`<p class="aviso">O progresso fica salvo no aparelho <b>e na nuvem</b>. Se trocar de celular, é só entrar com o código, a figura e a senha. O backup abaixo é uma cópia extra.</p>`:`<p class="aviso">O progresso fica salvo <b>somente neste aparelho e neste navegador</b>, neste endereço. Se os dados do navegador forem limpos ou se trocar de celular, ele se perde. Faça um backup de vez em quando.</p>`}
   <button class="sec" onclick="exportar()">Baixar backup</button> <button class="sec" onclick="copiarBackup()">Copiar backup</button>
   <label>Restaurar de um arquivo<input type="file" accept=".json,application/json" onchange="importar(this.files[0])"></label>
   <label>Ou cole o texto do backup aqui<textarea id="colar" rows="3" style="width:100%;border:0;border-radius:10px;padding:8px"></textarea></label>
   <button class="sec" onclick="aplicar($('#colar').value)">Restaurar do texto</button>
-  <button class="sec" onclick="if(confirm('Apagar todo o progresso?')){localStorage.removeItem(KEY);location.reload()}">Apagar progresso</button></div>`;
+  ${window.PM_SESSAO?"":`<button class="sec" onclick="if(confirm('Apagar todo o progresso?')){localStorage.removeItem(KEY);location.reload()}">Apagar progresso</button>`}</div>`;
 }
-garantirPyri();render();checarLembrete();criarBotaoPyri();tutorialInicial();
+if(!window.PM_PARAR){garantirPyri();render();checarLembrete();criarBotaoPyri();tutorialInicial()}
 if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});

@@ -26,7 +26,11 @@
   <button data-t="dex" onclick="ir('dex')">Pokédex</button>
   <button data-t="prof" onclick="ir('prof')">Prof.</button>
 </nav>
-<!-- Os módulos novos vêm primeiro (só definem funções); o código antigo roda por último e inicia o app. -->
+<!-- A camada de dados (nuvem) vem primeiro; depois os módulos novos (só definem funções); o código antigo roda por último e inicia o app; a sincronização entra depois dele. -->
+<script src="js/nuvem/config.js"></script>
+<script src="js/nuvem/regras.js"></script>
+<script src="js/nuvem/cliente.js"></script>
+<script src="js/nuvem/inicio.js"></script>
 <script src="js/conteudo/matriz.js"></script>
 <script src="js/conteudo/ano3.js"></script>
 <script src="js/motor/geradores.js"></script>
@@ -35,5 +39,6 @@
 <script src="js/pokemon/pyri.js"></script>
 <script src="js/motor/trilha.js"></script>
 <script src="js/legado/jogo.js"></script>
+<script src="js/nuvem/sincronia.js"></script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+TERMOS DE USO E AVISO DE PRIVACIDADE DO POKEMATH — versão 2026-11-v1
+
+[RASCUNHO: este texto precisa ser revisado por um profissional de direito antes de ser usado com famílias de verdade (LGPD e ECA Digital).]
+
+O Pokemath é um aplicativo educativo de matemática para crianças. Este documento explica quais dados são guardados e para quê. Ao aceitar, você declara que é o pai, a mãe ou o responsável legal da criança que vai usar o aplicativo.
+
+1. QUAIS DADOS GUARDAMOS
+Do responsável: nome, e-mail e o registro deste consentimento (data, hora e versão do texto).
+Da criança: apelido (pode ser um nome inventado), ano escolar, idade, a figura escolhida e uma senha de 4 números (guardada de forma embaralhada, nunca em texto). Também guardamos o progresso no jogo: fases e níveis concluídos, vidas, Pokémon conquistados, moedas, experiência, dias seguidos de estudo e acertos e erros nas contas.
+Não pedimos sobrenome, endereço, telefone, foto, escola nem localização da criança. Recomendamos usar apenas um apelido.
+
+2. PARA QUE USAMOS
+Somente para o aplicativo funcionar: salvar o progresso, permitir que a criança continue em outro aparelho e mostrar ao responsável como a criança está estudando. Não vendemos dados, não mostramos anúncios e não usamos os dados para criar perfis de consumo.
+
+3. QUEM VÊ OS DADOS
+A criança vê apenas o próprio progresso. O responsável vê apenas as crianças da sua própria conta. Nenhuma criança vê os dados de outra.
+
+4. ONDE FICAM
+Os dados ficam guardados na nuvem, em um serviço de banco de dados contratado pelo Pokemath (Supabase), e uma cópia do progresso fica no aparelho da criança para o jogo funcionar sem internet.
+
+5. SEUS DIREITOS
+O responsável pode, a qualquer momento: ver os dados, baixar uma cópia, corrigir o apelido, o ano e a idade, trocar a senha da criança, e excluir a criança ou a conta inteira. Ao excluir, os dados são apagados.
+
+6. SEGURANÇA
+A senha da criança é guardada embaralhada, há limite de tentativas erradas na entrada, e as regras do banco impedem que uma conta veja dados de outra.
+
+7. MUDANÇAS
+Se este texto mudar de forma importante, pediremos um novo consentimento e guardaremos a nova versão com a data.
+
+Para exercer seus direitos ou tirar dúvidas, fale com a pessoa responsável pelo aplicativo: [PREENCHER: nome e e-mail de contato].

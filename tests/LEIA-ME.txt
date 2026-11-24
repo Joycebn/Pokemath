@@ -1,0 +1,8 @@
+Testes automáticos (rodam num navegador simulado, sem precisar de celular).
+  npm install jsdom
+  node tests/teste_lote1.js        -> fases, animações, trilha, tentativas por dia e recompensas
+  node tests/teste_jogo_antigo.js  -> tabuada, ofensiva, captura, loja, evolução, backup (o app que já existia)
+  node tests/teste_nuvem.js        -> camada de dados: entrada da criança, offline, 2 aparelhos, configuração externa
+  node tests/teste_regras.js       -> regras de junção do progresso e da configuração externa
+  node tests/teste_funcoes.js      -> funções do servidor (login-crianca e gerenciar-crianca)
+Os dois primeiros rodam em "modo sem nuvem" (window.PM_TESTE_LOCAL=1), como o app era antes.
