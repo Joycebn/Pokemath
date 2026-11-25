@@ -57,16 +57,17 @@
     const email=String(f.get("email")).trim(),hash=await sha256(V.termos);
     const r=await PM.auth.cadastrar(email,String(f.get("senha")),{nome:String(f.get("nome")).trim(),consentimento_aceito:true,consentimento_versao:C.termos.versao,consentimento_hash:hash},emailRedirectTo());
     V.ocupado=false;
-    if(r.rede)return dizer("Sem internet. Tente de novo quando estiver conectado.");
+    if(r.rede)return dizer(PM.motivo(r));
     if(!r.ok){const m=(r.dados&&(r.dados.msg||r.dados.error_description||r.dados.message))||"";
-      return dizer(/already|registered/i.test(m)?"Este e-mail já tem conta. Use “Entrar”.":/password/i.test(m)?"A senha precisa ter pelo menos 8 caracteres.":"Não consegui criar a conta agora. Confira os dados e tente de novo.")}
+      return dizer(/already|registered/i.test(m)?"Este e-mail já tem conta. Use “Entrar”.":/password/i.test(m)?"A senha precisa ter pelo menos 8 caracteres.":PM.motivo(r))}
     if(r.dados&&r.dados.access_token){guardar(r.dados,email);V.msg=V.ok="";return abrirPainel()}
     V.modo="entrar";dizer("",`Conta criada! Enviamos uma mensagem para ${email}: clique no link dela para confirmar o e-mail e depois entre aqui. Seu cadastro ainda precisa ser aprovado antes do uso.`);
   }
   async function entrar(f){
     V.ocupado=true;const email=String(f.get("email")).trim();
     const r=await PM.auth.entrar(email,String(f.get("senha")));V.ocupado=false;
-    if(r.rede)return dizer("Sem internet. Tente de novo quando estiver conectado.");
+    if(r.rede)return dizer(PM.motivo(r));
+    if(!r.ok&&r.status!==400&&r.status!==422)return dizer(PM.motivo(r));   // 401/403/404/5xx: mostra o código; 400/422 = e-mail ou senha errados
     if(!r.ok||!r.dados||!r.dados.access_token)return dizer(r.dados&&/confirm/i.test(JSON.stringify(r.dados))?"Falta confirmar o e-mail. Procure a mensagem na sua caixa de entrada.":"E-mail ou senha incorretos.");
     guardar(r.dados,email);V.msg=V.ok="";abrirPainel();
   }
@@ -91,10 +92,10 @@
   }
   async function sairConta(){const t=await token();if(t)PM.auth.sair(t);PM.apagar(KR);limpar();V.status=null;V.eu=null;V.msg=V.ok="";desenhar()}
   const limpar=()=>{V.criancas=[];V.progresso={};V.config={};V.consents=[];V.ajustando=null;V.codigoNovo=null};
-  /* lê SÓ a própria linha (nome, status, data). Devolve o status, ou null se estiver sem internet. */
+  /* lê SÓ a própria linha (nome, status, data). Devolve o status, ou null se a chamada falhou (o motivo fica em V.falha). */
   async function carregarStatus(t){
     const r=await PM.rest("responsaveis","select=nome,status,criado_em",t);
-    if(r.rede)return null;
+    if(r.rede||!r.ok){V.falha=PM.motivo(r);return null}
     const l=r.ok&&Array.isArray(r.dados)?r.dados[0]:null;
     V.eu=l;V.status=l?l.status:"pendente";                       // sem linha = trata como pendente (nunca libera por engano)
     return V.status;
@@ -103,7 +104,7 @@
   async function liberado(){
     const t=await token();if(!t){desenhar();return null}
     const st=await carregarStatus(t);
-    if(st===null){dizer("Sem internet. Tente de novo quando estiver conectado.");return null}
+    if(st===null){dizer(V.falha);return null}
     if(st!=="aprovado"){limpar();desenhar();return null}
     return t;
   }
@@ -155,14 +156,14 @@
   async function abrirPainel(){
     const t=await token();if(!t){desenhar();return}
     const st=await carregarStatus(t);
-    if(st===null){dizer("Sem internet. Não consegui conferir o seu cadastro.");return}
+    if(st===null){dizer(V.falha);return}
     if(st!=="aprovado"){limpar();desenhar();return}          // pendente/bloqueado: não pede nenhum dado de criança
     const [a,p,k,c]=await Promise.all([
       PM.rest("criancas","select=id,apelido,ano_escolar,idade,avatar,codigo,ativo,ultimo_acesso&order=criado_em",t),
       PM.rest("progresso","select=crianca_id,moedas,pokemon_total,ofensiva_atual,atualizado_em",t),
       PM.rest("configuracoes","select=*",t),
       PM.rest("consentimentos","select=versao_texto,aceito,aceito_em&order=aceito_em.desc",t)]);
-    if(a.rede)dizer("Sem internet. Não consegui carregar as crianças.");
+    if(a.rede||!a.ok)dizer("Não consegui carregar as crianças. "+PM.motivo(a));
     V.criancas=a.ok&&Array.isArray(a.dados)?a.dados:[];
     V.progresso=Object.fromEntries((p.ok&&Array.isArray(p.dados)?p.dados:[]).map(x=>[x.crianca_id,x]));
     V.config=Object.fromEntries((k.ok&&Array.isArray(k.dados)?k.dados:[]).map(x=>[x.crianca_id,x]));
@@ -176,8 +177,8 @@
     const t=await liberado();if(!t)return;V.ocupado=true;
     const r=await PM.funcao("gerenciar-crianca",{acao:"criar",apelido:String(f.get("apelido")).trim(),ano_escolar:+f.get("ano"),idade:+f.get("idade"),avatar:V.novo.avatar,pin},t);
     V.ocupado=false;
-    if(r.rede)return dizer("Sem internet. Tente de novo quando estiver conectado.");
-    if(!r.ok||!r.dados||!r.dados.ok)return dizer(r.dados&&r.dados.erro==="limite_de_criancas"?"Você já cadastrou o máximo de 10 crianças.":r.dados&&r.dados.erro==="aguardando_aprovacao"?"Seu cadastro ainda não foi aprovado.":"Não consegui cadastrar agora. Confira os dados e tente de novo.");
+    if(r.rede)return dizer(PM.motivo(r));
+    if(!r.ok||!r.dados||!r.dados.ok)return dizer(r.dados&&r.dados.erro==="limite_de_criancas"?"Você já cadastrou o máximo de 10 crianças.":r.dados&&r.dados.erro==="aguardando_aprovacao"?"Seu cadastro ainda não foi aprovado.":"Não consegui cadastrar agora. "+PM.motivo(r));
     V.codigoNovo={codigo:r.dados.codigo,avatar:V.novo.avatar};V.novo={avatar:"a1"};V.msg=V.ok="";await abrirPainel();
   }
   async function acao(a,id){
