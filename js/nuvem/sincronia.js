@@ -45,6 +45,7 @@
       return"ok";
     }
     if(r.ok&&r.dados&&r.dados.erro==="conflito")return"conflito";
+    if(r.ok&&r.dados&&r.dados.erro==="sem_acesso"){estado="suspensa";msg="";return recuo()}     // família pendente/bloqueada: o jogo segue no aparelho e nada sobe
     estado=r.status===401?"expirada":"erro";msg="Erro "+r.status;recuo();
   }
 
@@ -94,7 +95,7 @@
   function depois(){meta.sujo=true;estado="pendente";salvarMeta();agendar(3000)}
 
   /* ---- tela: cartão na aba Prof. ---- */
-  const TXT={ok:"Tudo salvo na nuvem ☁️",pendente:"Salvando…",offline:"Sem internet: o progresso está salvo neste aparelho e será enviado quando a conexão voltar.",erro:"Não consegui salvar agora; vou tentar de novo.",expirada:"A sessão acabou. Entre de novo para continuar salvando."};
+  const TXT={ok:"Tudo salvo na nuvem ☁️",pendente:"Salvando…",offline:"Sem internet: o progresso está salvo neste aparelho e será enviado quando a conexão voltar.",erro:"Não consegui salvar agora; vou tentar de novo.",expirada:"A sessão acabou. Entre de novo para continuar salvando.",suspensa:"O salvamento na nuvem está suspenso para esta conta. O progresso continua guardado neste aparelho. Fale com o responsável."};
   function cartao(){
     const s=window.PM_SESSAO,q=meta.ultima?new Date(meta.ultima).toLocaleString("pt-BR"):"ainda não";
     return `<h2>Conta e nuvem</h2><div class="info"><p><b>${(s.apelido||"").replace(/</g,"&lt;")}</b> · ${TXT[estado]||""} ${msg?"("+msg+")":""}</p>

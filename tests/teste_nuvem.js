@@ -8,7 +8,9 @@ let ok=0;const bad=[];const t=(n,c,d)=>{c?ok++:bad.push(n+(d!==undefined?"  [obt
 
 /* ---------- Supabase simulado ---------- */
 class Servidor{
-  constructor(){this.online=true;this.log=[];this.cri={};this.prog={};this.conf={};this.falhas={};this.tok={};this.refresh={};this.n=0;this.recusarRefresh=false}
+  constructor(){this.online=true;this.log=[];this.cri={};this.prog={};this.conf={};this.falhas={};this.tok={};this.refresh={};this.n=0;this.recusarRefresh=false;this.resp={};this.rtok={}}
+  addResp(id,email,senha,nome,status){this.resp[id]={id,email,senha,nome,status,criado_em:"2026-11-23T20:00:00Z"}}
+  liberada(id){const r=this.cri[id]&&this.cri[id].resp;return !r||this.resp[r].status==="aprovado"}   // criança de família pendente/bloqueada não é liberada
   add(id,codigo,avatar,pin,apelido){this.cri[id]={id,codigo,avatar,pin,apelido,ano_escolar:6};this.conf[id]={crianca_id:id,tempo_desafio:60,questoes_por_fase:8,ano_escolar_liberado:3,tentativas_dia:3,extras:{},versao:1}}
   sessao(id){const a="tok-"+id+"-"+(++this.n),r="ref-"+id+"-"+this.n;this.tok[a]=id;this.refresh[r]=id;return{access_token:a,refresh_token:r,expires_at:Math.floor(Date.now()/1000)+3600}}
   quem(h){const a=(h.Authorization||"").replace("Bearer ","");return this.tok[a]||null}
@@ -20,16 +22,31 @@ class Servidor{
     if(u.startsWith("/functions/v1/login-crianca")){
       const c=Object.values(this.cri).find(x=>x.codigo===corpo.codigo);
       if(c&&(this.falhas[c.codigo]||0)>=5)return R({erro:"bloqueado",espera_seg:900},429);
-      if(!c||c.avatar!==corpo.avatar||c.pin!==corpo.pin){if(c)this.falhas[c.codigo]=(this.falhas[c.codigo]||0)+1;return R({erro:"dados_incorretos"},401)}
+      if(!c||c.avatar!==corpo.avatar||c.pin!==corpo.pin||!this.liberada(c.id)){if(c)this.falhas[c.codigo]=(this.falhas[c.codigo]||0)+1;return R({erro:"dados_incorretos"},401)}
       this.falhas[c.codigo]=0;return R({ok:true,sessao:this.sessao(c.id),crianca:{id:c.id,apelido:c.apelido,avatar:c.avatar,ano_escolar:c.ano_escolar}})}
+    if(u.startsWith("/auth/v1/token?grant_type=password")){
+      const r=Object.values(this.resp).find(x=>x.email===corpo.email&&x.senha===corpo.password);if(!r)return R({error:"invalid_grant"},400);
+      const a="rtok-"+r.id+"-"+(++this.n);this.rtok[a]=r.id;
+      return R({access_token:a,refresh_token:"rref-"+r.id,expires_at:Math.floor(Date.now()/1000)+3600,user:{id:r.id,user_metadata:{nome:r.nome}}})}
     if(u.startsWith("/auth/v1/token?grant_type=refresh_token")){
       const id=this.refresh[corpo.refresh_token];if(!id||this.recusarRefresh)return R({error:"invalid_grant"},400);return R(this.sessao(id))}
     if(u.startsWith("/auth/v1/logout"))return R({},204);
+    const rid=this.rtok[(h.Authorization||"").replace("Bearer ","")];
+    if(rid){   // ---- chamadas do RESPONSÁVEL (o servidor simulado aplica a mesma regra do banco: só aprovado vê/gera dados)
+      const r=this.resp[rid],ap=r.status==="aprovado",minhas=Object.values(this.cri).filter(c=>c.resp===rid);
+      if(u.startsWith("/rest/v1/responsaveis"))return R([{nome:r.nome,status:r.status,criado_em:r.criado_em}]);
+      if(u.startsWith("/rest/v1/criancas"))return R(ap?minhas.map(c=>({id:c.id,apelido:c.apelido,ano_escolar:6,idade:11,avatar:c.avatar,codigo:c.codigo,ativo:true,ultimo_acesso:null})):[]);
+      if(u.startsWith("/rest/v1/progresso"))return R(ap?minhas.filter(c=>this.prog[c.id]).map(c=>({crianca_id:c.id,moedas:9,pokemon_total:1,ofensiva_atual:2})):[]);
+      if(u.startsWith("/rest/v1/configuracoes"))return R(ap?minhas.map(c=>this.conf[c.id]):[]);
+      if(u.startsWith("/rest/v1/consentimentos"))return R(ap?[{versao_texto:"2026-11-v1",aceito:true,aceito_em:"2026-11-23T20:00:00Z"}]:[]);
+      if(u.startsWith("/functions/v1/gerenciar-crianca"))return ap?R({ok:true,codigo:"K7M2QP"}):R({erro:"aguardando_aprovacao"},403);
+      return R({},404)}
     const id=this.quem(h);
     if(!id)return R({message:"JWT"},401);
-    if(u.startsWith("/rest/v1/progresso")){const f=(u.match(/crianca_id=eq\.([^&]+)/)||[])[1];return R(f===id&&this.prog[id]?[JSON.parse(JSON.stringify(this.prog[id]))]:[])}   // RLS: só o próprio
-    if(u.startsWith("/rest/v1/configuracoes")){const f=(u.match(/crianca_id=eq\.([^&]+)/)||[])[1];return R(f===id?[this.conf[id]]:[])}
+    if(u.startsWith("/rest/v1/progresso")){const f=(u.match(/crianca_id=eq\.([^&]+)/)||[])[1];return R(f===id&&this.prog[id]&&this.liberada(id)?[JSON.parse(JSON.stringify(this.prog[id]))]:[])}   // RLS: só o próprio
+    if(u.startsWith("/rest/v1/configuracoes")){const f=(u.match(/crianca_id=eq\.([^&]+)/)||[])[1];return R(f===id&&this.liberada(id)?[this.conf[id]]:[])}
     if(u.startsWith("/rest/v1/rpc/pm_salvar_progresso")){
+      if(!this.liberada(id))return R({ok:false,erro:"sem_acesso"});
       const p=this.prog[id];
       if(!p){this.prog[id]={estado:corpo.p_estado,versao:1};return R({ok:true,versao:1})}
       if(p.versao!==corpo.p_versao)return R({ok:false,erro:"conflito",versao:p.versao});
@@ -203,6 +220,50 @@ function digitar(w,{codigo,avatar,pin}){
   t("o cadastro envia aceite, versão do texto e hash do texto",c0&&c0.data.consentimento_aceito===true&&c0.data.consentimento_versao==="2026-11-v1"&&/^[0-9a-f]{64}$/.test(c0.data.consentimento_hash)&&c0.data.nome==="Mãe da Ana");
   t("o e-mail e a senha vão ao serviço de contas, e a chave é só a publicável",c0.email==="m@x.com"&&srv.log.filter(x=>x.url.includes("signup")).every(x=>x.h.apikey===CHAVE));
   t("com confirmação por e-mail, avisa para confirmar",/confirmar|mensagem/i.test(W.document.getElementById("app").textContent));
+  d.window.close();
+
+  /* ===== 11) APROVAÇÃO MANUAL do responsável ===== */
+  srv.fetch=srv.fetchOrig;                                   // volta ao servidor completo
+  srv.addResp("RESP1","mae@x.com","senha-forte-1","Mãe da Ana","pendente");srv.cri[ID_A].resp="RESP1";
+  const entrarResp=async(d,email,senha)=>{const w=d.window;const f=w.document.getElementById("f");f.elements.email.value=email;f.elements.senha.value=senha;f.dispatchEvent(new w.Event("submit",{cancelable:true,bubbles:true}));await sleep(350)};
+  const txt=w=>w.document.getElementById("app").textContent;
+  srv.log.length=0;let armR={};d=abrir("responsavel.html",srv,armR);await sleep(100);W=d.window;
+  await entrarResp(d,"mae@x.com","senha-forte-1");
+  t("responsável PENDENTE entra e vê só 'aguardando aprovação', com nome e data do cadastro",/Aguardando aprovação/.test(txt(W))&&/Mãe da Ana/.test(txt(W))&&/23\/11\/2026|23\/11\/26/.test(txt(W)),txt(W).slice(0,200));
+  t("PENDENTE: nenhuma criança, formulário, ajuste ou consentimento aparece",!/Minhas crianças|Cadastrar criança|Ajustes|Meus consentimentos|ANA234/.test(txt(W))&&!W.document.getElementById("nc"));
+  t("PENDENTE: o app nem PEDE dados de crianças, progresso, configurações ou consentimentos",!srv.log.some(x=>/\/rest\/v1\/(criancas|progresso|configuracoes|consentimentos)/.test(x.url)),srv.log.map(x=>x.url.replace(URL_SB,"")).filter(u=>/rest/.test(u)));
+  t("PENDENTE: pode sair e pode excluir a própria conta (direito de exclusão)",!!W.document.getElementById("sair")&&!!W.document.getElementById("exc-conta"));
+  /* a criança dessa família não consegue entrar enquanto pendente */
+  const dK=abrir("entrar.html",srv,{});await sleep(100);digitar(dK.window,{codigo:"ANA234",avatar:"a3",pin:"7391"});await sleep(300);
+  t("criança de responsável PENDENTE: código, figura e PIN certos NÃO entram (mensagem genérica)",/não conferem/.test(dK.window.document.getElementById("app").textContent)&&!dK.window.localStorage.getItem("pm-sessao"));
+  dK.window.close();
+  /* aprovação pelo administrador */
+  srv.resp.RESP1.status="aprovado";srv.falhas.ANA234=0;
+  clicar(W,"#ver");await sleep(300);
+  t("depois de APROVADO: 'Verificar de novo' libera a área e mostra as crianças",/Minhas crianças/.test(txt(W))&&/ANA234/.test(txt(W))&&!!W.document.getElementById("nc"),txt(W).slice(0,160));
+  const dK2=abrir("entrar.html",srv,{});await sleep(100);digitar(dK2.window,{codigo:"ANA234",avatar:"a3",pin:"7391"});await sleep(400);
+  t("depois de APROVADO: a criança consegue entrar",!!dK2.window.localStorage.getItem("pm-sessao"));dK2.window.close();
+  /* bloqueio com a tela aberta: a próxima ação já cai na tela de bloqueio, sem chamar o servidor */
+  srv.resp.RESP1.status="bloqueado";srv.log.length=0;
+  const nc=W.document.getElementById("nc");nc.elements.apelido.value="Nova";nc.elements.pin.value="1111";nc.elements.pin2.value="1111";
+  nc.dispatchEvent(new W.Event("submit",{cancelable:true,bubbles:true}));await sleep(300);
+  t("BLOQUEADO com a tela aberta: a ação é recusada e a tela vira 'Acesso suspenso'",/Acesso suspenso/.test(txt(W))&&!/Minhas crianças|ANA234/.test(txt(W)));
+  t("BLOQUEADO: nenhuma criança foi cadastrada (a função de criar nem foi chamada)",!srv.log.some(x=>x.url.includes("gerenciar-crianca")));
+  d.window.close();
+  /* a mesma regra ao reabrir a página já bloqueado */
+  const arm2={};srv.log.length=0;d=abrir("responsavel.html",srv,arm2);await sleep(100);await entrarResp(d,"mae@x.com","senha-forte-1");
+  t("BLOQUEADO ao entrar: só a tela de acesso suspenso, sem dados",/Acesso suspenso/.test(txt(d.window))&&!srv.log.some(x=>/\/rest\/v1\/(criancas|progresso|configuracoes|consentimentos)/.test(x.url)));
+  d.window.close();
+  /* criança já logada num aparelho, família bloqueada: o jogo segue no aparelho, nada sobe, e volta a sincronizar ao aprovar */
+  srv.resp.RESP1.status="aprovado";const armK=JSON.parse(JSON.stringify(arm));
+  d=abrir("index.html",srv,armK);await sleep(600);W=d.window;ev=c=>W.eval(c);
+  await W.Nuvem._tudo();const versaoAntes=srv.prog[ID_A].versao;
+  srv.resp.RESP1.status="bloqueado";ev("S.coins=4321;save()");await W.Nuvem._empurrar();
+  t("família BLOQUEADA: o jogo continua no aparelho e avisa que o salvamento na nuvem está suspenso",ev("S.coins")===4321&&W.Nuvem.estado().estado==="suspensa"&&W.PM_PARAR!==true);
+  t("família BLOQUEADA: nada novo é gravado na nuvem",srv.prog[ID_A].versao===versaoAntes&&srv.prog[ID_A].estado.coins!==4321);
+  t("família BLOQUEADA: o que é da criança segue guardado no aparelho",JSON.parse(W.localStorage.getItem("pokemath-estado-"+ID_A)).coins===4321);
+  srv.resp.RESP1.status="aprovado";await W.Nuvem._empurrar();await sleep(300);
+  t("reaprovada: o progresso guardado no aparelho sobe para a nuvem sem perder nada",srv.prog[ID_A].estado.coins===4321&&[25,4,7].every(i=>!!srv.prog[ID_A].estado.caught[i]),srv.prog[ID_A].estado.coins);
   d.window.close();
 
   t("nenhum erro de script em todo o teste",erros.length===0,erros.slice(0,3));

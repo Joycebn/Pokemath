@@ -60,6 +60,8 @@ const R=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{"content-ty
   r=await G.tratar(req(NOVA,{authorization:"Bearer J"}),ENV,mg({papel:"crianca"}));t("uma CRIANÇA logada não pode criar/excluir crianças → 403",r.status===403);
   log=[];r=await G.tratar(req(NOVA,{authorization:"Bearer J"}),ENV,mg({erroRpc:"limite_de_criancas"}));
   t("limite de crianças: 409 e o usuário técnico é desfeito",r.status===409&&log.some(x=>x.m==="DELETE"&&x.url.includes("/admin/users/")));
+  log=[];r=await G.tratar(req(NOVA,{authorization:"Bearer J"}),ENV,mg({erroRpc:"responsavel_nao_aprovado"}));j=await r.json();
+  t("responsável NÃO aprovado: 403 aguardando_aprovacao e o usuário técnico é desfeito",r.status===403&&j.erro==="aguardando_aprovacao"&&log.some(x=>x.m==="DELETE"&&x.url.includes("/admin/users/")));
   log=[];r=await G.tratar(req(NOVA,{authorization:"Bearer J"}),ENV,mg({erroRpc:"qualquer"}));t("falha no banco: desfaz o usuário técnico",r.status===502&&log.some(x=>x.m==="DELETE"));
   for(const [n,c] of [["PIN curto",{...NOVA,pin:"12"}],["ano 2",{...NOVA,ano_escolar:2}],["idade 30",{...NOVA,idade:30}],["avatar ruim",{...NOVA,avatar:"x"}],["apelido vazio",{...NOVA,apelido:"  "}],["apelido gigante",{...NOVA,apelido:"x".repeat(31)}]]){
     log=[];r=await G.tratar(req(c,{authorization:"Bearer J"}),ENV,mg());t("criar: "+n+" recusado sem criar nada",r.status===400&&!log.some(x=>x.m==="POST"&&x.url.includes("admin")))}
