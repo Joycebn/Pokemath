@@ -1,7 +1,7 @@
 /* Pokemath — entrada da criança: código (6 letras/números) + figura + senha de 4 números. Sem e-mail. */
 (function(){
   const app=document.getElementById("app");
-  const E={codigo:"",avatar:"",pin:"",msg:"",ocupado:false};
+  const E={codigo:"",avatar:"",pin:"",msg:"",ocupado:false,legado:false};   // legado: "trazer o progresso antigo" NUNCA vem marcado; só vale se a criança marcar
   try{E.codigo=localStorage.getItem("pm-ultimo-codigo")||""}catch{}
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const temLegado=()=>{try{return !!JSON.parse(localStorage.getItem("tabuada-pokemon-v1"))}catch{return false}};
@@ -16,7 +16,7 @@
       <p>2. Escolha a sua figura</p><div class="avs">${avs}</div>
       <p>3. Digite a sua senha de 4 números</p><div class="pontos" aria-live="polite" aria-label="${E.pin.length} de 4 números">${pontos}</div><div class="teclado">${teclas}</div>
       ${E.msg?`<div class="${E.msg.startsWith("✔")?"bom":"erro"}" role="alert">${esc(E.msg)}</div>`:""}
-      ${temLegado()?`<label class="chk"><input type="checkbox" id="legado" checked> <span>Trazer o progresso que já está salvo neste aparelho</span></label>`:""}
+      ${temLegado()?`<label class="chk"><input type="checkbox" id="legado" ${E.legado?"checked":""}> <span>Trazer o progresso que já está salvo neste aparelho</span></label>`:""}
       <button class="grande" id="ok" ${E.ocupado?"disabled":""}>${E.ocupado?"Entrando…":"Entrar"}</button></div>
       <p class="rodape">Esqueceu o código ou a senha? Peça ao seu responsável.<br><a class="link" href="responsavel.html" style="color:#cfe3ff">Sou responsável</a></p>`;
     const c=document.getElementById("cod");
@@ -25,6 +25,7 @@
     app.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{const n=b.dataset.n;
       if(n==="x")E.pin=E.pin.slice(0,-1);else if(n==="c")E.pin="";else if(E.pin.length<4)E.pin+=n;
       tela();if(E.pin.length===4&&E.codigo.length===6&&E.avatar)entrar()});
+    const lg=document.getElementById("legado");if(lg)lg.onchange=()=>{E.legado=lg.checked};
     document.getElementById("ok").onclick=entrar;
   }
 
@@ -34,7 +35,7 @@
     if(!E.avatar)return aviso("Escolha a sua figura.");
     if(E.pin.length!==4)return aviso("A senha tem 4 números.");
     E.ocupado=true;E.msg="";tela();
-    const importar=!!(document.getElementById("legado")&&document.getElementById("legado").checked);
+    const importar=E.legado===true;
     const r=await PM.funcao("login-crianca",{codigo:E.codigo,avatar:E.avatar,pin:E.pin});
     E.ocupado=false;E.pin="";
     if(r.rede)return aviso("Sem internet. Para entrar neste aparelho pela primeira vez é preciso estar conectado.");

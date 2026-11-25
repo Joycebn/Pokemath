@@ -213,7 +213,8 @@
         <label class="chk"><input type="checkbox" name="acomp" ${V.chk.acomp?"checked":""}> <span style="white-space:pre-wrap">${esc(a.caixas.acomp)}</span></label>
         <p><button type="button" class="sec" id="aut-doc">${V.verDoc?"Esconder o documento completo":"Ler o documento completo"}</button></p>
         ${V.verDoc?`<div class="termos" tabindex="0" id="aut-texto">${esc(a.texto)}</div>`:""}
-        <button class="grande" id="aut-ok" ${V.chk.perfil&&!V.ocupado?"":"disabled"}>Cadastrar criança</button>
+        <p id="aut-ajuda" class="aviso" ${V.chk.perfil?"hidden":""}>Para cadastrar, marque a primeira autorização (criar o perfil). A segunda é opcional e não libera o cadastro.</p>
+        <button class="grande" id="aut-ok" ${V.chk.perfil&&!V.ocupado?"":"disabled"} aria-disabled="${V.chk.perfil&&!V.ocupado?"false":"true"}">Cadastrar criança</button>
         <button type="button" class="sec" id="aut-volta">Voltar sem criar o perfil</button></form></div>`;
   }
   function ligarAutorizacoes(){
@@ -221,8 +222,13 @@
     const rec=document.getElementById("aut-recarregar");if(rec)rec.onclick=async()=>{await carregarAutorizacao();desenhar()};
     const f=document.getElementById("aut");if(!f)return;
     const ok=document.getElementById("aut-ok");
-    f.elements.perfil.onchange=e=>{V.chk.perfil=e.target.checked;ok.disabled=!V.chk.perfil||V.ocupado};
-    f.elements.acomp.onchange=e=>{V.chk.acomp=e.target.checked};
+    /* O botão segue SEMPRE o estado real da caixa 1 (lido da própria caixa). A caixa 2 nunca habilita o botão. */
+    const atualizar=()=>{
+      V.chk.perfil=f.elements.perfil.checked;V.chk.acomp=f.elements.acomp.checked;
+      const hab=V.chk.perfil&&!V.ocupado;ok.disabled=!hab;ok.setAttribute("aria-disabled",hab?"false":"true");
+      const aj=document.getElementById("aut-ajuda");if(aj)aj.hidden=V.chk.perfil;
+    };
+    for(const nome of ["perfil","acomp"])for(const ev of ["change","input","click"])f.elements[nome].addEventListener(ev,atualizar);
     document.getElementById("aut-doc").onclick=()=>{V.verDoc=!V.verDoc;desenhar()};
     f.onsubmit=e=>{e.preventDefault();enviarCriar()};
   }
@@ -242,6 +248,8 @@
   const ERRO_GENERICO="Não consegui cadastrar agora. Tente de novo em instantes.";
   const MENSAGEM_DA_FUNCAO=["consentimento_perfil_obrigatorio","falha_ao_registrar_autorizacao","texto_consentimento_nao_configurado"];   // erros em que a mensagem em português vem da função
   async function enviarCriar(){
+    const fa=document.getElementById("aut");                               // lê as caixas direto da tela (não de uma cópia que possa ter ficado velha)
+    if(fa){V.chk.perfil=fa.elements.perfil.checked;V.chk.acomp=fa.elements.acomp.checked}
     if(!V.chk.perfil||!V.aut||!V.rasc)return dizer("Para cadastrar a criança, marque a autorização para criar o perfil.");
     const t=await liberado();if(!t)return;
     const x=V.rasc;V.ocupado=true;desenhar();

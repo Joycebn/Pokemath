@@ -39,8 +39,12 @@
   const sessaoCrianca=()=>ler(CH_CRIANCA);
   const guardarCrianca=s=>gravar(CH_CRIANCA,s);
   const sairCrianca=()=>apagar(CH_CRIANCA);
-  /* devolve um token válido (renova se faltam < 2 min). null = sem internet ou sessão perdida. */
+  /* A sessão guardada no aparelho é de OUTRA criança que não a desta página? (outra criança entrou em outra aba/janela)
+     O aparelho guarda UMA sessão só; esta página fixou o seu id ao abrir (window.PM_SESSAO). Se não coincidem, ninguém pode usar o token. */
+  const sessaoTrocada=()=>{const meu=window.PM_SESSAO&&window.PM_SESSAO.id;if(!meu)return false;const s=sessaoCrianca();return !!(s&&s.id&&s.id!==meu)};
+  /* devolve um token válido (renova se faltam < 2 min). null = sem internet, sessão perdida OU sessão de outra criança. */
   async function tokenCrianca(forcar){
+    if(sessaoTrocada())return null;                          // NUNCA entrega o token de outra criança a esta página
     const s=sessaoCrianca();if(!s||!s.access)return null;
     if(!forcar&&s.expira&&s.expira-Date.now()>120000)return s.access;
     if(!s.refresh)return null;
@@ -59,5 +63,5 @@
     const d=r.dados||{},m=d.msg||d.message||d.error_description||d.erro||(typeof d.error==="string"?d.error:"")||"";
     return "O servidor respondeu com erro "+r.status+(m?": "+m:"")+".";
   };
-  window.PM={config:C,motivo,http,rest,rpc,funcao,auth,ler,gravar,apagar,sessaoCrianca,guardarCrianca,sairCrianca,tokenCrianca};
+  window.PM={config:C,motivo,http,rest,rpc,funcao,auth,ler,gravar,apagar,sessaoCrianca,sessaoTrocada,guardarCrianca,sairCrianca,tokenCrianca};
 })();

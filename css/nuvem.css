@@ -24,3 +24,6 @@
 .grade2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.caixa label{display:block;margin-top:8px;font-size:.9rem}
 .perigo{background:#7a1020!important;color:#fff!important}
 .chk{display:flex;gap:8px;align-items:flex-start}.chk input{width:auto;margin-top:5px}
+/* botão "Cadastrar criança" do passo das autorizações: desabilitado fica CLARAMENTE cinza (só a caixa 1 o habilita) */
+#aut-ok:disabled{background:#59607a;border-bottom-color:#3c4258;color:#cdd3e6;opacity:1;cursor:not-allowed}
+#aut-ajuda{font-size:.9rem;margin:10px 0 0}
