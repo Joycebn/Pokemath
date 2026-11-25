@@ -4,5 +4,8 @@
 window.PM_CONFIG={
   url:"https://cxfwnuyzkyugkbtbrgfl.supabase.co",
   chave:"sb_publishable_uA-tRTTlFWQOGKD8tMghpA_b4c_Tr7G",
-  termos:{versao:"2026-11-v1",arquivo:"dados/consentimento_v1.txt"}   // versão do texto de consentimento mostrado no cadastro
+  termos:{versao:"2026-11-v1",arquivo:"dados/consentimento_v1.txt"},   // texto mostrado no CADASTRO DO RESPONSÁVEL (não muda)
+  // Texto das AUTORIZAÇÕES POR ESTUDANTE (formulário de cadastrar criança). A versão e o hash do arquivo precisam estar
+  // no segredo PM_TEXTOS_CONSENTIMENTO da função gerenciar-crianca (formato  versao:hash). Para a versão final, troque só estas duas linhas.
+  autorizacao_estudante:{versao:"2026-11-teste",arquivo:"dados/consentimento_teste.txt"}
 };
