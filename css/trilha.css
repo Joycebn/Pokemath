@@ -1,0 +1,66 @@
+/* Trilha por zonas: cada ano é uma zona; cada fase é um círculo no caminho; a folha mostra os 3 níveis. */
+.zona{margin:14px 0;border-radius:20px;padding:12px 10px 14px;background:linear-gradient(180deg,var(--z1),var(--z2));color:#fff;position:relative;overflow:hidden;border-bottom:5px solid rgba(0,0,0,.35)}
+.zona h2{margin:0 0 8px;font-size:1.05rem;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.zona .emBreve{background:rgba(0,0,0,.28);border-radius:10px;padding:8px 10px;margin:6px 0}
+.zona.bloq{filter:grayscale(.85);opacity:.82}
+.caminho{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.no{--x:6%;position:relative;display:flex;align-items:center;gap:10px;padding-left:var(--x)}
+.no.l1{--x:32%}.no.l2{--x:56%}.no.l3{--x:32%}
+.no:not(:last-child)::after{content:"";position:absolute;left:calc(var(--x) + 28px);top:62px;height:18px;border-left:5px dotted rgba(255,255,255,.55)}
+.no.feito:not(:last-child)::after{border-left-color:var(--amar)}
+.circulo{flex:none;width:60px;min-width:60px;height:60px;border-radius:50%;padding:0;font-size:1.7rem;position:relative;display:flex;align-items:center;justify-content:center;border:4px solid #fff;border-bottom-width:7px;margin:0;color:#fff}
+.circulo .ic{line-height:1}
+.circulo.bloqueado{background:#6b7390}
+.circulo.disponivel{background:var(--amar);color:var(--tinta);animation:pm-pulso 1.4s ease-in-out infinite}
+.circulo.concluido{background:#2b8a4d}
+.circulo.refazer{background:#e8862a;color:#111}
+.circulo.embreve{background:#4b5578;opacity:.6}
+.circulo .cad{position:absolute;right:-6px;bottom:-6px;font-size:.95rem}
+.circulo .medalha{position:absolute;right:-9px;bottom:-9px;font-size:1.25rem}
+.circulo:focus-visible,.folha button:focus-visible{outline:4px solid #fff;outline-offset:3px}
+.no .tit{font-weight:800;font-size:.95rem;text-shadow:0 2px 0 rgba(0,0,0,.45);line-height:1.15}.no .tit small{font-weight:600;opacity:.85}
+.portal{display:flex;align-items:center;gap:10px;margin-top:16px;background:rgba(0,0,0,.3);border-radius:14px;padding:8px 10px}
+.portal .sil{flex:none;width:64px;height:64px;object-fit:contain}
+.portal .sil.escura{filter:brightness(0) opacity(.75)}
+.folhaFundo{position:fixed;inset:0;background:rgba(5,10,30,.55);display:flex;align-items:center;justify-content:center;padding:12px;z-index:50}
+.folha{position:relative;width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;gap:18px;animation:pm-pop .22s ease-out}
+.folhaTopo{width:100%;background:rgba(20,12,35,.88);border-radius:16px;padding:8px 8px 8px 12px;box-sizing:border-box;border:2px solid rgba(255,255,255,.2)}
+.folhaTopo .fecha{margin:0;min-width:44px;min-height:44px}
+.folhaAviso{margin:0;background:rgba(20,12,35,.88);text-align:center;font-weight:700}
+/* a laje de pedra com as 3 medalhas */
+.laje{position:relative;display:flex;justify-content:center;align-items:center;gap:10px;padding:22px 22px 62px;max-width:94vw;box-sizing:border-box;border-radius:46px;background:linear-gradient(180deg,#85694f,#5d4535);border:4px solid #a58b72;box-shadow:inset 0 0 0 5px #4a382c,inset 0 10px 16px rgba(0,0,0,.4),0 10px 22px rgba(0,0,0,.55)}
+.laje .folhagem{position:absolute;width:34px;height:34px;pointer-events:none}
+.laje .folhagem.fa{left:-8px;top:-16px;transform:rotate(-25deg)}.laje .folhagem.fb{left:26%;top:-18px;transform:rotate(8deg) scale(.9)}
+.laje .folhagem.fc{right:30%;top:-16px;transform:rotate(-10deg) scale(.85)}.laje .folhagem.fd{right:-8px;top:-18px;transform:rotate(30deg) scaleX(-1)}
+.laje .folhagem.fe{left:-6px;bottom:-12px;transform:rotate(-95deg)}.laje .folhagem.ff{right:-6px;bottom:-12px;transform:rotate(160deg)}
+.folha .laje .nv,.folha .laje .nv.bloqueado,.folha .laje .nv.disponivel,.folha .laje .nv.concluido,.folha .laje .nv.refazer{position:relative;display:block;flex:none;width:84px;min-width:84px;height:84px;padding:0;margin:0;border:0;border-radius:50%;opacity:1;color:#fff;
+  background:radial-gradient(circle,#3a2b22 0 64%,#6e5646 65% 69%,transparent 70%)}
+.laje .nv .medal,.laje .nvTrava .medal{display:block;width:100%;height:100%;filter:drop-shadow(0 3px 3px rgba(0,0,0,.5))}
+.laje .nvTrava{flex:none;width:84px;height:84px}
+.laje .nv.bloqueado .medal,.laje .nvTrava .medal{filter:grayscale(1) brightness(.62) drop-shadow(0 3px 3px rgba(0,0,0,.5))}
+.laje .nv.disponivel{animation:pm-brilho 1.5s ease-in-out infinite}
+.laje .nv .selo{position:absolute;right:-4px;top:-4px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;border:2px solid #fff;color:#fff;font-weight:800}
+.laje .nv .selo.ok{background:#2b8a4d}.laje .nv .selo.trava{background:#3b4366}.laje .nv .selo.refaz{background:#e8862a}
+.laje .nv .leg{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:104px;text-align:center;display:block}
+.laje .nv .leg b{display:block;font-size:.9rem;text-shadow:0 2px 2px rgba(0,0,0,.7)}.laje .nv .leg small{display:block;font-size:.7rem;line-height:1.15;font-weight:700;text-shadow:0 2px 2px rgba(0,0,0,.7)}
+.folha .laje .nv:focus-visible{outline:4px solid #fff;outline-offset:4px}
+@keyframes pm-pulso{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,203,5,.7)}50%{transform:scale(1.07);box-shadow:0 0 0 10px rgba(255,203,5,0)}}
+@keyframes pm-pop{from{transform:scale(.88);opacity:0}to{transform:none;opacity:1}}
+@keyframes pm-brilho{0%,100%{box-shadow:0 0 0 0 rgba(255,203,5,.0)}50%{box-shadow:0 0 18px 6px rgba(255,203,5,.75)}}
+body.reduzir .circulo,body.reduzir .folha,body.reduzir .folha .laje .nv{animation:none}
+@media (prefers-reduced-motion:reduce){.circulo,.folha,.folha .laje .nv{animation:none}}
+
+/* ---- zona ilustrada: a imagem é o cenário e os círculos ficam sobre a trilha de tijolos dela ---- */
+.zona.ilus{aspect-ratio:800/1732;padding:0;background-size:100% 100%;background-position:center;background-repeat:no-repeat;border-radius:20px}
+.zona.ilus h2{position:absolute;top:8px;left:12px;right:12px;margin:0;z-index:2;background:rgba(15,10,30,.55);border-radius:12px;padding:4px 10px;display:inline-block;width:fit-content}
+.zona.ilus .emBreve{position:absolute;top:44px;left:12px;right:12px;z-index:2}
+.zona.ilus .caminhoI{position:absolute;inset:0;margin:0;padding:0;display:block}
+.zona.ilus .no{position:absolute;transform:translate(-50%,-50%);padding:0;display:block;--x:0}
+.zona.ilus .no::after{display:none}
+.zona.ilus .circulo{width:46px;min-width:46px;height:46px;font-size:1.3rem;border-width:3px;border-bottom-width:5px;box-shadow:0 3px 8px rgba(0,0,0,.45)}
+.zona.ilus .circulo .medalha{right:-8px;bottom:-8px;font-size:1.05rem}.zona.ilus .circulo .cad{font-size:.8rem;right:-5px;bottom:-5px}
+.zona.ilus .tit{position:absolute;top:50%;transform:translateY(-50%);width:max-content;max-width:34vw;background:rgba(15,10,30,.8);padding:3px 8px;border-radius:10px;font-size:.74rem;text-shadow:none;line-height:1.15}
+.zona.ilus .no.dir .tit{left:calc(100% + 8px)}
+.zona.ilus .no.esq .tit{right:calc(100% + 8px);text-align:right}
+.zona.ilus .portal{position:absolute;top:8.5%;left:50%;transform:translateX(-50%);width:90%;margin:0;z-index:2;background:rgba(15,10,30,.7)}
+.zona.ilus .portal .sil{width:56px;height:56px}

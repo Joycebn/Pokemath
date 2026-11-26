@@ -1,6 +1,6 @@
-const V="pokemath-v9",BASE=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","css/legado.css","css/novo.css",
-"js/conteudo/matriz.js","js/conteudo/ano3.js","js/motor/geradores.js","js/motor/explicacao.js","js/pokemon/falas.js","js/pokemon/pyri.js","js/motor/trilha.js","js/legado/jogo.js",
-"js/nuvem/config.js","js/nuvem/regras.js","js/nuvem/cliente.js","js/nuvem/inicio.js","js/nuvem/sincronia.js","js/nuvem/avatares.js","entrar.html","responsavel.html","css/nuvem.css","js/nuvem/entrar.js","js/nuvem/responsavel.js","dados/consentimento_v1.txt","dados/consentimento_teste.txt","dados/consentimento_v3.txt"];
+const V="pokemath-v12",BASE=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","css/legado.css","css/novo.css","css/trilha.css",
+"js/conteudo/matriz.js","js/conteudo/ano3.js","js/conteudo/zonas.js","js/motor/geradores.js","js/motor/explicacao.js","js/pokemon/falas.js","js/pokemon/pyri.js","js/motor/trilha.js","js/ui/trilha_visual.js","js/legado/jogo.js",
+"js/nuvem/config.js","js/nuvem/regras.js","js/nuvem/cliente.js","js/nuvem/inicio.js","js/nuvem/sincronia.js","js/nuvem/avatares.js","entrar.html","responsavel.html","css/nuvem.css","js/nuvem/entrar.js","js/nuvem/responsavel.js","dados/consentimento_v1.txt","dados/consentimento_teste.txt","dados/consentimento_v3.txt","img/zonas/ano3.webp"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>Promise.allSettled(BASE.map(u=>c.add(u)))).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==V).map(n=>caches.delete(n)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{

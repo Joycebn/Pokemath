@@ -10,6 +10,18 @@ create table if not exists public.responsaveis (
   criado_em   timestamptz not null default now()
 );
 
+-- APROVAÇÃO MANUAL: todo cadastro novo entra como 'pendente'. Só 'aprovado' libera a área do responsável,
+-- as crianças, o progresso, as configurações e os consentimentos. Quem muda o status é o administrador,
+-- pelo painel do Supabase (veja a pasta sql/admin). O app não consegue (sem permissão + gatilho em 003).
+-- Funciona também para quem já tinha rodado este arquivo: contas já existentes passam a 'pendente'.
+alter table public.responsaveis add column if not exists status text not null default 'pendente';
+alter table public.responsaveis add column if not exists status_alterado_em timestamptz;
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'responsaveis_status_chk') then
+    alter table public.responsaveis add constraint responsaveis_status_chk check (status in ('pendente', 'aprovado', 'bloqueado'));
+  end if;
+end $$;
+
 -- Crianças. Cada criança também é um usuário do Auth, mas SEM e-mail real: o login é feito
 -- pela função de servidor "login-crianca" (código + avatar + PIN de 4 números).
 -- O PIN é guardado apenas como hash (bcrypt) — nunca em texto puro.

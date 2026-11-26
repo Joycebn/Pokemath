@@ -279,6 +279,131 @@ await sleep(300);t("ao começar o nível o companheiro fala (balão com a fala)"
 ev("S.fases={'a3-posicional':{niveis:{bronze:{ok:true,perfeito:true,vezes:1},prata:{ok:false,falhou:true,vezes:1}},viu:true}};S.tutorialVisto=true;save()");
 const salvo=s.w.localStorage.getItem(KEY);s.w.close();s=await sessao(salvo);ev=s.ev;
 t("estado dos níveis (concluído, refazer) sobrevive ao fechar e abrir",st(ev,"a3-posicional")==="concluido,refazer,bloqueado",st(ev,"a3-posicional"));
+
+// ================= TRILHA POR ZONAS (Etapa 1): cada fase é um círculo; cada ano é uma zona; o círculo abre os 3 níveis =================
+{
+const z=await sessao(),zd=z.w.document,zv=x=>{try{return z.ev(x)}catch(e){return undefined}},Q=(x)=>[...zd.querySelectorAll(x)],U=x=>zd.querySelector(x);
+const zerar=()=>{zv("S.fases={};S.tentNivel=null;S.cfg.anoEscolar=3;save();ir('fases')")};
+const circ=id=>U('button.circulo[data-fase="'+id+'"]');
+const IDS=zv("fasesDoAno(3).map(f=>f.id)");
+zerar();
+const esperado={3:["Pyron",900003],4:["Lugia",249],5:["Ho-Oh",250],6:["Palkia",484],7:["Mewtwo",150],8:["Rayquaza",384],9:["Arceus",493]};
+try{t("zonas: existe a tabela ZONAS com os 7 anos (3º ao 9º)",zv("typeof ZONAS!=='undefined'&&Object.keys(ZONAS).join()")==="3,4,5,6,7,8,9");}catch(e){t("zonas: existe a tabela ZONAS com os 7 anos (3º ao 9º)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zonas: cada ano tem o lendário combinado (3º Pyron, 4º Lugia, 5º Ho-Oh, 6º Palkia, 7º Mewtwo, 8º Rayquaza, 9º Arceus) e um nome de cenário",Object.entries(esperado).every(([a,[n,id]])=>zv(`ZONAS[${a}].lendario.nome`)===n&&zv(`ZONAS[${a}].lendario.id`)===id&&!!zv(`ZONAS[${a}].nome`)));}catch(e){t("zonas: cada ano tem o lendário combinado (3º Pyron, 4º Lugia, 5º Ho-Oh, 6º Palkia, 7º Mewtwo, 8º Rayquaza, 9º Arceus) e um nome de cenário  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("trilha: 7 zonas na tela, uma por ano",Q(".zona").length===7&&Q(".zona").map(e=>e.dataset.ano).join()==="3,4,5,6,7,8,9");}catch(e){t("trilha: 7 zonas na tela, uma por ano  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases",Q('.zona[data-ano="3"] button.circulo[data-fase]').map(e=>e.dataset.fase).join()===IDS.join()&&IDS.length===6,Q('.zona[data-ano="3"] button.circulo[data-fase]').length);}catch(e){t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("trilha: os cartões antigos (com os 3 botões de nível dentro) saíram da tela",Q(".faseCard").length===0&&Q(".nv").length===0);}catch(e){t("trilha: os cartões antigos (com os 3 botões de nível dentro) saíram da tela  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("trilha: as fases 'Em breve' aparecem como círculos cinza desativados no fim do 3º ano",Q('.zona[data-ano="3"] .circulo.embreve[disabled]').length===zv("EM_BREVE[3].length"));}catch(e){t("trilha: as fases 'Em breve' aparecem como círculos cinza desativados no fim do 3º ano  [erro: "+String(e.message).slice(0,60)+"]",false)}
+/* estado do círculo = derivado dos 3 níveis */
+const est=id=>circ(id).dataset.estado;
+try{t("círculo: sem progresso, a 1ª fase está disponível e as outras bloqueadas",est(IDS[0])==="disponivel"&&IDS.slice(1).every(i=>est(i)==="bloqueado"),IDS.map(est).join());}catch(e){t("círculo: sem progresso, a 1ª fase está disponível e as outras bloqueadas  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true,perfeito:true,vezes:1}},viu:true}};save();ir('fases')");}catch(e){}
+try{t("círculo: com só o Bronze feito a fase continua 'disponível' e mostra a medalha 🥉",est(IDS[0])==="disponivel"&&/🥉/.test(circ(IDS[0]).textContent)&&est(IDS[1])==="bloqueado");}catch(e){t("círculo: com só o Bronze feito a fase continua 'disponível' e mostra a medalha 🥉  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:false,falhou:true,vezes:1}},viu:true}};save();ir('fases')");}catch(e){}
+try{t("círculo: nível falhado → fase em 'refazer'",est(IDS[0])==="refazer");}catch(e){t("círculo: nível falhado → fase em 'refazer'  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");}catch(e){}
+try{t("círculo: Bronze+Prata+Ouro → 'concluída' com 🥇, a próxima fase abre e o trecho percorrido fica marcado",est(IDS[0])==="concluido"&&/🥇/.test(circ(IDS[0]).textContent)&&est(IDS[1])==="disponivel"&&circ(IDS[0]).closest("li").classList.contains("feito")&&!circ(IDS[1]).closest("li").classList.contains("feito"));}catch(e){t("círculo: Bronze+Prata+Ouro → 'concluída' com 🥇, a próxima fase abre e o trecho percorrido fica marcado  [erro: "+String(e.message).slice(0,60)+"]",false)}
+/* folha com os 3 níveis */
+try{t("antes de tocar: nenhuma folha aberta",!U("#folha"));}catch(e){t("antes de tocar: nenhuma folha aberta  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{const clk=e=>{if(e)e.click()};circ(IDS[1])&&circ(IDS[1]).click();}catch(e){}
+try{t("tocar no círculo abre a folha com nome, resumo, 'Ver explicação' e os 3 níveis (Bronze, Prata, Ouro)",!!U("#folha")&&/Somar/.test(U("#folha").textContent)&&Q("#folha .nv").map(e=>e.classList[1]).join()==="bronze,prata,ouro"&&!!U("#folha .pm-livro")&&/Bronze/.test(U("#folha").textContent)&&/Prata/.test(U("#folha").textContent)&&/Ouro/.test(U("#folha").textContent));}catch(e){t("tocar no círculo abre a folha com nome, resumo, 'Ver explicação' e os 3 níveis (Bronze, Prata, Ouro)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("folha: cada nível mostra o estado (Bronze disponível, Prata e Ouro bloqueados)",Q("#folha .nv").map(e=>e.dataset.estado).join()==="disponivel,bloqueado,bloqueado");}catch(e){t("folha: cada nível mostra o estado (Bronze disponível, Prata e Ouro bloqueados)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("folha: acessível (role=dialog, aria-modal, botão Fechar com rótulo)",U("#folha").getAttribute("role")==="dialog"&&U("#folha").getAttribute("aria-modal")==="true"&&!!U('#folha [aria-label="Fechar"]'));}catch(e){t("folha: acessível (role=dialog, aria-modal, botão Fechar com rótulo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{U("#folha .nv.prata").click();}catch(e){}
+try{t("folha: nível bloqueado continua bloqueado (a regra do abrirNivel não mudou) e a folha segue aberta",zv("FS.vista")==="trilha"&&!!U("#folha"));}catch(e){t("folha: nível bloqueado continua bloqueado (a regra do abrirNivel não mudou) e a folha segue aberta  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{U('#folha [aria-label="Fechar"]').click();}catch(e){}
+try{t("folha: o botão Fechar fecha",!U("#folha"));}catch(e){t("folha: o botão Fechar fecha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{circ(IDS[1]).click();zd.dispatchEvent(new z.w.KeyboardEvent("keydown",{key:"Escape",bubbles:true}));}catch(e){}
+try{t("folha: a tecla Esc fecha",!U("#folha"));}catch(e){t("folha: a tecla Esc fecha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{circ(IDS[1]).click();U("#folha .nv.bronze").click();}catch(e){}
+try{t("tocar no nível chama a mesma entrada de antes (abrirNivel): abre a fase certa e fecha a folha",!U("#folha")&&zv("FS.fase.id")===IDS[1]&&zv("FS.nivel")==="bronze"&&zv("FS.vista")!=="trilha",zv("FS.vista"));}catch(e){t("tocar no nível chama a mesma entrada de antes (abrirNivel): abre a fase certa e fecha a folha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("voltarTrilha()");}catch(e){}
+/* fase bloqueada */
+try{zerar();circ(IDS[2]).click();}catch(e){}
+try{t("fase bloqueada: a folha só explica ('Termine os 3 níveis da fase anterior primeiro!'), sem botões de nível",!!U("#folha")&&Q("#folha .nv").length===0&&/Termine os 3 níveis da fase anterior primeiro!/.test(U("#folha").textContent));}catch(e){t("fase bloqueada: a folha só explica ('Termine os 3 níveis da fase anterior primeiro!'), sem botões de nível  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{U('#folha [aria-label="Fechar"]').click();}catch(e){}
+/* tentativas do dia continuam valendo */
+try{zv("S.tentNivel={dia:hoje(),c:{'a3-posicional:bronze':3}};save();ir('fases')");circ(IDS[0]).click();}catch(e){}
+try{t("folha: sem tentativas no dia o nível mostra 'volte amanhã' e não abre",/volte amanhã/.test(U("#folha .nv.bronze").textContent)&&(U("#folha .nv.bronze").click(),zv("FS.vista")==="trilha"));}catch(e){t("folha: sem tentativas no dia o nível mostra 'volte amanhã' e não abre  [erro: "+String(e.message).slice(0,60)+"]",false)}
+/* sair da aba fecha a folha */
+try{zv("ir('inicio')");t("trocar de aba fecha a folha",!U("#folha"));}catch(e){}
+/* anos */
+zerar();
+try{t("ano ainda não liberado pelo responsável: zona cinza com 🔒 e a frase de liberação",Q(".zona").filter(e=>e.dataset.ano!=="3").every(e=>e.classList.contains("bloq")&&/🔒/.test(e.querySelector("h2").textContent)&&/Libera quando o ano escolar for/.test(e.textContent))&&!U('.zona[data-ano="3"]').classList.contains("bloq"));}catch(e){t("ano ainda não liberado pelo responsável: zona cinza com 🔒 e a frase de liberação  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("S.cfg.anoEscolar=4;save();ir('fases')");}catch(e){}
+try{t("ano liberado sem fases prontas: mostra 'chegam nos próximos lotes' e não fica cinza",!U('.zona[data-ano="4"]').classList.contains("bloq")&&/chegam nos próximos lotes/.test(U('.zona[data-ano="4"]').textContent));}catch(e){t("ano liberado sem fases prontas: mostra 'chegam nos próximos lotes' e não fica cinza  [erro: "+String(e.message).slice(0,60)+"]",false)}
+/* portal do lendário */
+zerar();
+try{t("portal: cada zona tem o lendário em silhueta (imagem do Pokémon do ano) e a frase 'Conclua todas as fases'",Object.entries(esperado).every(([a,[n,id]])=>{const p=U('.zona[data-ano="'+a+'"] .portal');return !!p&&p.querySelector("img.sil")&&p.dataset.lendario===String(id)&&/Conclua todas as fases/.test(p.textContent)&&p.textContent.includes(n)&&p.dataset.completo==="0"}));}catch(e){t("portal: cada zona tem o lendário em silhueta (imagem do Pokémon do ano) e a frase 'Conclua todas as fases'  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("S.fases=Object.fromEntries(fasesDoAno(3).map(f=>[f.id,{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}]));save();ir('fases')");}catch(e){}
+try{t("portal: com as 6 fases prontas feitas, mas ainda com fases 'em breve' no 3º ano, o portal NÃO está completo",U('.zona[data-ano="3"] .portal').dataset.completo==="0")}catch(e){t("portal em breve  [erro]",false)}
+try{zv("EM_BREVE[3]=[];ir('fases')")}catch(e){}
+try{t("portal: com todas as fases do ano concluídas marca o portal como completo (✅); a entrega do lendário fica para a Etapa 7",U('.zona[data-ano="3"] .portal').dataset.completo==="1"&&/✅/.test(U('.zona[data-ano="3"] .portal').textContent)&&U('.zona[data-ano="4"] .portal').dataset.completo==="0");}catch(e){t("portal: com todas as fases do ano concluídas marca o portal como completo (✅); a entrega do lendário fica para a Etapa 7  [erro: "+String(e.message).slice(0,60)+"]",false)}
+/* acessibilidade e movimento */
+zerar();
+try{t("círculos: cada um é um botão com rótulo (título + situação) e alvo de toque de pelo menos 56px",Q("button.circulo[data-fase]").every(b=>/,/.test(b.getAttribute("aria-label")||"")&&b.getAttribute("aria-label").includes(zv(`FASES.find(f=>f.id==='${b.dataset.fase}').titulo`)))&&/\.circulo\{[^}]*(width|min-width):(5[6-9]|[6-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"")));}catch(e){t("círculos: cada um é um botão com rótulo (título + situação) e alvo de toque de pelo menos 56px  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha",/body\.reduzir[^{]*\{[^}]*animation:none/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/prefers-reduced-motion/.test(lerArq("css/trilha.css")));}catch(e){t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+/* arquivos */
+try{t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)",/css\/trilha\.css/.test(lerArq("index.html"))&&lerArq("index.html").indexOf("js/conteudo/zonas.js")>0&&lerArq("index.html").indexOf("js/conteudo/zonas.js")<lerArq("index.html").indexOf("js/ui/trilha_visual.js")&&lerArq("index.html").indexOf("js/ui/trilha_visual.js")<lerArq("index.html").indexOf("js/legado/jogo.js"));}catch(e){t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v12 e os 3 arquivos novos na lista",/const V="pokemath-v12"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)",/function estadoNivel/.test(lerArq("js/motor/trilha.js"))&&/function abrirNivel/.test(lerArq("js/motor/trilha.js"))&&/restantesNivel/.test(lerArq("js/motor/trilha.js")));}catch(e){t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+z.w.close();
+}
+
+// ================= ZONA ILUSTRADA DO 3º ANO (Ninho de Fogo): fundo com a imagem da joyce, círculos sobre a trilha de tijolos =================
+{
+const z=await sessao(),zd=z.w.document,zv=x=>{try{return z.ev(x)}catch(e){return undefined}},U=x=>zd.querySelector(x),Q=x=>[...zd.querySelectorAll(x)];
+zv("S.fases={};S.tentNivel=null;S.cfg.anoEscolar=3;save();ir('fases')");
+const P=zv("ZONAS[3].pontos")||[],F=zv("ZONAS[3].fundo");
+const arq="img/zonas/ano3.webp",W=360,H=360*1732/800;
+try{t("imagem: ZONAS[3].fundo aponta para img/zonas/ano3.webp e o arquivo existe, é WebP e leve (menos de 400 KB)",F===arq&&fs.existsSync(path.join(DIR,arq))&&(b=>b.slice(0,4).toString()==="RIFF"&&b.slice(8,12).toString()==="WEBP"&&b.length<400*1024)(fs.readFileSync(path.join(DIR,arq))))}catch(e){t("imagem do ano 3  [erro: "+String(e.message).slice(0,50)+"]",false)}
+try{t("pontos: há pelo menos 14 (6 fases + 8 'em breve'), todos dentro da imagem (3% a 97%)",P.length>=14&&P.every(p=>p[0]>=3&&p[0]<=97&&p[1]>=3&&p[1]<=97),P.length);}catch(e){t("pontos: há pelo menos 14 (6 fases + 8 'em breve'), todos dentro da imagem (3% a 97%)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("pontos: nenhum par de círculos se encosta (distância mínima de 50px numa tela de 360px de largura)",P.length>=14&&P.every((a,i)=>P.every((b,j)=>j<=i||Math.hypot((a[0]-b[0])*W/100,(a[1]-b[1])*H/100)>=50)));}catch(e){t("pontos: nenhum par de círculos se encosta (distância mínima de 50px numa tela de 360px de largura)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("pontos: a trilha SOBE — o primeiro ponto é o mais baixo da imagem e o último o mais alto",P.length>=14&&P[0][1]===Math.max(...P.map(p=>p[1]))&&P[13][1]<=Math.min(...P.slice(0,13).map(p=>p[1]))+12);}catch(e){t("pontos: a trilha SOBE — o primeiro ponto é o mais baixo da imagem e o último o mais alto  [erro: "+String(e.message).slice(0,60)+"]",false)}
+const zi=U('.zona[data-ano="3"]');
+try{t("zona do 3º ano é ilustrada: tem a classe 'ilus' e usa a imagem como fundo",!!zi&&zi.classList.contains("ilus")&&/ano3\.webp/.test(zi.getAttribute("style")||""),zi&&zi.getAttribute("style"));}catch(e){t("zona do 3º ano é ilustrada: tem a classe 'ilus' e usa a imagem como fundo  [erro: "+String(e.message).slice(0,60)+"]",false)}
+const nos=Q('.zona[data-ano="3"].ilus li.no');
+try{t("zona ilustrada: as 14 posições (6 fases + 8 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)",nos.length===14&&nos.every((n,i)=>P[i]&&n.style.left===P[i][0]+"%"&&n.style.top===P[i][1]+"%"),nos.map(n=>n.style.left+","+n.style.top).slice(0,2).join(" | "));}catch(e){t("zona ilustrada: as 14 posições (6 fases + 8 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 6ª mais acima",nos.length===14&&parseFloat(nos[0].style.top)>parseFloat(nos[5].style.top)&&nos[0].querySelector('button.circulo[data-fase]')&&nos[0].querySelector("button").dataset.fase===zv("fasesDoAno(3)[0].id"));}catch(e){t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 6ª mais acima  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: cada fase tem seu nome numa etiqueta escura (.tit) ao lado do círculo",nos.length===14&&nos.slice(0,6).every(n=>!!n.querySelector(".tit"))&&nos.every((n,i)=>n.classList.contains(P[i][0]>50?"esq":"dir")));}catch(e){t("zona ilustrada: cada nome fica numa etiqueta escura (.tit) do lado de fora da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: os 8 'em breve' são só cadeados (sem etiqueta, para não cobrir a trilha) e continuam com o nome no rótulo de acessibilidade e no title",nos.length===14&&nos.slice(6).every(n=>!n.querySelector(".tit")&&!!n.querySelector("button.circulo.embreve[disabled]")&&/em breve/.test(n.querySelector("button").getAttribute("aria-label"))&&!!n.querySelector("button").getAttribute("title")))}catch(e){t("em breve sem etiqueta  [erro]",false)}
+try{t("zona ilustrada: o portal do Pyron aparece perto do vulcão (parte alta) com a silhueta",!!U('.zona[data-ano="3"].ilus .portal img.sil')&&U('.zona[data-ano="3"] .portal').dataset.lendario==="900003");}catch(e){t("zona ilustrada: o portal do Pyron aparece perto do vulcão (parte alta) com a silhueta  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("os outros anos continuam com o degradê (sem 'ilus') até chegarem as imagens",Q(".zona").filter(e=>e.dataset.ano!=="3").every(e=>!e.classList.contains("ilus")));}catch(e){t("os outros anos continuam com o degradê (sem 'ilus') até chegarem as imagens  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("os estados e a folha continuam: tocar no círculo da 1ª fase abre a folha com os 3 níveis",(zv("abrirFolhaFase(fasesDoAno(3)[0].id)"),Q("#folha .nv").length===3));}catch(e){t("os estados e a folha continuam: tocar no círculo da 1ª fase abre a folha com os 3 níveis  [erro: "+String(e.message).slice(0,60)+"]",false)}
+zv("fecharFolha()");
+/* abrir a aba rola até a fase atual */
+const vistos=[];z.w.Element.prototype.scrollIntoView=function(){vistos.push(this)};
+zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");
+try{t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)",typeof zv("rolarTrilha")==="string"||zv("typeof rolarTrilha")==="function"?(zv("rolarTrilha()"),vistos.length>0&&vistos[vistos.length-1].dataset&&vistos[vistos.length-1].dataset.fase===zv("fasesDoAno(3)[1].id")):false,vistos.length);}catch(e){t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px",/\.zona\.ilus\{[^}]*aspect-ratio:800\/1732/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/\.ilus\.circulo\{[^}]*width:(4[4-9]|[5-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"").replace(/\.zona\.ilus\.circulo/g,".ilus.circulo")));}catch(e){t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v12 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v12"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
+z.w.close();
+}
+
+// ================= FOLHA DOS NÍVEIS NO ESTILO "LAJE DE PEDRA COM 3 MEDALHAS", NO MEIO DA TELA =================
+{
+const z=await sessao(),zd=z.w.document,zv=x=>{try{return z.ev(x)}catch(e){return undefined}},U=x=>zd.querySelector(x),Q=x=>[...zd.querySelectorAll(x)];
+const css=lerArq("css/trilha.css").replace(/\s+/g,"");
+const IDS=zv("fasesDoAno(3).map(f=>f.id)");
+try{zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:false,falhou:true,vezes:1}},viu:true}};S.tentNivel=null;S.cfg.anoEscolar=3;save();ir('fases');abrirFolhaFase('"+IDS[0]+"')");}catch(e){}
+try{t("laje: a folha tem a laje de pedra (.laje) com as 3 medalhas dentro, na ordem Bronze, Prata, Ouro",!!U("#folha .laje")&&Q("#folha .laje .nv").map(e=>e.classList[1]).join()==="bronze,prata,ouro");}catch(e){t("laje: a folha tem a laje de pedra (.laje) com as 3 medalhas dentro, na ordem Bronze, Prata, Ouro  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("laje: cada medalha é um desenho (svg .medal) metálico, sem emoji de medalha",Q("#folha .laje .nv").every(b=>!!b.querySelector("svg.medal"))&&!/[🥉🥈🥇]/.test(U("#folha .laje").innerHTML));}catch(e){t("laje: cada medalha é um desenho (svg .medal) metálico, sem emoji de medalha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("laje: a pedra tem folhagem nos cantos (pelo menos 4 folhas em svg)",Q("#folha .laje .folhagem").length>=4);}catch(e){t("laje: a pedra tem folhagem nos cantos (pelo menos 4 folhas em svg)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("laje: cada medalha tem rótulo acessível com nome e situação",Q("#folha .laje .nv").map(b=>b.getAttribute("aria-label")).join("|")==="Bronze, concluído|Prata, para refazer|Ouro, bloqueado",Q("#folha .laje .nv").map(b=>b.getAttribute("aria-label")).join("|"));}catch(e){t("laje: cada medalha tem rótulo acessível com nome e situação  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("laje: concluído mostra um selo ✔, bloqueado mostra cadeado e refazer mostra 🔁 (o estado se vê sem ler)",!!U("#folha .nv.bronze .selo.ok")&&!!U("#folha .nv.ouro .selo.trava")&&!!U("#folha .nv.prata .selo.refaz"));}catch(e){t("laje: concluído mostra um selo ✔, bloqueado mostra cadeado e refazer mostra 🔁 (o estado se vê sem ler)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("laje: a situação em texto continua abaixo de cada medalha (Concluído, Refazer, Bloqueado)",/Concluído/.test(U("#folha .nv.bronze").textContent)&&/Refazer/.test(U("#folha .nv.prata").textContent)&&/Bloqueado/.test(U("#folha .nv.ouro").textContent));}catch(e){t("laje: a situação em texto continua abaixo de cada medalha (Concluído, Refazer, Bloqueado)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("laje: cabeçalho com nome da fase, resumo, 📖 e Fechar continuam",/Casas dos números/.test(U("#folha").textContent)&&!!U("#folha .pm-livro")&&!!U('#folha [aria-label="Fechar"]'));}catch(e){t("laje: cabeçalho com nome da fase, resumo, 📖 e Fechar continuam  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("laje: toque na medalha continua chamando abrirNivel (Bronze abre a fase)",(U("#folha .nv.bronze").click(),zv("FS.fase&&FS.fase.id")===IDS[0]&&!U("#folha")));}catch(e){t("laje: toque na medalha continua chamando abrirNivel (Bronze abre a fase)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("voltarTrilha()");}catch(e){}
+try{zv("S.fases={};save();ir('fases');abrirFolhaFase('"+IDS[2]+"')");}catch(e){}
+try{t("laje: fase bloqueada mostra a laje com 3 medalhas cinza (sem botões de nível) e o aviso",!!U("#folha .laje")&&Q("#folha .laje .medal.trava").length===3&&Q("#folha .nv").length===0&&/Termine os 3 níveis da fase anterior primeiro!/.test(U("#folha").textContent));}catch(e){t("laje: fase bloqueada mostra a laje com 3 medalhas cinza (sem botões de nível) e o aviso  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("fecharFolha()");}catch(e){}
+try{t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo",/\.folhaFundo\{[^}]*align-items:center/.test(css)&&!/\.folhaFundo\{[^}]*flex-end/.test(css)&&!/\.folha\{[^}]*border-radius:20px20px00/.test(css));}catch(e){t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)",/\.laje\.nv(\.refazer)?\{[^}]*width:(7[2-9]|[89]\d|1\d\d)px/.test(css.replace(/\.folha\.laje/g,".laje")));}catch(e){t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("movimento: 'reduzir movimento' desliga o brilho das medalhas",/body\.reduzir[^{]*\.nv[^{]*\{[^}]*animation:none/.test(css));}catch(e){t("movimento: 'reduzir movimento' desliga o brilho das medalhas  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v12",/const V="pokemath-v12"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v12  [erro: "+String(e.message).slice(0,60)+"]",false)}
+z.w.close();
+}
 t("nenhum erro de script durante todos os testes",erros.length===0,erros.join(" | "));
 console.log(`\nPASSARAM: ${ok}   FALHARAM: ${bad.length}`);bad.forEach(b=>console.log(" ✗ "+b));process.exit(0);
 })().catch(e=>{console.error("ERRO NO TESTE:",e);process.exit(1)});

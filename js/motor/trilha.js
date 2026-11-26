@@ -38,16 +38,18 @@ function registroFase(f){
 }
 
 function fases(){
+  if(typeof fecharFolha==="function")fecharFolha();             // a folha dos níveis nunca fica aberta por cima de outra tela
   if(FS.vista==="explica")return htmlExplica();
   if(FS.vista==="exerc")return htmlExerc();
   if(FS.vista==="fim")return htmlFim();
   return htmlTrilha();
 }
 function posFases(){
+  if(FS.vista==="trilha"&&typeof rolarTrilha==="function")rolarTrilha();
   if(FS.vista==="explica")mostrarPasso();
   if(FS.vista==="exerc"){const i=$("#resp");if(i)i.focus();carregarFalaSessao()}
 }
-function sairFases(){pararAnimacoes()}
+function sairFases(){pararAnimacoes();if(typeof fecharFolha==="function")fecharFolha()}
 function voltarTrilha(){pararAnimacoes();FS.vista="trilha";render()}
 
 function cartaoFase(f){
@@ -57,8 +59,12 @@ function cartaoFase(f){
   <div class="niveis">${NIVEIS.map(n=>{const st=estadoNivel(f,n),rest=restantesNivel(f.id,n);
     return `<button class="nv ${n} ${st}" data-estado="${st}" onclick="abrirNivel('${f.id}','${n}')"><span class="nvi">${ICN[n]}</span><b>${NOME_N[n]}</b><small>${ROT_ESTADO[st]}${st!=="bloqueado"&&rest<=0?" · volte amanhã":""}</small></button>`}).join("")}</div></div>`;
 }
-function htmlTrilha(){
-  let h=`<div class="pyriBox"><div class="pyriAv">🔥</div><div class="balao">Escolha uma fase! Cada fase tem 3 níveis: 🥉 Bronze, 🥈 Prata e 🥇 Ouro. Em cada nível você tem 2 vidas ❤️❤️. Para ir à próxima fase, termine os 3 níveis. Cada nível pode ser tentado ${cfgF("tentativasFaseDia")} vezes por dia.</div></div>`;
+/* introdução (Pyri) da tela de fases */
+function introTrilha(){return `<div class="pyriBox"><div class="pyriAv">🔥</div><div class="balao">Escolha uma fase! Cada fase tem 3 níveis: 🥉 Bronze, 🥈 Prata e 🥇 Ouro. Em cada nível você tem 2 vidas ❤️❤️. Para ir à próxima fase, termine os 3 níveis. Cada nível pode ser tentado ${cfgF("tentativasFaseDia")} vezes por dia.</div></div>`;}
+/* a tela das fases é a trilha por zonas (js/ui/trilha_visual.js); a lista antiga fica só como reserva se esse arquivo não carregar */
+function htmlTrilha(){return typeof htmlTrilhaZonas==="function"?htmlTrilhaZonas():htmlTrilhaLista()}
+function htmlTrilhaLista(){
+  let h=introTrilha();
   for(const a of Object.keys(ANOS).map(Number)){
     const lib=anoLiberado(a),fs=fasesDoAno(a);
     h+=`<h2>${ANOS[a].nome}${lib?"":" 🔒"}</h2>`;

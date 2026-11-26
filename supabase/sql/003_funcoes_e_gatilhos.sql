@@ -19,7 +19,7 @@ begin
     raise exception 'consentimento_obrigatorio' using errcode = 'P0001';
   end if;
   n := nullif(trim(coalesce(new.raw_user_meta_data ->> 'nome', '')), '');
-  insert into public.responsaveis (id, nome, email) values (new.id, coalesce(left(n, 80), 'Responsável'), new.email);
+  insert into public.responsaveis (id, nome, email, status) values (new.id, coalesce(left(n, 80), 'Responsável'), new.email, 'pendente');   -- sempre pendente: aprovação manual
   insert into public.consentimentos (responsavel_id, versao_texto, texto_hash, aceito)
     values (new.id, left(v, 40), left(new.raw_user_meta_data ->> 'consentimento_hash', 128), true);
   return new;
@@ -28,6 +28,33 @@ end $$;
 drop trigger if exists pm_novo_usuario on auth.users;
 create trigger pm_novo_usuario after insert on auth.users
   for each row execute function public.pm_novo_usuario();
+
+-- ---------- Aprovação manual: proteção do status e funções auxiliares ----------
+-- O status só muda pelo painel (papel postgres). Se um dia alguém conceder UPDATE por engano, este gatilho ainda recusa.
+create or replace function public.pm_proteger_status() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if current_user in ('anon', 'authenticated', 'service_role') then
+    raise exception 'status_somente_pelo_painel' using errcode = '42501';
+  end if;
+  new.status_alterado_em := now();
+  return new;
+end $$;
+drop trigger if exists pm_proteger_status on public.responsaveis;
+create trigger pm_proteger_status before update on public.responsaveis
+  for each row when (old.status is distinct from new.status) execute function public.pm_proteger_status();
+
+-- "Quem está logado é um responsável aprovado?"  (usada pelas regras de acesso; só diz sim/não sobre o próprio usuário)
+create or replace function public.pm_sou_responsavel_aprovado() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.responsaveis where id = auth.uid() and status = 'aprovado');
+$$;
+-- "Quem está logado é uma criança cujo responsável está aprovado?"
+create or replace function public.pm_crianca_logada_liberada() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.criancas c join public.responsaveis r on r.id = c.responsavel_id
+                  where c.id = auth.uid() and r.status = 'aprovado');
+$$;
 
 -- ---------- Nova criança: cria a configuração padrão ----------
 create or replace function public.pm_nova_crianca() returns trigger
@@ -95,6 +122,9 @@ language plpgsql security definer set search_path = public, extensions as $$
 declare cod text; tent int := 0;
 begin
   if p_pin is null or p_pin !~ '^\d{4}$' then raise exception 'pin_invalido'; end if;
+  if not exists (select 1 from public.responsaveis where id = p_responsavel and status = 'aprovado') then
+    raise exception 'responsavel_nao_aprovado';
+  end if;
   if (select count(*) from public.criancas where responsavel_id = p_responsavel) >= 10 then
     raise exception 'limite_de_criancas';
   end if;
@@ -150,6 +180,11 @@ begin
   select * into c from public.criancas where codigo = p_codigo and ativo;
   if found then
     if c.avatar = coalesce(p_avatar, '') and p_pin ~ '^\d{4}$' and c.pin_hash = crypt(p_pin, c.pin_hash) then certo := true; end if;
+    -- Responsável pendente ou bloqueado: trata como "dados incorretos" (mesma resposta, mesmo registro de falha,
+    -- sem revelar o motivo). A conferência vem DEPOIS do hash para o tempo de resposta não denunciar nada.
+    if certo and not exists (select 1 from public.responsaveis where id = c.responsavel_id and status = 'aprovado') then
+      certo := false;
+    end if;
   else
     perform crypt(coalesce(p_pin, ''), gen_salt('bf', 10));
   end if;
@@ -181,6 +216,7 @@ declare cod text;
 begin
   if auth.uid() is null then raise exception 'nao_autenticado'; end if;
   if p_pin is null or p_pin !~ '^\d{4}$' then raise exception 'pin_invalido'; end if;
+  if not public.pm_sou_responsavel_aprovado() then return false; end if;
   select codigo into cod from public.criancas where id = p_crianca and responsavel_id = auth.uid();
   if cod is null then return false; end if;
   update public.criancas set pin_hash = crypt(p_pin, gen_salt('bf', 10)) where id = p_crianca;
@@ -194,6 +230,9 @@ language plpgsql security invoker set search_path = public as $$
 declare uid uuid := auth.uid(); nv bigint;
 begin
   if uid is null then raise exception 'nao_autenticado'; end if;
+  if not public.pm_crianca_logada_liberada() then
+    return jsonb_build_object('ok', false, 'erro', 'sem_acesso');   -- família pendente/bloqueada: nada é gravado na nuvem
+  end if;
   insert into public.progresso as p (crianca_id, estado, versao, dispositivo)
   values (uid, p_estado, 1, left(p_dispositivo, 60))
   on conflict (crianca_id) do update
@@ -211,6 +250,7 @@ create or replace function public.pm_registrar_consentimento(p_versao text, p_ha
 language plpgsql security invoker set search_path = public as $$
 declare novo bigint;
 begin
+  if not public.pm_sou_responsavel_aprovado() then raise exception 'responsavel_nao_aprovado'; end if;
   insert into public.consentimentos (responsavel_id, versao_texto, texto_hash, aceito)
   values (auth.uid(), left(p_versao, 40), left(p_hash, 128), p_aceito) returning id into novo;
   return novo;
