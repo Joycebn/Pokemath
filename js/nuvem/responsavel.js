@@ -2,7 +2,7 @@
 (function(){
   const app=document.getElementById("app"),C=PM_CONFIG,KR="pm-resp";
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const V={modo:"entrar",msg:"",ok:"",criancas:[],progresso:{},config:{},ajustando:null,editando:null,pinPara:null,novo:{avatar:"a1"},codigoNovo:null,termos:"",consents:[],ocupado:false,status:null,eu:null,
+  const V={modo:"entrar",msg:"",ok:"",criancas:[],progresso:{},config:{},ajustando:null,editando:null,pinPara:null,novo:{avatar:"a1"},codigoNovo:null,termos:"",consents:[],ocupado:false,status:null,eu:null,aceite:null,
     passo:1,rasc:null,aut:null,chk:{perfil:false,acomp:false},verDoc:false};   // cadastro de criança em 2 passos: rasc = dados do passo 1 (só na memória), aut = texto das autorizações
   const sessao=()=>PM.ler(KR);
 
@@ -14,7 +14,7 @@
     if(r.rede)return s.expira>Date.now()?s.access:null;
     PM.apagar(KR);return null;
   }
-  const guardar=(d,email)=>PM.gravar(KR,{access:d.access_token,refresh:d.refresh_token,expira:(d.expires_at||0)*1000,email,id:d.user&&d.user.id,nome:d.user&&d.user.user_metadata&&d.user.user_metadata.nome});
+  const guardar=(d,email)=>(V.aceite=null,PM.gravar(KR,{access:d.access_token,refresh:d.refresh_token,expira:(d.expires_at||0)*1000,email,id:d.user&&d.user.id,nome:d.user&&d.user.user_metadata&&d.user.user_metadata.nome}));
   async function sha256(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
   const dizer=(m,ok)=>{V.msg=ok?"":m;V.ok=ok||"";desenhar()};
 
@@ -22,7 +22,9 @@
   function desenhar(){
     const aviso=(V.msg?`<div class="erro" role="alert">${esc(V.msg)}</div>`:"")+(V.ok?`<div class="bom" role="status">${esc(V.ok)}</div>`:"");
     if(!sessao()){app.innerHTML=telaEntrada(aviso);ligarEntrada();return}
-    if(V.status==="aprovado"){app.innerHTML=telaPainel(aviso);ligarPainel();return}
+    if(V.status==="aprovado"&&V.aceite===true){app.innerHTML=telaPainel(aviso);ligarPainel();return}
+    if(V.status==="aprovado"&&V.aceite===false){app.innerHTML=telaAceite(aviso);ligarAceite();return}   // conta aprovada, mas o último aceite não é o da versão atual dos termos
+    if(V.status==="aprovado"){app.innerHTML=telaConferir(aviso);ligarEspera();return}               // aceite ainda não conferido (ou a conferência falhou): nada de criança aparece
     app.innerHTML=telaEspera(aviso);ligarEspera();                  // pendente, bloqueado ou ainda conferindo: nenhum dado de criança é pedido nem mostrado
   }
   function telaEntrada(aviso){
@@ -75,6 +77,52 @@
 
   /* ---------- aprovação manual ---------- */
   const dataBR=d=>d?new Date(d).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—";
+  /* ---------- aceite obrigatório da versão atual dos termos (C.termos) ---------- */
+  function telaConferir(aviso){
+    return `<div class="caixa"><h1>Área do responsável</h1><p>Conferindo o seu cadastro…</p>${aviso}
+    <button class="grande" id="ver">Verificar de novo</button> <button class="sec" id="sair">Sair</button></div>`;
+  }
+  function telaAceite(aviso){
+    const ok=!!V.termos&&!V.termos.startsWith("Não consegui");
+    return `<div class="caixa"><h1>Termos atualizados</h1>
+    <p>Os termos de uso e o aviso de privacidade foram atualizados (versão ${esc(C.termos.versao)}). Para continuar usando a área do responsável, leia o texto completo e aceite. Enquanto isso, nenhum dado das crianças é mostrado.</p>
+    <div class="termos" tabindex="0" id="termos">${esc(V.termos||"Carregando…")}</div>
+    <label class="chk"><input type="checkbox" id="ac-chk"> <span>Li e concordo com os termos e o aviso de privacidade (versão ${esc(C.termos.versao)}).</span></label>${aviso}
+    <button class="grande" id="ac-ok" disabled>Aceitar e continuar</button> ${ok?"":`<button class="sec" id="ac-recarregar">Carregar o texto de novo</button> `}<button class="sec" id="sair">Sair</button><br>
+    <button class="sec perigo" id="exc-conta" style="margin-top:10px">Excluir minha conta e meus dados</button></div>`;
+  }
+  function ligarAceite(){
+    ligarEspera();
+    const chk=document.getElementById("ac-chk"),ok=document.getElementById("ac-ok"),rec=document.getElementById("ac-recarregar");
+    const pode=()=>!V.ocupado&&chk.checked&&!!V.termos&&!V.termos.startsWith("Não consegui");
+    chk.onchange=()=>{ok.disabled=!pode()};
+    if(rec)rec.onclick=async()=>{await carregarTermos();desenhar()};
+    ok.onclick=()=>{if(pode())aceitar()};
+  }
+  /* grava UMA linha nova em consentimentos (INSERT pelo caminho que a política cons_criar já permite para responsável aprovado).
+     Nunca altera nem apaga registros antigos. O hash é o do texto exatamente como foi carregado e mostrado. */
+  async function aceitar(){
+    if(V.ocupado||!V.termos||V.termos.startsWith("Não consegui"))return;
+    const t=await token();if(!t)return desenhar();
+    const s=sessao()||{};let id=s.id;
+    if(!id){try{id=JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))).sub}catch{}}
+    if(!id)return dizer("Não consegui registrar o seu aceite agora. Saia e entre de novo.");
+    V.ocupado=true;
+    const hash=await sha256(V.termos);
+    const r=await PM.http("/rest/v1/consentimentos",{metodo:"POST",token:t,cabecalhos:{Prefer:"return=minimal"},corpo:{responsavel_id:id,versao_texto:C.termos.versao,texto_hash:hash,aceito:true}});
+    V.ocupado=false;
+    if(!r.ok)return dizer("Não consegui registrar o seu aceite agora. Tente de novo em instantes.");
+    V.msg=V.ok="";await abrirPainel();                      // relê o aceite no servidor: só libera se ele mesmo confirmar a versão atual
+  }
+  /* Confere o ÚLTIMO aceite: só vale se for aceito=true e da versão atual. Devolve true/false, ou null se não deu para conferir. */
+  async function carregarAceite(t){
+    const r=await PM.rest("consentimentos","select=versao_texto,texto_hash,aceito,aceito_em&order=aceito_em.desc&limit=1",t);
+    if(r.rede||!r.ok||!Array.isArray(r.dados)){V.falha=PM.motivo(r);V.aceite=null;return null}
+    const u=r.dados[0];V.aceite=!!(u&&u.aceito===true&&u.versao_texto===C.termos.versao);
+    return V.aceite;
+  }
+  async function pedirAceite(){limpar();if(!V.termos||V.termos.startsWith("Não consegui"))await carregarTermos();desenhar()}
+
   function telaEspera(aviso){
     const s=sessao()||{},eu=V.eu||{},nome=eu.nome||s.nome||s.email||"";
     if(V.status===null)return `<div class="caixa"><h1>Área do responsável</h1><p>Conferindo o seu cadastro…</p>${aviso}</div>`;
@@ -91,7 +139,7 @@
     const s=document.getElementById("sair");if(s)s.onclick=sairConta;
     const e=document.getElementById("exc-conta");if(e)e.onclick=excluirConta;
   }
-  async function sairConta(){const t=await token();if(t)PM.auth.sair(t);PM.apagar(KR);limpar();V.status=null;V.eu=null;V.msg=V.ok="";desenhar()}
+  async function sairConta(){const t=await token();if(t)PM.auth.sair(t);PM.apagar(KR);limpar();V.status=null;V.eu=null;V.aceite=null;V.msg=V.ok="";desenhar()}
   const limpar=()=>{V.passo=1;V.rasc=null;V.aut=null;V.chk={perfil:false,acomp:false};V.verDoc=false;V.criancas=[];V.progresso={};V.config={};V.consents=[];V.ajustando=null;V.editando=null;V.pinPara=null;V.codigoNovo=null};
   /* lê SÓ a própria linha (nome, status, data). Devolve o status, ou null se a chamada falhou (o motivo fica em V.falha). */
   async function carregarStatus(t){
@@ -107,6 +155,9 @@
     const st=await carregarStatus(t);
     if(st===null){dizer(V.falha);return null}
     if(st!=="aprovado"){limpar();desenhar();return null}
+    const ac=await carregarAceite(t);
+    if(ac===null){limpar();dizer(V.falha);return null}              // não deu para conferir o aceite: bloqueia
+    if(!ac){await pedirAceite();return null}                       // termos novos ainda não aceitos: volta para a tela de aceite
     return t;
   }
 
@@ -187,6 +238,9 @@
     const st=await carregarStatus(t);
     if(st===null){dizer(V.falha);return}
     if(st!=="aprovado"){limpar();desenhar();return}          // pendente/bloqueado: não pede nenhum dado de criança
+    const ac=await carregarAceite(t);                         // aceite da versão atual dos termos: ANTES de qualquer leitura de criança/progresso/configuração
+    if(ac===null){limpar();dizer(V.falha);return}
+    if(!ac){await pedirAceite();return}
     const [a,p,k,c]=await Promise.all([
       PM.rest("criancas","select=id,apelido,ano_escolar,idade,avatar,codigo,ativo,ultimo_acesso&order=criado_em",t),
       PM.rest("progresso","select=crianca_id,moedas,pokemon_total,ofensiva_atual,atualizado_em",t),
@@ -358,7 +412,7 @@
     if(dig===null)return;if(dig.trim()!=="EXCLUIR")return dizer("Nada foi apagado.");
     const t=await token();if(!t)return desenhar();
     const r=await PM.funcao("gerenciar-crianca",{acao:"excluir_conta"},t);
-    if(!r.ok)return dizer("Não consegui excluir agora.");PM.apagar(KR);limpar();V.status=null;V.eu=null;dizer("","Sua conta e os dados foram excluídos.");
+    if(!r.ok)return dizer("Não consegui excluir agora.");PM.apagar(KR);limpar();V.status=null;V.eu=null;V.aceite=null;dizer("","Sua conta e os dados foram excluídos.");
   }
 
   if(sessao()){desenhar();abrirPainel()}else desenhar();
