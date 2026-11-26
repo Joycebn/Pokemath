@@ -27,3 +27,9 @@
 /* botão "Cadastrar criança" do passo das autorizações: desabilitado fica CLARAMENTE cinza (só a caixa 1 o habilita) */
 #aut-ok:disabled{background:#59607a;border-bottom-color:#3c4258;color:#cdd3e6;opacity:1;cursor:not-allowed}
 #aut-ajuda{font-size:.9rem;margin:10px 0 0}
+
+/* campos de PIN com olho (área do responsável) */
+.campo-pin{margin-top:8px}.campo-pin label{display:block;font-size:.9rem}
+.pinbox{display:flex;align-items:stretch;gap:6px}.pinbox input{flex:1;min-width:0}
+.olho{flex:none;min-width:44px;font-size:1.2rem;line-height:1;padding:0 10px;background:#2c3350;border:2px solid #59607a;border-radius:10px;color:#fff;cursor:pointer}
+.olho[aria-pressed="true"]{background:#3a62c9;border-color:#8fb0ff}

@@ -2,7 +2,7 @@
 (function(){
   const app=document.getElementById("app"),C=PM_CONFIG,KR="pm-resp";
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const V={modo:"entrar",msg:"",ok:"",criancas:[],progresso:{},config:{},ajustando:null,novo:{avatar:"a1"},codigoNovo:null,termos:"",consents:[],ocupado:false,status:null,eu:null,
+  const V={modo:"entrar",msg:"",ok:"",criancas:[],progresso:{},config:{},ajustando:null,editando:null,pinPara:null,novo:{avatar:"a1"},codigoNovo:null,termos:"",consents:[],ocupado:false,status:null,eu:null,
     passo:1,rasc:null,aut:null,chk:{perfil:false,acomp:false},verDoc:false};   // cadastro de criança em 2 passos: rasc = dados do passo 1 (só na memória), aut = texto das autorizações
   const sessao=()=>PM.ler(KR);
 
@@ -92,7 +92,7 @@
     const e=document.getElementById("exc-conta");if(e)e.onclick=excluirConta;
   }
   async function sairConta(){const t=await token();if(t)PM.auth.sair(t);PM.apagar(KR);limpar();V.status=null;V.eu=null;V.msg=V.ok="";desenhar()}
-  const limpar=()=>{V.passo=1;V.rasc=null;V.aut=null;V.chk={perfil:false,acomp:false};V.verDoc=false;V.criancas=[];V.progresso={};V.config={};V.consents=[];V.ajustando=null;V.codigoNovo=null};
+  const limpar=()=>{V.passo=1;V.rasc=null;V.aut=null;V.chk={perfil:false,acomp:false};V.verDoc=false;V.criancas=[];V.progresso={};V.config={};V.consents=[];V.ajustando=null;V.editando=null;V.pinPara=null;V.codigoNovo=null};
   /* lê SÓ a própria linha (nome, status, data). Devolve o status, ou null se a chamada falhou (o motivo fica em V.falha). */
   async function carregarStatus(t){
     const r=await PM.rest("responsaveis","select=nome,status,criado_em",t);
@@ -110,27 +110,51 @@
     return t;
   }
 
+  /* Campo de PIN com olho: nasce oculto (type=password) a cada desenho da tela; o olho só troca password/text na tela do responsável.
+     O valor digitado nunca vai para localStorage nem para o console. (A tela de entrada da criança, entrar.js, não usa isto.) */
+  const campoPin=(id,nome,rotulo)=>`<div class="campo-pin"><label for="${id}">${rotulo}</label><span class="pinbox"><input id="${id}" name="${nome}" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autocomplete="off"><button type="button" class="olho" data-olho="${id}" aria-pressed="false" aria-label="Mostrar a senha" title="Mostrar a senha">👁</button></span></div>`;
+  function ligarOlhos(){
+    app.querySelectorAll("[data-olho]").forEach(b=>b.onclick=()=>{
+      const inp=document.getElementById(b.dataset.olho);if(!inp)return;
+      const ver=inp.type==="password";inp.type=ver?"text":"password";
+      b.setAttribute("aria-pressed",String(ver));b.setAttribute("aria-label",ver?"Ocultar a senha":"Mostrar a senha");b.title=ver?"Ocultar a senha":"Mostrar a senha";
+    });
+  }
+
   function telaPainel(aviso){
     const s=sessao();
     const cards=V.criancas.map(c=>{const p=V.progresso[c.id]||{},a=PM_AVATARES.find(x=>x.k===c.avatar)||PM_AVATARES[0];
       return `<div class="crianca"><div class="av">${PM_avatarHtml(a)}</div><div class="dados"><b>${esc(c.apelido)}</b> · ${c.ano_escolar}º ano · ${c.idade} anos<br>
       Código: <b class="codigo">${esc(c.codigo)}</b><br><small>🪙 ${p.moedas??0} · 🎒 ${p.pokemon_total??0} Pokémon · 🔥 ${p.ofensiva_atual??0} dia(s) · último acesso: ${c.ultimo_acesso?new Date(c.ultimo_acesso).toLocaleDateString("pt-BR"):"nunca"}</small>
-      <div class="acoes"><button data-a="ajustes" data-id="${c.id}">⚙ Ajustes</button><button data-a="pin" data-id="${c.id}">🔑 Novo PIN</button><button data-a="dados" data-id="${c.id}">⬇ Dados</button><button class="perigo" data-a="excluir" data-id="${c.id}">Excluir</button></div></div></div>`}).join("");
+      <div class="acoes"><button data-a="editar" data-id="${c.id}">✏ Editar</button><button data-a="ajustes" data-id="${c.id}">⚙ Ajustes</button><button data-a="pin" data-id="${c.id}">🔑 Novo PIN</button><button data-a="dados" data-id="${c.id}">⬇ Dados</button><button class="perigo" data-a="excluir" data-id="${c.id}">Excluir</button></div></div></div>`}).join("");
     const av=PM_AVATARES.map(a=>`<button type="button" aria-pressed="${V.novo.avatar===a.k}" aria-label="${a.nome}" data-av="${a.k}">${PM_avatarHtml(a)}</button>`).join("");
     return `<div class="caixa"><h1>Olá, ${esc(s.nome||s.email||"")}</h1><button class="sec" id="sair">Sair</button> <a class="link" href="entrar.html" style="color:#cfe3ff">Entrada da criança</a></div>${V.passo===2?"":aviso}
     ${V.codigoNovo?`<div class="bom"><b>Criança cadastrada!</b> Anote e guarde:<br>Código: <b class="codigo" style="font-size:1.6rem;letter-spacing:.2em">${esc(V.codigoNovo.codigo)}</b><br>Figura: ${esc((PM_AVATARES.find(x=>x.k===V.codigoNovo.avatar)||{}).nome||"")} · Senha: a que você digitou (não aparece de novo).</div>`:""}
     <h2>Minhas crianças</h2>${cards||"<p>Nenhuma criança ainda. Cadastre abaixo.</p>"}
-    ${V.ajustando?telaAjustes():""}
+    ${V.ajustando?telaAjustes():""}${V.editando?telaEditar():""}${V.pinPara?telaNovoPin():""}
     ${V.passo===2?telaAutorizacoes(aviso):`<div class="caixa"><h2 style="margin-top:0">Cadastrar criança</h2><form id="nc">
       <label>Apelido (use um nome inventado, sem sobrenome)<input name="apelido" required maxlength="30"></label>
       <div class="grade2"><label>Ano escolar<select name="ano">${[3,4,5,6,7,8,9].map(a=>`<option value="${a}" ${a===6?"selected":""}>${a}º ano</option>`).join("")}</select></label>
       <label>Idade<input name="idade" type="number" min="5" max="18" value="11" required></label></div>
       <p>Figura da criança</p><div class="avs">${av}</div>
-      <div class="grade2"><label>Senha de 4 números<input name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autocomplete="off"></label>
-      <label>Repita a senha<input name="pin2" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autocomplete="off"></label></div>
+      <div class="grade2">${campoPin("cad-pin","pin","Senha de 4 números")}${campoPin("cad-pin2","pin2","Repita a senha")}</div>
       <button class="grande" ${V.ocupado?"disabled":""}>Continuar</button></form></div>`}
     <div class="caixa"><h2 style="margin-top:0">Meus consentimentos</h2>${V.consents.map(c=>`<p>${new Date(c.aceito_em).toLocaleString("pt-BR")} · versão ${esc(c.versao_texto)} · ${c.aceito?"aceito":"revogado"}</p>`).join("")||"<p>—</p>"}
       <button class="sec perigo" id="exc-conta">Excluir minha conta e todos os dados</button></div>`;
+  }
+  function telaEditar(){
+    const c=V.criancas.find(x=>x.id===V.editando);if(!c)return "";
+    return `<div class="caixa"><h2 style="margin-top:0">Editar ${esc(c.apelido)}</h2>
+    <form id="ed"><label>Apelido (use um nome inventado, sem sobrenome)<input name="apelido" required maxlength="30" value="${esc(c.apelido)}"></label>
+    <div class="grade2"><label>Ano escolar<select name="ano">${[3,4,5,6,7,8,9].map(a=>`<option value="${a}" ${c.ano_escolar===a?"selected":""}>${a}º ano</option>`).join("")}</select></label>
+    <label>Idade<input name="idade" type="number" min="5" max="18" value="${esc(c.idade)}" required></label></div>
+    <p id="ed-avisos" class="aviso">Os anos liberados não mudam ao trocar o ano escolar; ajuste em ⚙ Ajustes se quiser.<br>A criança vê o novo apelido na próxima vez que entrar.</p>
+    <button class="grande" ${V.ocupado?"disabled":""}>Salvar</button> <button type="button" class="sec" id="ed-x">Fechar</button></form></div>`;
+  }
+  function telaNovoPin(){
+    const c=V.criancas.find(x=>x.id===V.pinPara);if(!c)return "";
+    return `<div class="caixa"><h2 style="margin-top:0">Novo PIN de ${esc(c.apelido)}</h2><p>Digite a nova senha de 4 números. As tentativas erradas serão zeradas.</p>
+    <form id="np">${campoPin("np-pin","pin","Nova senha de 4 números")}<button class="grande" ${V.ocupado?"disabled":""}>Salvar novo PIN</button> <button type="button" class="sec" id="np-x">Fechar</button></form></div>`;
   }
   function telaAjustes(){
     const c=V.criancas.find(x=>x.id===V.ajustando),k=V.config[V.ajustando]||{},x=k.extras||{};
@@ -150,6 +174,9 @@
     const nc=document.getElementById("nc");if(nc)nc.onsubmit=e=>{e.preventDefault();continuar(new FormData(e.target))};
     ligarAutorizacoes();
     document.getElementById("exc-conta").onclick=excluirConta;
+    ligarOlhos();
+    const ed=document.getElementById("ed");if(ed){ed.onsubmit=e=>{e.preventDefault();salvarEdicao(new FormData(e.target))};document.getElementById("ed-x").onclick=()=>{V.editando=null;desenhar()}}
+    const np=document.getElementById("np");if(np){np.onsubmit=e=>{e.preventDefault();salvarNovoPin(new FormData(e.target))};document.getElementById("np-x").onclick=()=>{V.pinPara=null;desenhar()}}
     const aj=document.getElementById("aj");if(aj){aj.onsubmit=e=>{e.preventDefault();salvarAjustes(new FormData(e.target))};document.getElementById("aj-x").onclick=()=>{V.ajustando=null;desenhar()}}
   }
   function restaurarRascunho(){const r=V.novo.rascunho;if(!r)return;const f=document.getElementById("nc");for(const [k,v] of Object.entries(r)){if(f.elements[k]&&k!=="avatar")f.elements[k].value=v}}
@@ -267,16 +294,21 @@
   }
   async function acao(a,id){
     const c=V.criancas.find(x=>x.id===id);if(!c)return;const t=await liberado();if(!t)return;
-    if(a==="ajustes"){V.ajustando=id;return desenhar()}
-    if(a==="pin"){
-      const n=prompt("Nova senha de 4 números para "+c.apelido+":");if(n===null)return;
-      if(!/^\d{4}$/.test(n))return dizer("A senha precisa ter exatamente 4 números.");
-      const r=await PM.rpc("pm_redefinir_pin",{p_crianca:id,p_pin:n},t);
-      return r.ok&&r.dados===true?dizer("",`Nova senha de ${c.apelido} salva. As tentativas erradas foram zeradas.`):dizer("Não consegui trocar a senha agora.");
-    }
+    if(a==="ajustes"){V.ajustando=id;V.editando=V.pinPara=null;return desenhar()}
+    if(a==="editar"){V.editando=id;V.ajustando=V.pinPara=null;return desenhar()}
+    if(a==="pin"){V.pinPara=id;V.ajustando=V.editando=null;return desenhar()}
     if(a==="dados"){
-      const [fi,pr,co]=await Promise.all([PM.rest("criancas","select=id,apelido,ano_escolar,idade,avatar,codigo,ativo,criado_em,ultimo_acesso&id=eq."+id,t),PM.rest("progresso","crianca_id=eq."+id,t),PM.rest("configuracoes","crianca_id=eq."+id,t)]);
-      const blob=new Blob([JSON.stringify({exportado_em:new Date().toISOString(),ficha:fi.dados,progresso:pr.dados,configuracoes:co.dados},null,2)],{type:"application/json"});
+      /* cópia dos dados: ficha, progresso e ajustes da criança + dados do responsável e histórico de autorizações
+         (colunas listadas uma a uma: nunca pin_hash, auth_email, tokens nem segredos) */
+      const [fi,pr,co,re,cr,ce]=await Promise.all([
+        PM.rest("criancas","select=id,apelido,ano_escolar,idade,avatar,codigo,ativo,criado_em,ultimo_acesso&id=eq."+id,t),
+        PM.rest("progresso","select=crianca_id,estado,versao,moedas,xp_companheiro,nivel_companheiro,companheiro_id,pokemon_total,ofensiva_atual,ofensiva_maxima,ultimo_dia_estudo,fases,pokemon,criado_em,atualizado_em&crianca_id=eq."+id,t),
+        PM.rest("configuracoes","select=crianca_id,tempo_desafio,tempo_fase,questoes_por_fase,ano_escolar_liberado,tentativas_dia,extras,versao,atualizado_em&crianca_id=eq."+id,t),
+        PM.rest("responsaveis","select=id,nome,email,status,criado_em",t),
+        PM.rest("consentimentos","select=versao_texto,texto_hash,aceito,aceito_em&order=aceito_em.desc",t),
+        PM.rest("consentimentos_estudante","select=tipo,versao_texto,texto_hash,aceito_em,retirado_em&crianca_id=eq."+id+"&order=aceito_em.desc",t)]);
+      if([fi,pr,co,re,cr,ce].some(x=>!x.ok||!Array.isArray(x.dados)))return dizer("Não consegui montar a cópia dos dados agora. Tente de novo.");
+      const blob=new Blob([JSON.stringify({exportado_em:new Date().toISOString(),responsavel:re.dados[0]||null,autorizacoes_do_responsavel:cr.dados,ficha:fi.dados,autorizacoes_do_estudante:ce.dados,progresso:pr.dados,configuracoes:co.dados},null,2)],{type:"application/json"});
       const l=document.createElement("a");l.href=URL.createObjectURL(blob);l.download=`pokemath-${c.apelido}.json`;l.click();setTimeout(()=>URL.revokeObjectURL(l.href),2000);return;
     }
     if(a==="excluir"){
@@ -285,6 +317,30 @@
       const r=await PM.funcao("gerenciar-crianca",{acao:"excluir",crianca_id:id},t);
       if(!r.ok)return dizer("Não consegui excluir agora.");V.ajustando=null;await abrirPainel();dizer("",`${c.apelido} foi excluída.`);
     }
+  }
+  async function salvarEdicao(f){
+    const id=V.editando,c=V.criancas.find(x=>x.id===id);if(!c)return;
+    const apelido=String(f.get("apelido")||"").trim(),ano=+f.get("ano"),idade=+f.get("idade");
+    if(apelido.length<1||apelido.length>30)return dizer("O apelido precisa ter de 1 a 30 caracteres.");
+    if(!Number.isInteger(ano)||ano<3||ano>9)return dizer("O ano escolar precisa ser do 3º ao 9º ano.");
+    if(!Number.isInteger(idade)||idade<5||idade>18)return dizer("A idade precisa ser de 5 a 18 anos.");
+    const t=await liberado();if(!t)return;
+    V.ocupado=true;desenhar();
+    const r=await PM.funcao("gerenciar-crianca",{acao:"editar",crianca_id:id,apelido,ano_escolar:ano,idade},t);
+    V.ocupado=false;
+    const d=(r&&r.dados)||{},erro=typeof d.erro==="string"?d.erro:"";
+    if(r.ok&&d.ok&&d.crianca){Object.assign(c,{apelido:d.crianca.apelido,ano_escolar:d.crianca.ano_escolar,idade:d.crianca.idade});V.editando=null;return dizer("",`Dados de ${c.apelido} salvos. A criança vê o novo apelido na próxima vez que entrar.`)}
+    if(["apelido_invalido","ano_invalido","idade_invalida","nao_encontrada","duplicada","falha_ao_consultar","falha_ao_salvar"].includes(erro)&&typeof d.mensagem==="string")return dizer(d.mensagem);
+    return dizer("Não consegui salvar agora. Tente de novo em instantes.");
+  }
+  async function salvarNovoPin(f){
+    const id=V.pinPara,c=V.criancas.find(x=>x.id===id);if(!c)return;
+    let n=String(f.get("pin")||"");
+    if(!/^\d{4}$/.test(n)){n="";return dizer("A senha precisa ter exatamente 4 números.")}
+    const t=await liberado();if(!t){n="";return}
+    const r=await PM.rpc("pm_redefinir_pin",{p_crianca:id,p_pin:n},t);n="";
+    if(r.ok&&r.dados===true){V.pinPara=null;return dizer("",`Nova senha de ${c.apelido} salva. As tentativas erradas foram zeradas.`)}
+    return dizer("Não consegui trocar a senha agora.");
   }
   async function salvarAjustes(f){
     const t=await liberado();if(!t)return;const id=V.ajustando,antigo=(V.config[id]||{}).extras||{};
