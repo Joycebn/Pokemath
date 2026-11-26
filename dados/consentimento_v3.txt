@@ -1,0 +1,59 @@
+TERMOS DE USO E AVISO DE PRIVACIDADE DO POKEMATH — versão 2026-11-v3
+
+O Pokemath é um aplicativo educativo de matemática para crianças e adolescentes. A participação é opcional. A decisão da família de comprar ou usar o jogo não interfere na participação do estudante nas aulas. Este documento explica quais dados são guardados, para que são usados e quais escolhas você pode fazer ao cadastrar cada estudante.
+
+1. QUAIS DADOS GUARDAMOS
+
+Do responsável, guardamos o nome, o e-mail e o registro da autorização, com data, hora, versão e um código que permite conferir o texto aceito.
+
+Do estudante, guardamos o apelido, o ano escolar, a idade, o código de acesso, a figura escolhida e um registro de verificação do PIN de quatro números. Também guardamos o progresso no jogo, incluindo fases e níveis concluídos, vidas, Pokémon conquistados, moedas, experiência, dias seguidos de estudo e acertos e erros nas contas.
+
+Não pedimos sobrenome, endereço, telefone, foto, escola nem localização do estudante. Recomendamos usar um apelido inventado.
+
+2. PARA QUE USAMOS
+
+Usamos o nome e o e-mail do responsável para confirmar o endereço de e-mail, analisar o cadastro e administrar a conta solicitada. Depois da aprovação, o responsável pode cadastrar cada estudante.
+
+Com a sua autorização, usamos os dados do estudante para criar o perfil, permitir a entrada no jogo, salvar o progresso, continuar a partida em outro aparelho e mostrar a você como o estudante está aprendendo. Guardamos o registro da autorização para comprovar a sua escolha.
+
+O acompanhamento individual pela professora é opcional e depende da segunda autorização ao final deste documento. Não vendemos dados, não mostramos anúncios e não usamos os dados para criar perfis de consumo.
+
+3. QUEM VÊ OS DADOS
+
+Cada estudante vê apenas o próprio progresso. O responsável vê apenas os perfis vinculados à sua conta. Os colegas não veem as respostas uns dos outros.
+
+Joycielle Araujo Oliveira (Novyelle), responsável pelo aplicativo, analisa os cadastros dos adultos. Como professora, ela poderá consultar os acertos, erros e avanços de um estudante para acompanhar sua aprendizagem em matemática somente se o responsável autorizar esse acompanhamento.
+
+4. ONDE FICAM E POR QUANTO TEMPO
+
+O banco de dados fica na região de São Paulo, no serviço de nuvem Supabase. A empresa Supabase Pte. Ltd. (Singapura) e a Supabase, Inc. (Estados Unidos) podem tratar dados para suporte e operação, e outros fornecedores que prestam serviços de hospedagem e monitoramento ao Supabase estão nos Estados Unidos. A lista atualizada está em supabase.com/legal/subprocessors.
+
+As cópias de segurança do banco de dados são mantidas por até 7 dias. Dados excluídos podem permanecer nessas cópias por esse prazo e depois são apagados automaticamente.
+
+O e-mail de confirmação é enviado pelo serviço Brevo, empresa com sede em Paris, França. Os registros de envio, com o endereço do destinatário, ficam guardados por 1 mês e depois são apagados automaticamente. O conteúdo das mensagens não fica armazenado no Brevo.
+
+Uma cópia do progresso fica no aparelho do estudante para o jogo funcionar sem internet.
+
+5. SEUS DIREITOS
+
+O responsável pode consultar os dados, baixar uma cópia, corrigir o apelido, o ano escolar e a idade, trocar o PIN e excluir um perfil ou a conta inteira. Também pode perguntar com quem os dados são compartilhados, pedir sua eliminação ou retirar uma autorização. Para exercer esses direitos gratuitamente, use a área do responsável ou escreva para novyelle.j@gmail.com. Se o pedido não for resolvido, você pode encaminhá-lo à Agência Nacional de Proteção de Dados (ANPD).
+
+Ao excluir um perfil ou a conta, os dados são apagados do banco de dados na hora. As cópias de segurança seguem o prazo da seção 4. A cópia do progresso que ficou no aparelho só é apagada quando os dados do aplicativo são limpos ou o aplicativo é desinstalado. O registro do aceite é apagado junto com o perfil ou com a conta.
+
+Você pode retirar apenas a autorização de acompanhamento pela professora, a qualquer momento, pelo e-mail acima. O estudante poderá continuar jogando com o mesmo perfil e progresso.
+
+6. SEGURANÇA
+
+O PIN do estudante é guardado como um código de verificação chamado hash, sem armazenar os quatro números em texto legível. Há limite de tentativas erradas de entrada, e as regras de acesso ao banco de dados restringem cada família aos perfis da sua conta.
+
+7. MUDANÇAS
+
+Se este texto mudar de forma importante, avisaremos o responsável e destacaremos o que mudou. Se quisermos usar os dados para uma nova finalidade que dependa da sua autorização, pediremos um novo consentimento antes de iniciar esse uso e registraremos a data e a versão aceita.
+
+Para exercer seus direitos ou tirar dúvidas, fale com Joycielle Araujo Oliveira (Novyelle), responsável pelo Pokemath, pelo e-mail novyelle.j@gmail.com.
+
+AUTORIZAÇÕES PARA ESTE ESTUDANTE
+
+☐ Autorização para criar o perfil. Declaro que sou mãe, pai ou responsável legal por este estudante. Autorizo o Pokemath a usar seu apelido, ano escolar, idade, dados de entrada e progresso nos exercícios e no jogo para criar o perfil, permitir o acesso, salvar a partida e mostrar o desempenho na minha área de responsável.
+
+☐ Autorização opcional para acompanhamento pela professora. Autorizo a professora Joycielle Araujo Oliveira a consultar os acertos, erros e avanços deste estudante para acompanhar sua aprendizagem em matemática. Posso deixar esta caixa desmarcada ou retirar esta autorização depois, sem que o estudante perca o acesso ao jogo ou o progresso.
