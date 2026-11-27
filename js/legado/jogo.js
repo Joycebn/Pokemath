@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s), app=$("#app");
-const IMG=id=>id>=PYRI_ID?PYRI_IMG:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const IMG=id=>id===PYRI_ID?PYRI_FOTO:id>=PYRI_ID?PYRI_IMG:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 const POOL={comum:[10,13,16,19,21,41,43,46,52,54,60,66,72,74,79,92,96,116,129,161],
   raro:[1,4,7,25,37,39,58,63,133,143,147,152,155,158],lendario:[144,145,146,150,243,244,245]};
 const ALL=[...POOL.comum,...POOL.raro,...POOL.lendario], INICIAIS=[1,4,7,25,133,152,155,158,252,255,258,387,390,393,495,498,501,650,653,656,722,725,728,810,813,816,906,909,912];
@@ -23,7 +23,7 @@ async function dados(id){try{const j=await(await fetch(`https://pokeapi.co/api/v
 const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
 /* ---------- navegação ---------- */
-function ir(v){if(v!=="fases"&&typeof sairFases==="function")sairFases();if(Q){clearInterval(Q.timer);Q=null}if(v!=="prof")profOk=false;tela=v;render()}
+function ir(v){if(typeof fecharFolha==="function")fecharFolha();if(v!=="fases"&&typeof sairFases==="function")sairFases();if(Q){clearInterval(Q.timer);Q=null}if(v!=="prof")profOk=false;tela=v;render()}
 function render(){
   app.innerHTML=({inicio,fases,estudar,cuidar,loja,dex,prof}[tela])();
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tela));
@@ -49,7 +49,8 @@ function comp(id){S.comp=id;save();ir("inicio")}
 function carinho(){$("#pet").classList.remove("pulo");void $("#pet").offsetWidth;$("#pet").classList.add("pulo");$("#fala").textContent=agrado()}
 
 /* ---------- estudar ---------- */
-function estudar(){
+function estudar(){return htmlTabTrilha()+`<details class="livre"><summary>🎯 Livre: aprender, treinar e desafio</summary>${estudarLivre()}</details>`}
+function estudarLivre(){
   const o=Array.from({length:S.cfg.max},(_,i)=>`<option value="${i+1}">Tabuada do ${i+1}</option>`).join("");
   return `<h2>Aprender</h2><div class="info"><select id="ta" onchange="aprender()">${o}</select><div id="apr"></div></div>
   <h2>Treinar, sem pressa</h2><div class="info"><select id="tt"><option value="0">Mistura (mais as contas difíceis)</option>${o}</select><button class="sec" onclick="iniciar('treino',+$('#tt').value)">Começar treino</button></div>

@@ -1,6 +1,7 @@
 /* Pyri: primeira forma da família Pyron. É o guia do jogo E o companheiro inicial (não há escolha de Pokémon inicial).
    Aqui ficam: o companheiro inicial, o tutorial (nome grande + entrada do Pyri falando) e o botão “Pyri, me explica”. */
 const PYRI_ID=900001,PYRELIS_ID=900002,PYRON_ID=900003;      // ids próprios (a PokéAPI só vai até 1025)
+const PYRI_FOTO="img/pokemon/pyri.webp";   // figura 2D do Pyri (a 3D vem depois)
 const PYRI_IMG="data:image/svg+xml;utf8,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><radialGradient id='g' cx='50%' cy='40%'><stop offset='0' stop-color='#ffd27a'/><stop offset='1' stop-color='#ff6a2f'/></radialGradient></defs><circle cx='100' cy='100' r='92' fill='url(#g)' stroke='#fff' stroke-width='8'/><text x='100' y='134' font-size='112' text-anchor='middle'>🔥</text></svg>");
 const TUT_PASSOS=[
   {fala:"Oi, eu sou o Pyri!",ico:"👋"},

@@ -49,3 +49,10 @@ A zona do 3º ano usa uma ilustração (`img/zonas/ano3.webp`) como cenário; os
 
 ### Folha dos níveis (laje de pedra com 3 medalhas)
 Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 medalhas (bronze, prata e ouro, desenhadas em SVG). O estado aparece no selo de cada medalha (✔ concluído, 🔒 bloqueado, 🔁 refazer; a disponível brilha) e em texto embaixo. O visual está em `js/ui/trilha_visual.js` (`medalhaSvg`, `laje`) e `css/trilha.css` (`.laje`). `sw.js` v12.
+
+## Etapa 3 — Pyri 2D, Macetes e Tabuada em trilha
+
+- **Pyri**: `img/pokemon/pyri.webp` (WebP transparente, ~106 KB). `IMG(PYRI_ID)` devolve essa figura em todas as telas; Pyrelis e Pyron continuam com o desenho provisório até terem figura. A figura 3D fica para depois.
+- **Macetes** (`js/conteudo/macetes.js`, `js/ui/macetes.js`): medidas de comprimento (frase "Katia Herdou DA Mãe Dois Cachorrinhos Muito Mansinhos") e tabuadas do 4, 5, 9, 10 e 11. Prática: ordem das palavras, lacuna e aplicação (medidas) ou 5 contas com a explicação do truque. Sem vidas; erro mostra explicação e deixa tentar de novo. XP pequeno **uma vez por dia por macete** (`S.macetes`). Acesso: botão 💡 na aba Tabuada, na laje dos círculos ×4/×5/×9, e campo opcional `macete` em qualquer fase.
+- **Tabuada em trilha** (`js/conteudo/tabuada_trilha.js`, `js/ui/tabuada_trilha.js`): círculos ×2 a ×9, depois 2×1, 3×1, 2×2 fácil e 2×2. Cada círculo abre a laje: 🥉 8 de 10 de primeira; 🥈 9 de 10 e tempo médio ≤ meta; 🥇 10 de 10 e tempo médio ≤ meta. Metas de 1 algarismo: Prata 6 s, Ouro 3 s por conta (outras: 2×1 12/7 s, 3×1 20/12 s, 2×2 fácil 15/9 s, 2×2 30/20 s). Ajustáveis em `S.cfg.tabMetas = {t7:{prata:5}}`. Bronze abre a próxima tabuada; Prata exige Bronze; Ouro exige Prata. O tempo vai da conta aparecer até o acerto (errar não zera). Progresso em `S.tabT` (últimas 30 sessões; gráfico de evolução na laje). Aprender/Treinar/Desafio ficam em "Livre". Sem SQL: o progresso já sincroniza dentro do `S`.
+- `sw.js`: `pokemath-v13` com os arquivos novos e a figura do Pyri.
