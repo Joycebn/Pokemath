@@ -26,7 +26,7 @@ function estadoNivel(f,n){
 /* tentativas: no máximo cfgF("tentativasFaseDia") por dia PARA CADA NÍVEL de cada fase */
 const chaveT=(id,n)=>id+":"+n;
 const tentativasNivel=(id,n)=>S.tentNivel&&S.tentNivel.dia===hoje()?(S.tentNivel.c[chaveT(id,n)]||0):0;
-const restantesNivel=(id,n)=>Math.max(0,cfgF("tentativasFaseDia")-tentativasNivel(id,n));
+const restantesNivel=(id,n)=>SEM_LIMITE_TENTATIVAS?cfgF("tentativasFaseDia"):Math.max(0,cfgF("tentativasFaseDia")-tentativasNivel(id,n));
 function gastarTentativa(id,n){
   const h=hoje();if(!S.tentNivel||S.tentNivel.dia!==h)S.tentNivel={dia:h,c:{}};
   S.tentNivel.c[chaveT(id,n)]=(S.tentNivel.c[chaveT(id,n)]||0)+1;save();
@@ -145,12 +145,12 @@ function htmlRelacionar(ex){
   const L=ex.lig||(ex.lig={sel:null,map:{}}),n=ex.pares.length,tudo=Object.keys(L.map).length===n;
   const esq=ex.pares.map((p,i)=>`<button class="rel e ${L.sel===i?"sel":""} ${L.map[i]!=null?"lig c"+i:""}" onclick="ligarEsq(${i})">${p.e}</button>`).join("");
   const dir=ex.direita.map((d,j)=>{const dono=Object.keys(L.map).find(i=>L.map[i]===j);return `<button class="rel d ${dono!=null?"lig c"+dono:""}" onclick="ligarDir(${j})">${d}</button>`}).join("");
-  return `<div class="relGrid"><div class="relCol">${esq}</div><div class="relCol">${dir}</div></div><p class="relDica">Toque numa conta e depois no resultado dela.</p><button class="grande" ${tudo?"":"disabled"} onclick="verificarLig()">Verificar</button>`;
+  return `<div class="relGrid"><div class="relCol">${esq}</div><div class="relCol">${dir}</div></div><p class="relDica">${ex.relDica||"Toque numa conta e depois no resultado dela."}</p><button class="grande" ${tudo?"":"disabled"} onclick="verificarLig()">Verificar</button>`;
 }
 function ligarEsq(i){const s=FS.ses;if(!s||s.estado!=="pergunta")return;const L=s.fila[0].lig;L.sel=L.sel===i?null:i;render()}
 function ligarDir(j){
   const s=FS.ses;if(!s||s.estado!=="pergunta")return;const L=s.fila[0].lig;if(L.sel==null)return;
-  for(const k of Object.keys(L.map))if(L.map[k]===j)delete L.map[k];
+  if(!s.fila[0].muitos)for(const k of Object.keys(L.map))if(L.map[k]===j)delete L.map[k];
   L.map[L.sel]=j;L.sel=null;render();
 }
 function verificarLig(){
@@ -158,7 +158,22 @@ function verificarLig(){
   if(Object.keys(L.map).length!==ex.pares.length)return;
   responderFase(ex.pares.every((p,i)=>ex.direita[L.map[i]]===p.d)?1:0);
 }
+/* ordenar: toca nos números na ordem; a fila aparece embaixo; dá para desfazer */
+function htmlOrdenar(ex){
+  const O=ex.ord||(ex.ord={fila:[]}),n=ex.nums.length,tudo=O.fila.length===n;
+  const bt=ex.nums.map((v,i)=>`<button class="ordNum" ${O.fila.includes(i)?"disabled":""} onclick="ordenarNum(${i})">${v}</button>`).join("");
+  const fila=O.fila.length?O.fila.map(i=>`<span class="ordPick">${ex.nums[i]}</span>`).join(`<span class="ordSep">›</span>`):`<span class="ordVazio">Sua fila aparece aqui</span>`;
+  return `<div class="ordGrade">${bt}</div><div id="ord-fila" class="ordFila" aria-live="polite">${fila}</div><div class="ordAcoes"><button id="ord-desfazer" class="lin" ${O.fila.length?"":"disabled"} onclick="desfazerOrd()">↩ Desfazer</button><button id="ord-ok" class="grande" ${tudo?"":"disabled"} onclick="verificarOrd()">Verificar</button></div>`;
+}
+function ordenarNum(i){const s=FS.ses;if(!s||s.estado!=="pergunta")return;const O=s.fila[0].ord;if(O.fila.includes(i))return;O.fila.push(i);render()}
+function desfazerOrd(){const s=FS.ses;if(!s||s.estado!=="pergunta")return;s.fila[0].ord.fila.pop();render()}
+function verificarOrd(){
+  const s=FS.ses;if(!s||s.estado!=="pergunta")return;const ex=s.fila[0],O=ex.ord;
+  if(O.fila.length!==ex.nums.length)return;
+  responderFase(O.fila.every((i,k)=>ex.nums[i]===ex.ordemCerta[k])?1:0);
+}
 function htmlResposta(ex){
+  if(ex.tipo==="ordenar")return htmlOrdenar(ex);
   if(ex.tipo==="escolha")return `<div class="ops">${ex.opcoes.map(o=>`<button class="op" onclick="responderFase(${o})">${o}</button>`).join("")}</div>`;
   if(ex.tipo==="relacionar")return htmlRelacionar(ex);
   return `<input id="resp" type="number" inputmode="numeric" autocomplete="off" aria-label="${ex.tipo==="lacuna"?"Número que falta":"Sua resposta"}" onkeydown="if(event.key==='Enter')responderFase($('#resp').value)"><button class="grande" onclick="responderFase($('#resp').value)">${ex.tipo==="lacuna"?"Completar":"Verificar"}</button>`;
@@ -184,7 +199,7 @@ function responderFase(v){
   if(certo){
     if(!ex.rep){s.acertosPrimeira++;const g=ganhar(S.cfg.moedaAcerto);s.moedas+=g;ganharXP(1);efeito(g>0?"+"+g+" 🪙":"⭐")}
     s.feitas++;conta();bip([660,880]);s.estado="certo";s.msg=`<b>${pick(["Mandou bem!","Isso aí!","Acertou!","Boa, treinadora!"])}</b> `;
-  }else{s.erros++;s.vidas--;bip([220]);s.estado="errado";s.fila.push({...ex,rep:true,lig:{sel:null,map:{}}})}      // errar tira uma vida
+  }else{s.erros++;s.vidas--;bip([220]);s.estado="errado";s.fila.push({...ex,rep:true,lig:{sel:null,map:{}},ord:{fila:[]}})}      // errar tira uma vida
   render();
 }
 function continuarSessao(){

@@ -19,6 +19,7 @@ async function sessao(saved,opts={}){const d=novo(saved,opts),ev=c=>d.window.eva
   ev("S.cfg.reduzir=true;S.cfg.teto=1000;S.cfg.meta=1000;save()");return{d,ev,w:d.window}}
 /* responde certo (qualquer tipo de questão) ou errado */
 function certo(ev){const ex=ev("FS.ses.fila[0]");
+  if(ex.tipo==="ordenar"){ev("(()=>{const ex=FS.ses.fila[0];ex.ordemCerta.forEach(v=>ordenarNum(ex.nums.indexOf(v)));verificarOrd()})()");return}
   if(ex.tipo==="relacionar"){ev("(()=>{const ex=FS.ses.fila[0];ex.pares.forEach((p,i)=>{ligarEsq(i);ligarDir(ex.direita.indexOf(p.d))});verificarLig()})()");return}
   ev(`responderFase(${ev("FS.ses.fila[0].resposta")})`)}
 function errado(ev){ev("responderFase(-7)")}
@@ -134,7 +135,7 @@ s.w.close();
 // ================= 6. tipos de questão variados =================
 s=await sessao();ev=s.ev;await ev("escolher(25)");
 let tiposOk=true,tmsg="";
-for(const f of ev("FASES.map(f=>f.id)"))for(const n of["bronze","prata","ouro"]){const ses=ev(`novaSessao(FASES.find(f=>f.id==='${f}'),'${n}')`),tp=Array.from(ses.fila).map(x=>x.tipo);
+for(const f of ev("FASES.map(f=>f.id)"))for(const n of["bronze","prata","ouro"]){const ses=ev(`novaSessao(FASES.find(f=>f.id==='${f}'),'${n}')`),tp=Array.from(ses.fila).map(x=>x.tipo==="ordenar"?"lacuna":x.tipo);   /* no Ouro de Comparar, ordenar faz o papel de completar */
   if(!["digitar","escolha","lacuna","relacionar"].every(x=>tp.includes(x))||tp.some((x,i)=>i&&x===tp[i-1])){tiposOk=false;tmsg=f+" "+n+": "+tp.join()}}
 t("em TODAS as fases e níveis aparecem os 4 tipos (escrever, selecionar, completar e ligar), sem repetir o mesmo seguido",tiposOk,tmsg);
 let bom=true,msg="";const chk=(c,m)=>{if(!c){bom=false;msg=m}};
@@ -345,7 +346,7 @@ try{t("círculos: cada um é um botão com rótulo (título + situação) e alvo
 try{t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha",/body\.reduzir[^{]*\{[^}]*animation:none/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/prefers-reduced-motion/.test(lerArq("css/trilha.css")));}catch(e){t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* arquivos */
 try{t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)",/css\/trilha\.css/.test(lerArq("index.html"))&&lerArq("index.html").indexOf("js/conteudo/zonas.js")>0&&lerArq("index.html").indexOf("js/conteudo/zonas.js")<lerArq("index.html").indexOf("js/ui/trilha_visual.js")&&lerArq("index.html").indexOf("js/ui/trilha_visual.js")<lerArq("index.html").indexOf("js/legado/jogo.js"));}catch(e){t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v14 e os 3 arquivos novos na lista",/const V="pokemath-v14"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v16 e os 3 arquivos novos na lista",/const V="pokemath-v16"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)",/function estadoNivel/.test(lerArq("js/motor/trilha.js"))&&/function abrirNivel/.test(lerArq("js/motor/trilha.js"))&&/restantesNivel/.test(lerArq("js/motor/trilha.js")));}catch(e){t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
@@ -376,7 +377,7 @@ const vistos=[];z.w.Element.prototype.scrollIntoView=function(){vistos.push(this
 zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");
 try{t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)",typeof zv("rolarTrilha")==="string"||zv("typeof rolarTrilha")==="function"?(zv("rolarTrilha()"),vistos.length>0&&vistos[vistos.length-1].dataset&&vistos[vistos.length-1].dataset.fase===zv("fasesDoAno(3)[1].id")):false,vistos.length);}catch(e){t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px",/\.zona\.ilus\{[^}]*aspect-ratio:800\/1732/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/\.ilus\.circulo\{[^}]*width:(4[4-9]|[5-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"").replace(/\.zona\.ilus\.circulo/g,".ilus.circulo")));}catch(e){t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v14 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v14"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v16 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v16"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -401,7 +402,7 @@ try{zv("fecharFolha()");}catch(e){}
 try{t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo",/\.folhaFundo\{[^}]*align-items:center/.test(css)&&!/\.folhaFundo\{[^}]*flex-end/.test(css)&&!/\.folha\{[^}]*border-radius:20px20px00/.test(css));}catch(e){t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)",/\.laje\.nv(\.refazer)?\{[^}]*width:(7[2-9]|[89]\d|1\d\d)px/.test(css.replace(/\.folha\.laje/g,".laje")));}catch(e){t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("movimento: 'reduzir movimento' desliga o brilho das medalhas",/body\.reduzir[^{]*\.nv[^{]*\{[^}]*animation:none/.test(css));}catch(e){t("movimento: 'reduzir movimento' desliga o brilho das medalhas  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v14",/const V="pokemath-v14"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v14  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v16",/const V="pokemath-v16"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v16  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -414,7 +415,7 @@ try{const b=fs.readFileSync(path.join(DIR,"img/pokemon/pyri.webp"));t("Pyri: img
 try{t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI",zv("IMG(PYRI_ID)")==="img/pokemon/pyri.webp"&&zv("IMG(PYRELIS_ID)===PYRI_IMG&&IMG(PYRON_ID)===PYRI_IMG")===true&&/PokeAPI\/sprites/.test(zv("IMG(25)")));}catch(e){t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("S.comp=PYRI_ID;ir('cuidar')");}catch(e){}
 try{t("Pyri: aparece na tela do Cuidar quando é o companheiro",/img\/pokemon\/pyri\.webp/.test(U("#app").innerHTML));}catch(e){t("Pyri: aparece na tela do Cuidar quando é o companheiro  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v14 e a figura do Pyri na lista (offline)",/const V="pokemath-v14"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v14 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v16 e a figura do Pyri na lista (offline)",/const V="pokemath-v16"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v16 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* ---------- Macetes: dados e funções ---------- */
 const IDM=zv("MACETES.map(m=>m.id).join()");
 try{t("macetes: a lista tem as medidas, as casas, somar, vai um, empréstimo, as tabuadas 2 a 11, dividir, comparar, pares/ímpares, sequências e (Lote B) figuras, tempo e dinheiro",IDM==="medidas-comprimento,casas,somar,vaium,emprestimo,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9,tab10,tab11,dividir,comparar,parimpar,sequencia,figuras,tempo,dinheiro",IDM);}catch(e){t("macetes: a lista tem comprimento, ×5, ×4, ×9, ×10 e ×11  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -536,17 +537,17 @@ const seqOk=(txt,resp)=>{const toks=txt.split(/,\s*/).map(x=>x.trim());const d=d
 for(const nome of["comparar","parImpar","sequencia"]){let bom=true,msg="";const chk=(c,m)=>{if(!c){bom=false;msg=nome+": "+m}};
  for(const d of[1,3])for(const tp of["digitar","escolha","lacuna","relacionar"])for(let i=0;i<80;i++){
   const ex=ev3(`GER.${nome}(${d},'${tp}')`);if(!ex){chk(false,"sem questão");break}
-  chk(ex.tipo===tp,"tipo "+tp+"->"+ex.tipo);chk(ex.dica&&ex.dica.length>8&&ex.erro&&ex.erro.length>8,"sem dica/explicação");
-  if(tp!=="relacionar")chk(Number.isInteger(ex.resposta)&&ex.resposta>=0,"resposta inválida "+ex.resposta);
+  const tpEsp=(nome==="comparar"&&d>=3&&tp==="lacuna")?"ordenar":tp;chk(ex.tipo===tpEsp,"tipo "+tp+"->"+ex.tipo);chk(ex.dica&&ex.dica.length>8&&ex.erro&&ex.erro.length>8,"sem dica/explicação");
+  if(tp!=="relacionar"&&ex.tipo!=="ordenar")chk(Number.isInteger(ex.resposta)&&ex.resposta>=0,"resposta inválida "+ex.resposta);
   if(tp==="escolha"){const o=Array.from(ex.opcoes);chk(o.length===4&&new Set(o).size===4&&o.includes(ex.resposta),"opções")}
-  if(tp==="lacuna")chk(ex.enunciado.includes("___"),"lacuna sem ___");
-  if(tp==="relacionar"){const P=Array.from(ex.pares),D=Array.from(ex.direita);chk(P.length>=3&&P.length<=4&&D.length===P.length&&new Set(D).size===D.length&&P.every(p=>D.includes(p.d))&&ex.resposta===1&&ex.chave,"relacionar")}
+  if(tp==="lacuna"&&ex.tipo==="lacuna")chk(ex.enunciado.includes("___"),"lacuna sem ___");
+  if(tp==="relacionar"){const P=Array.from(ex.pares),D=Array.from(ex.direita);chk(P.length>=3&&P.length<=4&&D.length===(nome==="parImpar"?2:P.length)&&new Set(D).size===D.length&&P.every(p=>D.includes(p.d))&&ex.resposta===1&&ex.chave,"relacionar")}
   /* conteúdo certo */
   if(nome==="comparar"){
    if(tp==="escolha"){const o=Array.from(ex.opcoes),mx=/maior/.test(ex.enunciado);chk(ex.resposta===(mx?Math.max(...o):Math.min(...o)),"escolha comparar: "+ex.enunciado+o)}
    if(tp==="digitar"){const n=num(ex.enunciado.split(":")[1]),mx=/maior/.test(ex.enunciado);chk(n.length>=2&&ex.resposta===(mx?Math.max(...n):Math.min(...n)),"digitar comparar: "+ex.enunciado)}
-   if(tp==="lacuna"){const m=ex.enunciado.match(/Os números (\d+), (\d+) e (\d+) em ordem (crescente|decrescente)/);chk(!!m,"lacuna comparar formato: "+ex.enunciado);if(m){const n=[+m[1],+m[2],+m[3]].sort((a,b)=>a-b);chk(ex.resposta===n[1],"lacuna comparar: "+ex.enunciado+" -> "+ex.resposta)}}
-   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>{const m=p.e.match(/^o (maior|menor): (\d+) ou (\d+)$/);return m&&+p.d===(m[1]==="maior"?Math.max(+m[2],+m[3]):Math.min(+m[2],+m[3]))&&+m[2]!==+m[3]}),"par comparar errado")
+   if(tp==="lacuna"&&d<3){const m=ex.enunciado.match(/Os números (\d+), (\d+) e (\d+) em ordem (crescente|decrescente)/);chk(!!m,"lacuna comparar formato: "+ex.enunciado);if(m){const n=[+m[1],+m[2],+m[3]].sort((a,b)=>a-b);chk(ex.resposta===n[1],"lacuna comparar: "+ex.enunciado+" -> "+ex.resposta)}}
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>{const m=p.e.match(/^(\d+) ▢ (\d+)$/);return m&&p.d===(+m[1]>+m[2]?"maior que (>)":+m[1]<+m[2]?"menor que (<)":"igual (=)")}),"par comparar (sinal) errado")
    const dg=d>=3?4:3;if(tp==="digitar"||tp==="escolha")chk(num(ex.enunciado.split(":")[1]||"").concat(Array.from(ex.opcoes||[])).every(n=>String(n).length===dg),"número com tamanho errado")
   }
   if(nome==="parImpar"){
@@ -554,7 +555,7 @@ for(const nome of["comparar","parImpar","sequencia"]){let bom=true,msg="";const 
    if(tp==="digitar"){let m=ex.enunciado.match(/^Quantos números (pares|ímpares) há aqui\? (.*)$/);if(m){const k=m[1]==="pares"?"par":"ímpar",n=num(m[2]);chk(ex.resposta===n.filter(x=>pr(x)===k).length&&n.length>=5,"contagem: "+ex.enunciado)}
      else{m=ex.enunciado.match(/^Qual é o número (par|ímpar) logo (depois|antes) de (\d+)\?$/);chk(!!m&&ex.resposta===nextPI(m[1],m[2],+m[3]),"digitar par/ímpar: "+ex.enunciado+" -> "+ex.resposta)}}
    if(tp==="lacuna"){const m=ex.enunciado.match(/O número (par|ímpar) logo (depois|antes) de (\d+) é ___/);chk(!!m&&ex.resposta===nextPI(m[1],m[2],+m[3]),"lacuna par/ímpar: "+ex.enunciado)}
-   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>{const m=p.e.match(/^(par|ímpar) logo (depois|antes) de (\d+)$/);return m&&+p.d===nextPI(m[1],m[2],+m[3])}),"par par/ímpar errado")
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>/^\d+$/.test(p.e)&&p.d===pr(+p.e)),"par par/ímpar (classificar) errado")
   }
   if(nome==="sequencia"){
    const corpo=e=>e.replace(/^[^:?]*[:?]\s*/,"");
@@ -574,7 +575,7 @@ T("explicação de Comparar abre a partir da trilha (fase liberada depois dos 3 
 const rod=(nome,args)=>ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.${nome}(${args});const R=rot.montar(ctx);const g=[];
   for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length])}window.__g=g;return true})()`);
 ev3("FS.vel=0.001");
-for(const[n,a,passosEsperados,fim]of[["comparar","358,385",4,/>|</],["comparar","4521,4575",5,/>|</],["parImpar","7",7,/ímpar/],["sequencia","3,4",5,/19/]]){
+for(const[n,a,passosEsperados,fim]of[["comparar","358,385",7,/>|</],["comparar","4521,4575",8,/>|</],["parImpar","7",7,/ímpar/],["sequencia","3,4",7,/19/]]){
   ev3("S.cfg.reduzir=false");sa.w.__anims.length=0;try{await rod(n,a)}catch(e){}await sleep(300);const g=Array.from(ev3("window.__g")||[]);ev3("window.__g=null");
   t(`roteiro ${n}(${a}): ${passosEsperados} passos, cada um de 3 a 5 s, falas curtas e números/figuras viajam`,g.length===passosEsperados&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sa.w.__anims.length>0,JSON.stringify(g.map(x=>x[0]))+" anims:"+sa.w.__anims.length);
   t(`roteiro ${n}(${a}): termina com o resultado em destaque (.pm-res)`,fim.test(ev3("[...document.querySelectorAll('#exp-stage .pm-res')].map(e=>e.textContent).join('|')")||""),ev3("[...document.querySelectorAll('#exp-stage .pm-res')].map(e=>e.textContent).join('|')"));
@@ -764,9 +765,121 @@ sb.w.close();
   now+=DIA}
  try{t("depois das 4 fases novas, Dinheiro conta como concluída e o 3º ano só falta o 'em breve'",ev("estadoFase(FASES.find(f=>f.id==='a3-dinheiro'))")==="concluido"&&ev("fasesDoAno(3).every(f=>estadoFase(f)==='concluido')"))}catch(e){t("estado Dinheiro  [erro]",false)}
  s.w.close()}
-t("sw.js: pokemath-v14 (arquivos mudaram)",/const V="pokemath-v14"/.test(lerArq("sw.js")));
+
 }
 
+
+// ===== Entrega 1 (ajustes da Joyce): sinal em Comparar, ordenar no Ouro, par/ímpar muitos-para-um, macete e explicações =====
+{
+const sb=await sessao(null,{animate:true});
+const ev3=x=>{try{return sb.ev(x)}catch(e){return undefined}},U=x=>sb.w.document.querySelector(x),Q=x=>[...sb.w.document.querySelectorAll(x)];
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+const prE=n=>n%2===0?"par":"ímpar",SIN=["maior que (>)","menor que (<)","igual (=)"];
+T("Comparar, ligar: agora é 'Ligue o sinal correto em cada situação' (568 ▢ 477), com um par de cada sinal (maior, menor, igual)",()=>{
+  for(const d of[1,3])for(let i=0;i<120;i++){const ex=ev3(`GER.comparar(${d},'relacionar')`),P=Array.from(ex.pares),D=Array.from(ex.direita);
+    if(ex.enunciado!=="Ligue o sinal correto em cada situação.")return "enunciado: "+ex.enunciado;
+    if(P.length!==3||D.length!==3||[...D].sort().join()!==[...SIN].sort().join())return "colunas "+JSON.stringify(D);
+    const len=d>=3?4:3;
+    for(const p of P){const m=p.e.match(/^(\d+) ▢ (\d+)$/);if(!m||m[1].length!==len||m[2].length!==len)return "par "+p.e;
+      if(p.d!==(+m[1]>+m[2]?SIN[0]:+m[1]<+m[2]?SIN[1]:SIN[2]))return "sinal errado "+p.e+" "+p.d}
+    if(new Set(P.map(p=>p.d)).size!==3)return "faltou um sinal: "+JSON.stringify(P);
+    if(!ex.respTxt||!ex.chave||ex.resposta!==1)return "respTxt/chave"}
+  return true});
+T("Comparar, Ouro: no lugar de 'qual número falta', vem 'ordenar' (4 ou 5 números, crescente ou decrescente); no Bronze e na Prata a lacuna continua",()=>{
+  let cres=0,decr=0;for(let i=0;i<150;i++){const ex=ev3("GER.comparar(3,'lacuna')");
+    if(ex.tipo!=="ordenar")return "Ouro lacuna -> "+ex.tipo;const n=Array.from(ex.nums),oc=Array.from(ex.ordemCerta);
+    if(n.length<4||n.length>5||new Set(n).size!==n.length||!n.every(x=>String(x).length===4))return "números "+n;
+    const cr=/crescente/.test(ex.enunciado)&&!/decrescente/.test(ex.enunciado),de=/decrescente/.test(ex.enunciado);if(cr===de)return "enunciado: "+ex.enunciado;
+    const esp=[...n].sort((a,b)=>cr?a-b:b-a);if(oc.join()!==esp.join())return "ordemCerta "+oc+" esperado "+esp;
+    if(ex.resposta!==1||!ex.respTxt.includes(cr?" < ":" > ")||!ex.chave||!ex.dica||!ex.erro)return "campos";cr?cres++:decr++}
+  for(let i=0;i<40;i++){const ex=ev3("GER.comparar(1,'lacuna')");if(ex.tipo!=="lacuna"||!ex.enunciado.includes("___"))return "Bronze/Prata mudou"}
+  return cres>20&&decr>20});
+T("Comparar, Ouro: a sessão do Ouro traz a questão de ordenar e nenhuma lacuna; Bronze e Prata não têm ordenar",()=>{
+  for(let i=0;i<10;i++){const o=Array.from(ev3("novaSessao(FASES.find(f=>f.id==='a3-comparar'),'ouro').fila.map(x=>x.tipo)")),b=Array.from(ev3("novaSessao(FASES.find(f=>f.id==='a3-comparar'),'bronze').fila.map(x=>x.tipo)"));
+    if(!o.includes("ordenar")||o.includes("lacuna")||b.includes("ordenar")||!b.includes("lacuna"))return JSON.stringify([o,b])}return true});
+T("ordenar na tela: toca nos números na ordem, a fila aparece, dá para desfazer; só verifica com todos; o certo passa e o errado tira 1 vida",()=>{
+  ev3("S.fases={};S.tentNivel=null;ir('fases')");ev3(OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao"])+";save()");
+  ev3("abrirNivel('a3-comparar','bronze')");
+  ev3(`(()=>{const ex=GER.comparar(3,'lacuna');FS.ses=novaSessao(FASES.find(f=>f.id==='a3-comparar'),'ouro');FS.ses.fila[0]=ex;FS.fase=FS.ses.fase;FS.vista='exerc';render()})()`);
+  const ex=ev3("FS.ses.fila[0]"),n=Array.from(ex.nums),oc=Array.from(ex.ordemCerta);
+  if(Q("#app .ordNum").length!==n.length)return "botões "+Q("#app .ordNum").length;
+  if(!U("#ord-ok").disabled)return "Verificar devia estar desligado";
+  Q("#app .ordNum")[n.indexOf(oc[0])].click();Q("#app .ordNum")[n.indexOf(oc[1])].click();
+  if(Q("#ord-fila .ordPick").map(e=>e.textContent).join()!==[oc[0],oc[1]].join())return "fila "+Q("#ord-fila .ordPick").map(e=>e.textContent);
+  if(!Q("#app .ordNum")[n.indexOf(oc[0])].disabled)return "número já usado ainda clicável";
+  U("#ord-desfazer").click();if(Q("#ord-fila .ordPick").length!==1)return "desfazer";
+  if(Q("#app .ordNum")[n.indexOf(oc[1])].disabled)return "desfazer não liberou o número";
+  Q("#app .ordNum")[n.indexOf(oc[1])].click();oc.slice(2).forEach(v=>Q("#app .ordNum")[n.indexOf(v)].click());
+  if(U("#ord-ok").disabled)return "Verificar devia ligar";
+  const vidas=ev3("FS.ses.vidas");U("#ord-ok").click();if(ev3("FS.ses.estado")!=="certo"||ev3("FS.ses.vidas")!==vidas)return "certo não passou";
+  ev3("continuarSessao()");
+  ev3(`(()=>{const ex=GER.comparar(3,'lacuna');FS.ses.fila[0]=ex;FS.ses.estado='pergunta';render()})()`);
+  const n2=Array.from(ev3("FS.ses.fila[0].nums")),oc2=Array.from(ev3("FS.ses.fila[0].ordemCerta")),rev=[...oc2].reverse();
+  rev.forEach(v=>Q("#app .ordNum")[n2.indexOf(v)].click());U("#ord-ok").click();
+  if(ev3("FS.ses.estado")!=="errado"||ev3("FS.ses.vidas")!==vidas-1)return "errado não tirou vida";
+  if(!U("#app .fb.err").textContent.includes(oc2.join(oc2[0]<oc2[1]?" < ":" > ")))return "não mostrou a ordem certa";
+  ev3("continuarSessao()");const rep=ev3("FS.ses.fila[FS.ses.fila.length-1]");
+  return rep.rep===true&&rep.tipo==="ordenar"&&Array.from(rep.ord.fila).length===0||"a repetição deve voltar com a fila vazia"});
+T("Pares e ímpares, ligar: 'Ligue cada número a par ou ímpar' (4 números, 2 cartões, vários números no mesmo cartão)",()=>{
+  for(const d of[1,3])for(let i=0;i<120;i++){const ex=ev3(`GER.parImpar(${d},'relacionar')`),P=Array.from(ex.pares),D=Array.from(ex.direita);
+    if(ex.enunciado!=="Ligue cada número a par ou ímpar.")return "enunciado "+ex.enunciado;
+    if(ex.muitos!==true||P.length!==4||D.length!==2||[...D].sort().join()!=="par,ímpar".split(",").sort().join())return "formato "+JSON.stringify(D)+P.length;
+    if(!P.every(p=>/^\d+$/.test(p.e)&&String(p.e).length===(d>=3?3:2)&&p.d===prE(+p.e)))return "par errado "+JSON.stringify(P);
+    if(new Set(P.map(p=>p.d)).size!==2)return "faltou par ou ímpar: "+JSON.stringify(P);
+    if(new Set(P.map(p=>p.e)).size!==4)return "números repetidos";
+    if(!ex.respTxt||!ex.chave)return "respTxt"}
+  return true});
+T("ligar muitos-para-um na tela: dois números ligados ao mesmo cartão continuam ligados; certo passa e errado perde vida; textos de ajuda novos",()=>{
+  ev3(`(()=>{const ex=GER.parImpar(1,'relacionar');FS.ses=novaSessao(FASES.find(f=>f.id==='a3-paresimpares'),'bronze');FS.ses.fila[0]=ex;FS.fase=FS.ses.fase;FS.vista='exerc';render()})()`);
+  const ex=ev3("FS.ses.fila[0]"),P=Array.from(ex.pares),D=Array.from(ex.direita);
+  if(!/Toque num número e depois em Par ou Ímpar/.test(U("#app").textContent))return "texto de ajuda";
+  const lig=(i)=>{Q("#app .rel.e")[i].click();Q("#app .rel.d")[D.indexOf(P[i].d)].click()};
+  lig(0);const i2=P.findIndex((p,i)=>i>0&&p.d===P[0].d);if(i2<0)return "sem dois iguais";lig(i2);
+  const lg=Q("#app .rel.e.lig").length;if(lg!==2)return "primeira ligação sumiu: "+lg;
+  P.forEach((p,i)=>{if(i!==0&&i!==i2)lig(i)});if(U("#app button.grande").disabled)return "Verificar devia ligar";
+  const v=ev3("FS.ses.vidas");U("#app button.grande").click();if(ev3("FS.ses.estado")!=="certo")return "certo";
+  ev3("continuarSessao()");
+  ev3(`(()=>{const ex=GER.parImpar(1,'relacionar');FS.ses.fila[0]=ex;FS.ses.estado='pergunta';render()})()`);
+  const ex2=ev3("FS.ses.fila[0]"),P2=Array.from(ex2.pares),D2=Array.from(ex2.direita);
+  P2.forEach((p,i)=>{Q("#app .rel.e")[i].click();Q("#app .rel.d")[D2.indexOf(p.d==="par"?"ímpar":"par")].click()});U("#app button.grande").click();
+  return ev3("FS.ses.estado")==="errado"&&ev3("FS.ses.vidas")===v-1});
+T("ligar sinal na tela: texto de ajuda 'Toque numa situação e depois no sinal' e a ligação um-para-um continua (outro número no mesmo cartão tira o anterior)",()=>{
+  ev3(`(()=>{const ex=GER.comparar(1,'relacionar');FS.ses=novaSessao(FASES.find(f=>f.id==='a3-comparar'),'bronze');FS.ses.fila[0]=ex;FS.fase=FS.ses.fase;FS.vista='exerc';render()})()`);
+  if(!/Toque numa situação e depois no sinal/.test(U("#app").textContent))return "texto de ajuda";
+  Q("#app .rel.e")[0].click();Q("#app .rel.d")[0].click();Q("#app .rel.e")[1].click();Q("#app .rel.d")[0].click();
+  return Q("#app .rel.e.lig").length===1});
+T("Sequências: o macete explica 'aumentando = soma (segundo − primeiro)' e 'diminuindo = subtrai (primeiro − segundo)'",()=>{
+  const e=ev3("macAch('sequencia').explicacao");return /aumentando[^.]*soma[^.]*segundo − primeiro/.test(e)&&/diminuindo[^.]*subtrai[^.]*primeiro − segundo/.test(e)});
+T("Sequências: a lâmpada da fase mostra a regra do segundo menos o primeiro",()=>{
+  ev3("S.fases={};S.tentNivel=null;ir('fases')");ev3(OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao","a3-comparar","a3-paresimpares"])+";save()");
+  ev3("abrirLampada(macAch('sequencia'),'')");const L=U("#lampada");const ok=!!L&&/segundo − primeiro/.test(L.textContent)&&/primeiro − segundo/.test(L.textContent);U("#lamp-ok")&&U("#lamp-ok").click();return ok});
+/* ---- explicações completas ---- */
+ev3("ir('fases');abrirExplicacao('a3-comparar')");ev3("FS.auto=false;pararAnimacoes()");ev3("FS.vel=0.001");ev3("S.cfg.reduzir=false");
+const rod=(nome,args)=>ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.${nome}(${args});const R=rot.montar(ctx);const g=[],all=[];
+  for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length]);ctx.stage.querySelectorAll('.pm-res').forEach(e=>{if(!all.includes(e.textContent))all.push(e.textContent)})}window.__g=g;window.__res=all;return true})()`);
+for(const[n,a,passos,falas,fim]of[
+  ["comparar","358,385",7,[/maior que/,/menor que/,/igual/,/crescente/,/decrescente/,/do menor para o maior/,/do maior para o menor/],/maior que.*menor que.*igual.*\d+ < \d+ < \d+.*\d+ > \d+ > \d+/],
+  ["sequencia","3,4",7,[/segundo/,/primeiro/,/aumenta|aumentando/,/diminu/],/7 − 3 = 4.*19 − 15 = 4/]]){
+  sb.w.__anims.length=0;try{await rod(n,a)}catch(e){}await sleep(300);const g=Array.from(ev3("window.__g")||[]);const res=Array.from(ev3("window.__res")||[]).join("|");ev3("window.__g=null");
+  t(`roteiro ${n}(${a}) completo: ${passos} passos de 3 a 5 s, falas curtas e itens que viajam`,g.length===passos&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sb.w.__anims.length>0,JSON.stringify(g.map(x=>x[0])));
+  const txt=ev3(`ROT.${n}(${a}).passos.map(p=>p.fala).join(' ')`);
+  t(`roteiro ${n}: a fala cobre ${falas.map(r=>r.source).join(", ")}`,falas.every(r=>r.test(txt)),txt.slice(0,160));
+  t(`roteiro ${n}: os resultados mostrados batem com o conteúdo`,fim.test(res),res);
+}
+sb.w.close();
+/* ---- jogar o Ouro de Comparar inteiro (com ordenar) e Pares (ligar muitos) ---- */
+{const s=await sessao(),ev=s.ev;await ev("escolher(25)");ev(OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao"])+";save();ir('fases')");
+ try{await jogarNivel(s,"a3-comparar","bronze");await jogarNivel(s,"a3-comparar","prata");now+=DIA;await jogarNivel(s,"a3-comparar","ouro");
+  t("jogar Comparar: Bronze, Prata e Ouro (com a questão de ordenar) terminam e liberam a próxima fase",st(ev,"a3-comparar")==="concluido,concluido,concluido",st(ev,"a3-comparar"))}catch(e){t("jogar Comparar  [erro: "+String(e.message).slice(0,60)+"]",false)}
+ try{await jogarNivel(s,"a3-paresimpares","bronze");await jogarNivel(s,"a3-paresimpares","prata");now+=DIA;await jogarNivel(s,"a3-paresimpares","ouro");
+  t("jogar Pares e ímpares: os 3 níveis (com ligar muitos-para-um) terminam",st(ev,"a3-paresimpares")==="concluido,concluido,concluido",st(ev,"a3-paresimpares"))}catch(e){t("jogar Pares  [erro: "+String(e.message).slice(0,60)+"]",false)}
+ s.w.close()}
+t("sw.js: pokemath-v16 (arquivos mudaram)",/const V="pokemath-v16"/.test(lerArq("sw.js")));
+}
+
+t("limite diário: a chave temporária SEM_LIMITE_TENTATIVAS está ligada no app (os testes rodam com ela desligada, para provar a regra)",/const SEM_LIMITE_TENTATIVAS=true;/.test(lerArq("js/conteudo/matriz.js"))&&/SEM_LIMITE_TENTATIVAS\?cfgF/.test(lerArq("js/motor/trilha.js")));
+{const s2=await sessao(null,{});const e=x=>s2.ev(x);e("S.fases={};save()");
+ e("window.eval('0')");const r=e("(()=>{const f=SEM_LIMITE_TENTATIVAS;return f})()");t("nos testes a chave vem desligada, então o limite de 3 por dia continua valendo",r===false);s2.w.close()}
 t("nenhum erro de script durante todos os testes",erros.length===0,erros.join(" | "));
 console.log(`\nPASSARAM: ${ok}   FALHARAM: ${bad.length}`);bad.forEach(b=>console.log(" ✗ "+b));process.exit(0);
 })().catch(e=>{console.error("ERRO NO TESTE:",e);process.exit(1)});

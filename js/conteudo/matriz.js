@@ -6,6 +6,8 @@ const FASES=[];                                  // preenchida pelos arquivos an
 const EM_BREVE={3:["Tabelas e gráficos","Acaso e probabilidade"]};
 /* tentativasFaseDia = tentativas por dia PARA CADA NÍVEL (Bronze, Prata e Ouro contam separadamente).
    questoesPorFase = questões do nível Prata; o Bronze tem 2 a menos e o Ouro 2 a mais. */
+/* TEMPORÁRIO (Joyce, enquanto programa): true = sem limite diário de tentativas por nível. Voltar para false antes de entregar às crianças. */
+const SEM_LIMITE_TENTATIVAS=true;
 const DEF_F={anoEscolar:3,tentativasFaseDia:3,questoesPorFase:8,bonusFase:10};
 const cfgF=k=>(S.cfg&&S.cfg[k]!=null)?S.cfg[k]:DEF_F[k];
 const fasesDoAno=a=>FASES.filter(f=>f.ano===a).sort((x,y)=>x.ordem-y.ordem);
