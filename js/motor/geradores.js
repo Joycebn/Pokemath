@@ -137,7 +137,7 @@ function montarParImpar(d,tipo){
   if(tipo==="lacuna"){const c=cena();return{tipo:"lacuna",enunciado:`O número ${c.k} logo ${c.dir} de ${c.n} é ___`,resposta:c.r,dica,erro:explViz(c)}}
   let L;do{const n=new Set();while(n.size<4)n.add(rnd(lo,hi));L=[...n].map(x=>({e:String(x),d:parDe(x)}))}while(new Set(L.map(p=>p.d)).size<2);
   const respTxt=L.map(p=>`${p.e} = ${p.d}`).join("; ");
-  return{tipo:"relacionar",muitos:true,enunciado:"Ligue cada número a par ou ímpar.",pares:L,direita:["par","ímpar"],resposta:1,respTxt,chave:"pi"+respTxt,relDica:"Toque num número e depois em Par ou Ímpar.",dica,erro:`Os certos são: ${respTxt}.`};
+  return{tipo:"relacionar",enunciado:"Ligue cada número a par ou ímpar.",pares:L,direita:embaralhar(L.map(p=>p.d)),resposta:1,respTxt,chave:"pi"+respTxt,relDica:"Toque num número e depois numa casa Par ou Ímpar.",dica,erro:`Os certos são: ${respTxt}.`};
 }
 function regraSeq(d){
   const dec=d>=3&&Math.random()<.4,k=umDe(d>=3?[2,3,4,5,6,7,8,9,10,20,25,50]:[2,3,4,5,10]),ini=dec?k*6+rnd(0,40):rnd(1,d>=3?200:30);

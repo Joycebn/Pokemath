@@ -150,7 +150,7 @@ function htmlRelacionar(ex){
 function ligarEsq(i){const s=FS.ses;if(!s||s.estado!=="pergunta")return;const L=s.fila[0].lig;L.sel=L.sel===i?null:i;render()}
 function ligarDir(j){
   const s=FS.ses;if(!s||s.estado!=="pergunta")return;const L=s.fila[0].lig;if(L.sel==null)return;
-  if(!s.fila[0].muitos)for(const k of Object.keys(L.map))if(L.map[k]===j)delete L.map[k];
+  for(const k of Object.keys(L.map))if(L.map[k]===j)delete L.map[k];
   L.map[L.sel]=j;L.sel=null;render();
 }
 function verificarLig(){

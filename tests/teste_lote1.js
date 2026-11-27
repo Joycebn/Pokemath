@@ -346,7 +346,7 @@ try{t("círculos: cada um é um botão com rótulo (título + situação) e alvo
 try{t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha",/body\.reduzir[^{]*\{[^}]*animation:none/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/prefers-reduced-motion/.test(lerArq("css/trilha.css")));}catch(e){t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* arquivos */
 try{t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)",/css\/trilha\.css/.test(lerArq("index.html"))&&lerArq("index.html").indexOf("js/conteudo/zonas.js")>0&&lerArq("index.html").indexOf("js/conteudo/zonas.js")<lerArq("index.html").indexOf("js/ui/trilha_visual.js")&&lerArq("index.html").indexOf("js/ui/trilha_visual.js")<lerArq("index.html").indexOf("js/legado/jogo.js"));}catch(e){t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v16 e os 3 arquivos novos na lista",/const V="pokemath-v16"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v17 e os 3 arquivos novos na lista",/const V="pokemath-v17"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)",/function estadoNivel/.test(lerArq("js/motor/trilha.js"))&&/function abrirNivel/.test(lerArq("js/motor/trilha.js"))&&/restantesNivel/.test(lerArq("js/motor/trilha.js")));}catch(e){t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
@@ -377,7 +377,7 @@ const vistos=[];z.w.Element.prototype.scrollIntoView=function(){vistos.push(this
 zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");
 try{t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)",typeof zv("rolarTrilha")==="string"||zv("typeof rolarTrilha")==="function"?(zv("rolarTrilha()"),vistos.length>0&&vistos[vistos.length-1].dataset&&vistos[vistos.length-1].dataset.fase===zv("fasesDoAno(3)[1].id")):false,vistos.length);}catch(e){t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px",/\.zona\.ilus\{[^}]*aspect-ratio:800\/1732/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/\.ilus\.circulo\{[^}]*width:(4[4-9]|[5-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"").replace(/\.zona\.ilus\.circulo/g,".ilus.circulo")));}catch(e){t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v16 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v16"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v17 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v17"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -402,7 +402,7 @@ try{zv("fecharFolha()");}catch(e){}
 try{t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo",/\.folhaFundo\{[^}]*align-items:center/.test(css)&&!/\.folhaFundo\{[^}]*flex-end/.test(css)&&!/\.folha\{[^}]*border-radius:20px20px00/.test(css));}catch(e){t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)",/\.laje\.nv(\.refazer)?\{[^}]*width:(7[2-9]|[89]\d|1\d\d)px/.test(css.replace(/\.folha\.laje/g,".laje")));}catch(e){t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("movimento: 'reduzir movimento' desliga o brilho das medalhas",/body\.reduzir[^{]*\.nv[^{]*\{[^}]*animation:none/.test(css));}catch(e){t("movimento: 'reduzir movimento' desliga o brilho das medalhas  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v16",/const V="pokemath-v16"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v16  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v17",/const V="pokemath-v17"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v17  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -415,7 +415,7 @@ try{const b=fs.readFileSync(path.join(DIR,"img/pokemon/pyri.webp"));t("Pyri: img
 try{t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI",zv("IMG(PYRI_ID)")==="img/pokemon/pyri.webp"&&zv("IMG(PYRELIS_ID)===PYRI_IMG&&IMG(PYRON_ID)===PYRI_IMG")===true&&/PokeAPI\/sprites/.test(zv("IMG(25)")));}catch(e){t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("S.comp=PYRI_ID;ir('cuidar')");}catch(e){}
 try{t("Pyri: aparece na tela do Cuidar quando é o companheiro",/img\/pokemon\/pyri\.webp/.test(U("#app").innerHTML));}catch(e){t("Pyri: aparece na tela do Cuidar quando é o companheiro  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v16 e a figura do Pyri na lista (offline)",/const V="pokemath-v16"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v16 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v17 e a figura do Pyri na lista (offline)",/const V="pokemath-v17"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v17 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* ---------- Macetes: dados e funções ---------- */
 const IDM=zv("MACETES.map(m=>m.id).join()");
 try{t("macetes: a lista tem as medidas, as casas, somar, vai um, empréstimo, as tabuadas 2 a 11, dividir, comparar, pares/ímpares, sequências e (Lote B) figuras, tempo e dinheiro",IDM==="medidas-comprimento,casas,somar,vaium,emprestimo,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9,tab10,tab11,dividir,comparar,parimpar,sequencia,figuras,tempo,dinheiro",IDM);}catch(e){t("macetes: a lista tem comprimento, ×5, ×4, ×9, ×10 e ×11  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -541,7 +541,7 @@ for(const nome of["comparar","parImpar","sequencia"]){let bom=true,msg="";const 
   if(tp!=="relacionar"&&ex.tipo!=="ordenar")chk(Number.isInteger(ex.resposta)&&ex.resposta>=0,"resposta inválida "+ex.resposta);
   if(tp==="escolha"){const o=Array.from(ex.opcoes);chk(o.length===4&&new Set(o).size===4&&o.includes(ex.resposta),"opções")}
   if(tp==="lacuna"&&ex.tipo==="lacuna")chk(ex.enunciado.includes("___"),"lacuna sem ___");
-  if(tp==="relacionar"){const P=Array.from(ex.pares),D=Array.from(ex.direita);chk(P.length>=3&&P.length<=4&&D.length===(nome==="parImpar"?2:P.length)&&new Set(D).size===D.length&&P.every(p=>D.includes(p.d))&&ex.resposta===1&&ex.chave,"relacionar")}
+  if(tp==="relacionar"){const P=Array.from(ex.pares),D=Array.from(ex.direita);chk(P.length>=3&&P.length<=4&&D.length===P.length&&(nome==="parImpar"||new Set(D).size===D.length)&&P.every(p=>D.includes(p.d))&&ex.resposta===1&&ex.chave,"relacionar")}
   /* conteúdo certo */
   if(nome==="comparar"){
    if(tp==="escolha"){const o=Array.from(ex.opcoes),mx=/maior/.test(ex.enunciado);chk(ex.resposta===(mx?Math.max(...o):Math.min(...o)),"escolha comparar: "+ex.enunciado+o)}
@@ -820,28 +820,29 @@ T("ordenar na tela: toca nos números na ordem, a fila aparece, dá para desfaze
   if(!U("#app .fb.err").textContent.includes(oc2.join(oc2[0]<oc2[1]?" < ":" > ")))return "não mostrou a ordem certa";
   ev3("continuarSessao()");const rep=ev3("FS.ses.fila[FS.ses.fila.length-1]");
   return rep.rep===true&&rep.tipo==="ordenar"&&Array.from(rep.ord.fila).length===0||"a repetição deve voltar com a fila vazia"});
-T("Pares e ímpares, ligar: 'Ligue cada número a par ou ímpar' (4 números, 2 cartões, vários números no mesmo cartão)",()=>{
+T("Pares e ímpares, ligar: 'Ligue cada número a par ou ímpar' (4 números e 4 cartões, um cartão para cada número)",()=>{
   for(const d of[1,3])for(let i=0;i<120;i++){const ex=ev3(`GER.parImpar(${d},'relacionar')`),P=Array.from(ex.pares),D=Array.from(ex.direita);
     if(ex.enunciado!=="Ligue cada número a par ou ímpar.")return "enunciado "+ex.enunciado;
-    if(ex.muitos!==true||P.length!==4||D.length!==2||[...D].sort().join()!=="par,ímpar".split(",").sort().join())return "formato "+JSON.stringify(D)+P.length;
+    if(ex.muitos||P.length!==4||D.length!==4||[...D].sort().join()!==P.map(p=>p.d).sort().join())return "formato: um cartão para cada número "+JSON.stringify(D)+P.length;
     if(!P.every(p=>/^\d+$/.test(p.e)&&String(p.e).length===(d>=3?3:2)&&p.d===prE(+p.e)))return "par errado "+JSON.stringify(P);
     if(new Set(P.map(p=>p.d)).size!==2)return "faltou par ou ímpar: "+JSON.stringify(P);
     if(new Set(P.map(p=>p.e)).size!==4)return "números repetidos";
     if(!ex.respTxt||!ex.chave)return "respTxt"}
   return true});
-T("ligar muitos-para-um na tela: dois números ligados ao mesmo cartão continuam ligados; certo passa e errado perde vida; textos de ajuda novos",()=>{
+T("ligar par/ímpar na tela: aparecem 4 cartões (um por número); certo passa e errado perde vida; texto de ajuda novo",()=>{
   ev3(`(()=>{const ex=GER.parImpar(1,'relacionar');FS.ses=novaSessao(FASES.find(f=>f.id==='a3-paresimpares'),'bronze');FS.ses.fila[0]=ex;FS.fase=FS.ses.fase;FS.vista='exerc';render()})()`);
   const ex=ev3("FS.ses.fila[0]"),P=Array.from(ex.pares),D=Array.from(ex.direita);
-  if(!/Toque num número e depois em Par ou Ímpar/.test(U("#app").textContent))return "texto de ajuda";
-  const lig=(i)=>{Q("#app .rel.e")[i].click();Q("#app .rel.d")[D.indexOf(P[i].d)].click()};
-  lig(0);const i2=P.findIndex((p,i)=>i>0&&p.d===P[0].d);if(i2<0)return "sem dois iguais";lig(i2);
-  const lg=Q("#app .rel.e.lig").length;if(lg!==2)return "primeira ligação sumiu: "+lg;
-  P.forEach((p,i)=>{if(i!==0&&i!==i2)lig(i)});if(U("#app button.grande").disabled)return "Verificar devia ligar";
+  if(!/Toque num número e depois numa casa Par ou Ímpar/.test(U("#app").textContent))return "texto de ajuda";
+  if(Q("#app .rel.d").length!==P.length)return "cartões: "+Q("#app .rel.d").length+" para "+P.length+" números";
+  const usados=new Set(),lig=(i,cartao)=>{Q("#app .rel.e")[i].click();Q("#app .rel.d")[cartao].click();usados.add(cartao)};
+  P.forEach((p,i)=>lig(i,D.findIndex((d,j)=>d===p.d&&!usados.has(j))));
+  if(Q("#app .rel.e.lig").length!==P.length)return "ligações";if(U("#app button.grande").disabled)return "Verificar devia ligar";
   const v=ev3("FS.ses.vidas");U("#app button.grande").click();if(ev3("FS.ses.estado")!=="certo")return "certo";
   ev3("continuarSessao()");
   ev3(`(()=>{const ex=GER.parImpar(1,'relacionar');FS.ses.fila[0]=ex;FS.ses.estado='pergunta';render()})()`);
-  const ex2=ev3("FS.ses.fila[0]"),P2=Array.from(ex2.pares),D2=Array.from(ex2.direita);
-  P2.forEach((p,i)=>{Q("#app .rel.e")[i].click();Q("#app .rel.d")[D2.indexOf(p.d==="par"?"ímpar":"par")].click()});U("#app button.grande").click();
+  const ex2=ev3("FS.ses.fila[0]"),P2=Array.from(ex2.pares),D2=Array.from(ex2.direita),us=new Set();
+  const j0=D2.findIndex(d=>d!==P2[0].d);us.add(j0);const resto=D2.map((_,j)=>j).filter(j=>j!==j0);
+  P2.forEach((p,i)=>{const j=i===0?j0:resto.shift();Q("#app .rel.e")[i].click();Q("#app .rel.d")[j].click()});U("#app button.grande").click();
   return ev3("FS.ses.estado")==="errado"&&ev3("FS.ses.vidas")===v-1});
 T("ligar sinal na tela: texto de ajuda 'Toque numa situação e depois no sinal' e a ligação um-para-um continua (outro número no mesmo cartão tira o anterior)",()=>{
   ev3(`(()=>{const ex=GER.comparar(1,'relacionar');FS.ses=novaSessao(FASES.find(f=>f.id==='a3-comparar'),'bronze');FS.ses.fila[0]=ex;FS.fase=FS.ses.fase;FS.vista='exerc';render()})()`);
@@ -874,7 +875,7 @@ sb.w.close();
  try{await jogarNivel(s,"a3-paresimpares","bronze");await jogarNivel(s,"a3-paresimpares","prata");now+=DIA;await jogarNivel(s,"a3-paresimpares","ouro");
   t("jogar Pares e ímpares: os 3 níveis (com ligar muitos-para-um) terminam",st(ev,"a3-paresimpares")==="concluido,concluido,concluido",st(ev,"a3-paresimpares"))}catch(e){t("jogar Pares  [erro: "+String(e.message).slice(0,60)+"]",false)}
  s.w.close()}
-t("sw.js: pokemath-v16 (arquivos mudaram)",/const V="pokemath-v16"/.test(lerArq("sw.js")));
+t("sw.js: pokemath-v17 (arquivos mudaram)",/const V="pokemath-v17"/.test(lerArq("sw.js")));
 }
 
 t("limite diário: a chave temporária SEM_LIMITE_TENTATIVAS está ligada no app (os testes rodam com ela desligada, para provar a regra)",/const SEM_LIMITE_TENTATIVAS=true;/.test(lerArq("js/conteudo/matriz.js"))&&/SEM_LIMITE_TENTATIVAS\?cfgF/.test(lerArq("js/motor/trilha.js")));

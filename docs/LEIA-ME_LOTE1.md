@@ -87,3 +87,11 @@ Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 
 - Em breve (3º ano): só restam Tabelas e gráficos e Acaso e probabilidade (Lote C).
 - Trilha ilustrada: 15 círculos (13 fases + 2 cadeados). Foi acrescentado 1 ponto no caminho de cima do vulcão em `js/conteudo/zonas.js`, e cada ponto aceita um 3º valor opcional (`"e"` ou `"d"`) para escolher o lado da etiqueta e evitar que ela cubra o círculo vizinho. Nomes curtos: Figuras, Comprimento, Tempo, Dinheiro.
 - `sw.js`: `pokemath-v14`.
+
+## Ajustes das fases — Entrega 1 (Comparar, Pares e ímpares, Sequências)
+- **Comparar, "ligar"**: agora é "Ligue o sinal correto em cada situação" (`568 ▢ 477` ↔ maior que (>), menor que (<), igual (=)), três situações, uma de cada sinal. Em `montarComparar` (`js/motor/geradores.js`).
+- **Comparar, Ouro**: no lugar de "qual número falta", vem o tipo novo **ordenar** (4 ou 5 números, crescente ou decrescente): a criança toca nos números na ordem, vê a fila, pode desfazer e só então verifica. Bronze e Prata mantêm o completar. Tela em `htmlOrdenar`/`ordenarNum`/`desfazerOrd`/`verificarOrd` (`js/motor/trilha.js`); estilo em `css/novo.css`.
+- **Pares e ímpares, "ligar"**: quatro números ligados a "par" ou "ímpar" (um cartão "par" ou "ímpar" para cada número).
+- **Explicação de Comparar** (`ROT.comparar`): três passos novos — maior que / menor que / igual, crescente e decrescente. **Macete de Comparar** também completo.
+- **Sequências**: macete e explicação (`ROT.sequencia`, 2 passos novos) com a regra: aumentando = soma, quanto = segundo − primeiro; diminuindo = subtrai, quanto = primeiro − segundo.
+- `sw.js`: `pokemath-v17`. Arquivos alterados: js/motor/geradores.js, js/motor/trilha.js, js/motor/explicacao.js, js/conteudo/macetes.js, css/novo.css, sw.js, tests/teste_lote1.js, tests/teste_nuvem.js, docs/LEIA-ME_LOTE1.md.
