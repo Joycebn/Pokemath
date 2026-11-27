@@ -417,6 +417,18 @@ const ROT={
     passos.push(P(`Então ${a} ${sinal} ${b}. O maior número é ${maior}!`,4000,async(ctx,R)=>{
       const u=a>=b?R.da[0]:R.db[0],cl=criar(R.box,String(maior),"pm-d cn",u._x,u._y);await voarVarios(ctx,[[cl,(W-200)/2,190]],1600);cl.remove();
       criar(R.box,`${a} ${sinal} ${b}`,"pm-d cn pm-res pm-pop",(W-200)/2,190,200,56);glowRes(R);dizer(ctx,`${a} ${sinal} ${b}`);await esperar(ctx,1000)}));
+    /* sinais e ordem: maior que, menor que, igual, crescente, decrescente */
+    const c3=a===b?a+1:Math.max(Math.round((a+b)/2),Math.min(a,b)+1),tri=[a,b,c3].sort((x,y)=>x-y),cresc=tri.join(" < "),decr=[...tri].reverse().join(" > ");
+    passos.push(P("A boca do sinal abre para o maior. > é maior que, < é menor que, = é igual.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";const it=[[">","maior que"],["<","menor que"],["=","igual"]].map(([sg,nm],i)=>{
+        const o=criar(R.box,sg,"pm-op pm-pop",20+i*92,-60,60,52),t=criar(R.box,nm,"pm-txt",8+i*92,-60,84,30);return[[o,20+i*92,40],[t,8+i*92,100]]}).flat();
+      await voarVarios(ctx,it,1500,200);resSub(R,"maior que (>) · menor que (<) · igual (=)",10,170,280);glowRes(R);dizer(ctx,"> maior que · < menor que · = igual");await esperar(ctx,900)},{"maior que":"o sinal > aponta para o menor","menor que":"o sinal < aponta para o menor","igual":"o sinal = quando os dois são o mesmo número"}));
+    passos.push(P(`Ordem crescente é do menor para o maior. Por exemplo: ${cresc}.`,4500,async(ctx,R)=>{
+      R.box.innerHTML="";const ch=tri.map((v,i)=>criar(R.box,String(v),"pm-d cn",14+i*92,-70,76,44));
+      await voarVarios(ctx,ch.map((e,i)=>[e,14+i*92,60]),1500,250);resSub(R,cresc,20,140,260);glowRes(R);dizer(ctx,"crescente: do menor para o maior");await esperar(ctx,900)},{crescente:"do menor para o maior"}));
+    passos.push(P(`Ordem decrescente é do maior para o menor. Por exemplo: ${decr}.`,4500,async(ctx,R)=>{
+      R.box.innerHTML="";const ch=[...tri].reverse().map((v,i)=>criar(R.box,String(v),"pm-d cn",14+i*92,-70,76,44));
+      await voarVarios(ctx,ch.map((e,i)=>[e,14+i*92,60]),1500,250);resSub(R,decr,20,140,260);glowRes(R);dizer(ctx,"decrescente: do maior para o menor");await esperar(ctx,900)},{decrescente:"do maior para o menor"}));
     return{montar:ctx=>{const box=novaCena(ctx,W,H),R={box,da:[],db:[],sims:[]};
       [...sa].forEach((d,i)=>R.da.push(criar(box,d,"pm-d "+clsPos(kk(i)),cx(i),-70)));
       [...sb].forEach((d,i)=>R.db.push(criar(box,d,"pm-d "+clsPos(kk(i)),cx(i),-70)));return R},passos};
@@ -453,6 +465,13 @@ const ROT={
       const o=criar(R.box,"+"+k,"pm-op pm-pop",cx(3)+30,-60);await voarVarios(ctx,[[o,cx(3)+30,30]],1200);
       const cl=criar(R.box,String(t[4]),"pm-d cn",o._x,o._y,54,48);await voarVarios(ctx,[[cl,cx(4),90]],1800);cl.remove();
       criar(R.box,String(t[4]),"pm-d cn pm-res pm-pop",cx(4),90,54,48);glowRes(R);dizer(ctx,`${t[3]} + ${k} = ${t[4]}`);await esperar(ctx,900)}));
+    const dif=t[1]-t[0];
+    passos.push(P(`Números aumentando: somamos. Quanto? O segundo menos o primeiro: ${t[1]} − ${t[0]} = ${dif}.`,4500,async(ctx,R)=>{
+      R.box.innerHTML="";const a=criar(R.box,String(t[0]),"pm-d cn",40,-70,70,48),b=criar(R.box,String(t[1]),"pm-d cn",190,-70,70,48);
+      await voarVarios(ctx,[[a,40,50],[b,190,50]],1300,250);resSub(R,`${t[1]} − ${t[0]} = ${dif}`,40,130,220);glowRes(R);dizer(ctx,"aumentando → segundo − primeiro");await esperar(ctx,900)},{aumentando:"os números crescem, então somamos"}));
+    passos.push(P(`Números diminuindo: subtraímos. Quanto? O primeiro menos o segundo: ${t[4]} − ${t[3]} = ${dif}.`,4500,async(ctx,R)=>{
+      R.box.innerHTML="";const a=criar(R.box,String(t[4]),"pm-d cn",40,-70,70,48),b=criar(R.box,String(t[3]),"pm-d cn",190,-70,70,48);
+      await voarVarios(ctx,[[a,40,50],[b,190,50]],1300,250);resSub(R,`${t[4]} − ${t[3]} = ${dif}`,40,130,220);glowRes(R);dizer(ctx,"diminuindo → primeiro − segundo");await esperar(ctx,900)},{diminuindo:"os números diminuem, então subtraímos"}));
     return{montar:ctx=>{const box=novaCena(ctx,W,H);return{box,ops:[],t:t.slice(0,4).map((v,i)=>criar(box,String(v),"pm-d cn",cx(i),-70,54,48))}},passos};
   },
   /* ---------- Lote B: figuras geométricas (vértices acendem, lados, nome e cubo) ---------- */
