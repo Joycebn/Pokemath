@@ -57,15 +57,15 @@ function montarOp(nome,d,tipo){
   const sp=SPEC[nome](d),{a,b,op,r}=sp;
   if(tipo==="lacuna"){
     const lado=Math.random()<.5?"b":"a",falta=lado==="b"?b:a;
-    return{tipo:"lacuna",enunciado:`Complete a conta: ${lado==="b"?`${a} ${op} ___ = ${r}`:`___ ${op} ${b} = ${r}`}`,resposta:falta,dica:sp.dica,erro:`A lacuna é ${falta}, porque ${a} ${op} ${b} = ${r}.`};
+    return{tipo:"lacuna",enunciado:`Complete a conta: ${lado==="b"?`${a} ${op} ___ = ${r}`:`___ ${op} ${b} = ${r}`}`,resposta:falta,dica:sp.dica,fat:[a,b],erro:`A lacuna é ${falta}, porque ${a} ${op} ${b} = ${r}.`};
   }
   if(tipo==="relacionar"){
     const L=paresDe(nome,d,nome==="adicao"||nome==="adicaoVaiUm"?4:3),pares=L.map(x=>({e:`${x.a} ${x.op} ${x.b}`,d:String(x.r)}));
     const respTxt=pares.map(p=>`${p.e} = ${p.d}`).join("; ");
-    return{tipo:"relacionar",enunciado:"Ligue cada conta ao seu resultado.",pares,direita:embaralhar(pares.map(p=>p.d)),resposta:1,respTxt,chave:respTxt,dica:"Resolva cada conta separada e ligue ao resultado certo.",erro:`As ligações certas são: ${respTxt}.`};
+    return{tipo:"relacionar",enunciado:"Ligue cada conta ao seu resultado.",pares,fat:L.flatMap(x=>[x.a,x.b]),direita:embaralhar(pares.map(p=>p.d)),resposta:1,respTxt,chave:respTxt,dica:"Resolva cada conta separada e ligue ao resultado certo.",erro:`As ligações certas são: ${respTxt}.`};
   }
   const alt=sp.alt&&Math.random()<.5?sp.alt[Math.floor(Math.random()*sp.alt.length)]:null;
-  const base={enunciado:alt?alt.enunciado:`${a} ${op} ${b} = ?`,resposta:r,visual:alt?alt.visual:sp.visual,dica:sp.dica,erro:sp.erro};
+  const base={enunciado:alt?alt.enunciado:`${a} ${op} ${b} = ?`,resposta:r,fat:[a,b],visual:alt?alt.visual:sp.visual,dica:sp.dica,erro:sp.erro};
   return tipo==="escolha"?{...base,tipo:"escolha",opcoes:opcoesNum(r,sp.sim||[])}:{...base,tipo:"digitar"};
 }
 const NOMES_CASA=["unidades","dezenas","centenas","unidades de milhar"];

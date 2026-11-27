@@ -1,6 +1,6 @@
 /* Tabuada em trilha: dados, geradores e regras (sem tela). Estado em S.tabT (criado só quando preciso). */
 const TAB_TRILHA=[
- ...[2,3,4,5,6,7,8,9].map(n=>({id:"t"+n,n,rot:"×"+n,titulo:"Tabuada do "+n,digitos:1,macete:{4:"tab4",5:"tab5",9:"tab9"}[n]})),
+ ...[2,3,4,5,6,7,8,9].map(n=>({id:"t"+n,n,rot:"×"+n,titulo:"Tabuada do "+n,digitos:1,macete:"tab"+n})),
  {id:"m21",rot:"2×1",titulo:"2 algarismos × 1",digitos:2},
  {id:"m31",rot:"3×1",titulo:"3 algarismos × 1",digitos:2},
  {id:"m22f",rot:"2×2 fácil",titulo:"2 × 2 algarismos (fácil)",digitos:2},

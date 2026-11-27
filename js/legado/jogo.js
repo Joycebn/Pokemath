@@ -90,7 +90,6 @@ function opcoes(a,b){
   return embaralhar([c,...m]);
 }
 function dicaTexto(a,b){return `💡 ${a} × ${b} é o ${a} somado ${b} ${b===1?"vez":"vezes"}: ${Array(b).fill(a).join(" + ")}`}
-function mostrarDica(){const [a,b]=Q.f[Q.i];$("#fb").innerHTML=`<p class="dica">${dicaTexto(a,b)}</p>`}
 function perguntar(){
   const [a,b]=Q.f[Q.i],d=S.cfg.dificuldade,escolher=d!=="dificil";Q.tent=0;
   app.innerHTML=`<div class="info"><div class="topq"><span>${Q.i+1} de ${Q.f.length}</span><span id="tm">${Q.modo==="desafio"?"":"Sem pressa"}</span></div><div class="barra"><i style="width:${Q.i/Q.f.length*100}%"></i></div></div>
@@ -98,7 +97,7 @@ function perguntar(){
   <div class="tela"><div class="conta">${a} × ${b}</div>
   ${escolher?`<div class="ops">${opcoes(a,b).map(o=>`<button class="op" data-v="${o}" onclick="responder(${o})">${o}</button>`).join("")}</div>`
    :`<input id="r" type="number" inputmode="numeric" autocomplete="off" aria-label="Sua resposta"><button class="grande" onclick="responder()">Responder</button>`}
-  <div id="fb">${d==="facil"?`<p class="dica">${dicaTexto(a,b)}</p>`:`<button class="lin" onclick="mostrarDica()">Preciso de uma dica</button>`}</div></div>
+  <div id="fb">${botaoLampada(`abrirLampadaTab(${a},${b})`,true)}</div></div>
   <button class="sec" onclick="ir('estudar')">Sair</button>`;
   pulaPet=false;
   if($("#r")){$("#r").focus();$("#r").onkeydown=e=>{if(e.key==="Enter")responder()}}

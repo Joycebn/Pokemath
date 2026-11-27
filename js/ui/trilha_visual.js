@@ -62,7 +62,7 @@ const FOLHA_SVG=`<svg class="folhagem %C" viewBox="0 0 40 40" aria-hidden="true"
 const laje=miolo=>`<div class="laje">${["a","b","c","d","e","f"].map(c=>FOLHA_SVG.replace("%C","f"+c)).join("")}${miolo}</div>`;
 const SELO={concluido:`<span class="selo ok" aria-hidden="true">✔</span>`,bloqueado:`<span class="selo trava" aria-hidden="true">🔒</span>`,refazer:`<span class="selo refaz" aria-hidden="true">🔁</span>`,disponivel:""};
 const ROT_ACESSO={bloqueado:"bloqueado",disponivel:"disponível",concluido:"concluído",refazer:"para refazer"};
-function fecharFolha(){const e=document.getElementById("folha");if(e)e.remove()}
+function fecharFolha(){const e=document.getElementById("folha");if(e)e.remove();if(typeof fecharLampada==="function")fecharLampada()}
 function abrirFolhaFase(id){
   const f=FASES.find(x=>x.id===id);if(!f)return;
   fecharFolha();

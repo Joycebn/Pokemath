@@ -50,7 +50,7 @@ function posFases(){
   if(FS.vista==="exerc"){const i=$("#resp");if(i)i.focus();carregarFalaSessao()}
 }
 function sairFases(){pararAnimacoes();if(typeof fecharFolha==="function")fecharFolha()}
-function voltarTrilha(){pararAnimacoes();FS.vista="trilha";render()}
+function voltarTrilha(){fecharLampada();pararAnimacoes();FS.vista="trilha";render()}
 
 function cartaoFase(f){
   const lib=faseLiberada(f);
@@ -144,7 +144,7 @@ function htmlExerc(){
   const s=FS.ses,ex=s.fila[0],pct=Math.round(s.feitas/s.total*100);
   const vidas=`<span class="vidas" aria-label="${s.vidas} vidas">${"❤️".repeat(s.vidas)}${"🖤".repeat(VIDAS_NIVEL-s.vidas)}</span>`;
   const resp=s.estado==="pergunta"?htmlResposta(ex):"";
-  const dica=(s.dica&&ex.dica&&s.estado==="pergunta")?`<div class="dicaBox">💡 <b>Dica:</b> ${ex.dica}</div>`:"";
+  const dica=s.estado==="pergunta"?botaoLampada("abrirLampadaFase()"):"";
   const certa=ex.respTxt||ex.resposta;
   const fb=s.estado==="certo"?`<div class="fb ok">${s.msg}<button class="grande" onclick="continuarSessao()">Continuar</button></div>`
     :s.estado==="errado"?`<div class="fb err"><b>Você perdeu uma vida.</b> ${s.vidas>0?`Ainda tem ${s.vidas} ${s.vidas===1?"vida":"vidas"}!`:"Acabaram as vidas."}<br>A resposta certa é <b>${certa}</b>.<br>${ex.erro}<button class="grande" onclick="continuarSessao()">Continuar</button></div>`:"";

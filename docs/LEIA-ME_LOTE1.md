@@ -67,3 +67,9 @@ Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 
 - Roteiros em `js/motor/explicacao.js` (`ROT.comparar`, `ROT.parImpar`, `ROT.sequencia`), cada passo de 3 a 5 s.
 - "Tabuadas" saiu da lista "Em breve" (a aba Tabuada é a trilha da tabuada); a tela de fases ganhou o atalho 🔢 para ela. Restam em "Em breve": Figuras geométricas, Medidas de tempo e dinheiro, Tabelas e gráficos, Acaso e probabilidade (Lotes B e C).
 - Campo opcional `curto` na fase: nome curto da etiqueta na trilha ilustrada (o nome inteiro continua no rótulo de acessibilidade).
+
+## Lâmpada 💡 com macetes (no lugar da dica escrita)
+- Nos exercícios das fases (Bronze, Prata e Ouro), no Treino/Desafio da aba Tabuada e na trilha da Tabuada, a dica escrita saiu. No lugar há um botão 💡; só se a criança tocar abre o cartão com o macete e o Pyri. Abrir a lâmpada não custa vida, moeda nem tentativa, e a questão continua a mesma.
+- Qual macete abre: cada fase tem o campo `macete` (um id ou uma lista) em `js/conteudo/ano3.js`. Na Multiplicação a lâmpada escolhe pelos números da conta (ordem 9, 6, 8, 7, 4, 3, 5, 10, 11, 2); os geradores de conta guardam os fatores no campo `fat`. Fase sem macete mostra um "Lembrete" com a dica antiga.
+- 19 macetes em `js/conteudo/macetes.js`: medidas de comprimento (frase da Katia), casas dos números ("Um Dia Comi Mangas"), somar, "vai um", empréstimo, tabuadas do 2 ao 11, dividir, comparar (boca do sinal), pares e ímpares e sequências. Os da pesquisa (tabuadas e boca do sinal) vêm de Toda Matéria, Valor Final, Só Matemática e Psicopedagogia.com.br; os demais são propostas do projeto para ajuste.
+- Prática de cada macete (💡 Macetes na aba Tabuada): os de tabuada usam 5 contas; os conceituais usam 4 questões de escolha do gerador da fase; as medidas têm ordem, lacuna e aplicação.

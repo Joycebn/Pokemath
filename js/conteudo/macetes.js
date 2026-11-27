@@ -1,16 +1,46 @@
-/* Macetes: truques de memória. Dados puros (sem tela). */
+/* Macetes: truques de memória. Dados puros (sem tela).
+   Cada macete tem: id, icone, titulo, resumo (frase curta que vira o destaque), explicacao e uma fonte de prática:
+   partes (frase com iniciais), gerador (questões do GER da fase) ou a (tabuada do número a).
+   A lâmpada 💡 dos exercícios abre o macete da fase (campo macete da fase em js/conteudo/ano3.js). */
 const MACETES=[
 {id:"medidas-comprimento",icone:"📏",titulo:"Medidas de comprimento",resumo:"A ordem das unidades, do maior para o menor",tipo:"frase",
  partes:[{p:"Katia",u:"km"},{p:"Herdou",u:"hm"},{p:"DA",u:"dam"},{p:"Mãe",u:"m"},{p:"Dois",u:"dm"},{p:"Cachorrinhos",u:"cm"},{p:"Muito Mansinhos",u:"mm"}],
- explicacao:"A primeira letra de cada parte da frase é a primeira letra de uma unidade, na ordem do maior para o menor. “Muito Mansinhos” juntos formam o mm (milímetro)."},
-{id:"tab5",icone:"🖐️",titulo:"Tabuada do 5",resumo:"Metade do 10",tipo:"conta",a:5,
- explicacao:"Multiplicar por 5 é pegar a metade de multiplicar por 10. Ex.: 5 × 8 → 10 × 8 = 80, metade de 80 = 40."},
+ explicacao:"A primeira letra de cada parte da frase é a primeira letra de uma unidade, na ordem do maior para o menor. “Muito Mansinhos” juntos formam o mm (milímetro). A mesma ordem vale para massa (kg, hg, dag, g, dg, cg, mg) e capacidade (kl, hl, dal, l, dl, cl, ml)."},
+{id:"casas",icone:"🔢",titulo:"Casas dos números",resumo:"Um Dia Comi Mangas: U, D, C, M",tipo:"frase",gerador:"valorPosicional",
+ partes:[{p:"Um",u:"Unidade"},{p:"Dia",u:"Dezena"},{p:"Comi",u:"Centena"},{p:"Mangas",u:"Milhar"}],
+ explicacao:"As casas vão da direita para a esquerda: Unidade, Dezena, Centena e Milhar. Cada casa vale 10 vezes a casa da direita. Ex.: no 345, o 4 está nas dezenas e vale 40."},
+{id:"somar",icone:"➕",titulo:"Somar",resumo:"Comece pela direita, pelas unidades",tipo:"dica",gerador:"adicao",
+ explicacao:"Some sempre começando pela direita: primeiro as unidades, depois as dezenas, depois as centenas. Cada casa soma só com a casa igual. Ex.: 23 + 12 → 3 + 2 = 5 e 20 + 10 = 30, então 35."},
+{id:"vaium",icone:"🚀",titulo:"Somar com “vai um”",resumo:"10 unidades viram 1 dezena",tipo:"dica",gerador:"adicaoVaiUm",
+ explicacao:"Quando a soma de uma casa passa de 9, juntamos 10 e formamos um pacotinho: 10 unidades viram 1 dezena. Esse pacotinho é o “vai um” e sobe para a casa da esquerda. Ex.: 8 + 5 = 13 → escreve 3 e vai 1 para as dezenas."},
+{id:"emprestimo",icone:"➖",titulo:"Subtrair com empréstimo",resumo:"Peça 1 dezena emprestada: ela vale 10 unidades",tipo:"dica",gerador:"subtracao",
+ explicacao:"Se não dá para tirar (2 − 5, por exemplo), pedimos 1 dezena emprestada para a casa da esquerda. 1 dezena vale 10 unidades: 12 − 5 = 7. A casa que emprestou fica com 1 a menos."},
+{id:"tab2",icone:"2️⃣",titulo:"Tabuada do 2",resumo:"O dobro",tipo:"conta",a:2,
+ explicacao:"Multiplicar por 2 é fazer o dobro: o número somado com ele mesmo. Ex.: 2 × 7 = 7 + 7 = 14."},
+{id:"tab3",icone:"3️⃣",titulo:"Tabuada do 3",resumo:"O dobro mais o número",tipo:"conta",a:3,
+ explicacao:"Multiplicar por 3 é o dobro mais o próprio número. Ex.: 3 × 7 → dobro de 7 é 14, mais 7 = 21."},
 {id:"tab4",icone:"✌️",titulo:"Tabuada do 4",resumo:"O dobro do dobro",tipo:"conta",a:4,
  explicacao:"Multiplicar por 4 é dobrar duas vezes. Ex.: 4 × 7 → dobro de 7 é 14, dobro de 14 é 28."},
-{id:"tab9",icone:"🤟",titulo:"Tabuada do 9",resumo:"Dedos ou 10 menos 1",tipo:"conta",a:9,
- explicacao:"Multiplicar por 9 é multiplicar por 10 e tirar uma vez o número. Ex.: 9 × 7 → 70 − 7 = 63. Nos dedos: abaixe o 7º dedo; 6 dedos antes e 3 depois dão 63. A soma dos algarismos do resultado sempre dá 9 (6 + 3)."},
+{id:"tab5",icone:"🖐️",titulo:"Tabuada do 5",resumo:"Metade do 10",tipo:"conta",a:5,
+ explicacao:"Multiplicar por 5 é pegar a metade de multiplicar por 10. Ex.: 5 × 8 → 10 × 8 = 80, metade de 80 = 40."},
+{id:"tab6",icone:"6️⃣",titulo:"Tabuada do 6",resumo:"A do 5 mais o número",tipo:"conta",a:6,
+ explicacao:"Multiplicar por 6 é multiplicar por 5 e somar mais uma vez o número. Ex.: 6 × 7 → 5 × 7 = 35, mais 7 = 42."},
+{id:"tab7",icone:"7️⃣",titulo:"Tabuada do 7",resumo:"A do 5 mais a do 2",tipo:"conta",a:7,
+ explicacao:"Multiplicar por 7 é juntar a tabuada do 5 com a do 2 (5 + 2 = 7). Ex.: 7 × 6 → 5 × 6 = 30 e 2 × 6 = 12; 30 + 12 = 42."},
+{id:"tab8",icone:"8️⃣",titulo:"Tabuada do 8",resumo:"O dobro da tabuada do 4",tipo:"conta",a:8,
+ explicacao:"Multiplicar por 8 é fazer o dobro da tabuada do 4. Ex.: 8 × 7 → 4 × 7 = 28, dobro de 28 = 56."},
+{id:"tab9",icone:"🤟",titulo:"Tabuada do 9",resumo:"Dedos, ou o anterior e o que falta para 9",tipo:"conta",a:9,
+ explicacao:"Nos dedos: abaixe o dedo do número; os dedos à esquerda são as dezenas e os da direita, as unidades. Ex.: 9 × 7 → 6 dedos e 3 dedos = 63. Também dá para pensar: o resultado começa pelo número anterior (6) e termina com o que falta para 9 (3). Ou 10 × 7 = 70, menos 7 = 63. A soma dos algarismos do resultado sempre dá 9 (6 + 3)."},
 {id:"tab10",icone:"🔟",titulo:"Tabuada do 10",resumo:"Acrescente um zero",tipo:"conta",a:10,
  explicacao:"Multiplicar por 10 é colocar um zero no fim do número. Ex.: 10 × 7 = 70."},
 {id:"tab11",icone:"👯",titulo:"Tabuada do 11",resumo:"Repita o algarismo",tipo:"conta",a:11,
- explicacao:"De 11 × 1 até 11 × 9, repita o algarismo: 11 × 7 = 77. Para 11 × 10, some 10 de 100 + 10 = 110."}
+ explicacao:"De 11 × 1 até 11 × 9, repita o algarismo: 11 × 7 = 77. Para 11 × 10, some 10 de 100 + 10 = 110."},
+{id:"dividir",icone:"➗",titulo:"Dividir",resumo:"Divisão é o contrário da multiplicação",tipo:"dica",gerador:"divisao",
+ explicacao:"Para dividir, pense na multiplicação: 12 ÷ 3 → “3 vezes quanto dá 12?”. Como 3 × 4 = 12, então 12 ÷ 3 = 4. Também dá para repartir um por um em pratos iguais."},
+{id:"comparar",icone:"⚖️",titulo:"Comparar números",resumo:"A boca do sinal fica aberta para o maior",tipo:"dica",gerador:"comparar",
+ explicacao:"O sinal de maior e menor parece uma boca (um jacaré!): a boca fica aberta para o número maior e a ponta aponta para o menor. Para saber qual é maior, compare casa por casa, da esquerda para a direita: o primeiro algarismo diferente decide."},
+{id:"parimpar",icone:"👯",titulo:"Pares e ímpares",resumo:"Par forma duplas; ímpar sempre sobra um",tipo:"dica",gerador:"parImpar",
+ explicacao:"Par: dá para formar duplas sem sobrar, e o número termina em 0, 2, 4, 6 ou 8. Ímpar: sempre sobra um sem par, e o número termina em 1, 3, 5, 7 ou 9. Basta olhar o último algarismo."},
+{id:"sequencia",icone:"🔁",titulo:"Sequências",resumo:"Veja a diferença entre dois vizinhos",tipo:"dica",gerador:"sequencia",
+ explicacao:"Olhe dois números vizinhos e veja de quanto em quanto eles aumentam (ou diminuem). Essa é a regra: continue sempre com a mesma. Ex.: 3, 7, 11 → soma 4 a cada passo, então o próximo é 15."}
 ];

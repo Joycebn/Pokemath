@@ -39,7 +39,7 @@ function tabPerguntar(){
   <div class="tela"><div class="conta">${a} × ${b}</div>
   ${escolher?`<div class="ops">${opcoes(a,b).map(o=>`<button class="op" data-v="${o}" onclick="tabResponder(${o},this)">${o}</button>`).join("")}</div>`
    :`<input id="tr" type="number" inputmode="numeric" autocomplete="off" aria-label="Sua resposta"><button class="grande" id="tr-ok" onclick="tabResponder()">Responder</button>`}
-  <div id="fb"></div></div><button class="sec" onclick="ir('estudar')">Sair</button>`;
+  ${botaoLampada("abrirLampadaTT()",true)}<div id="fb"></div></div><button class="sec" onclick="ir('estudar')">Sair</button>`;
   const r=document.getElementById("tr");if(r){r.focus();r.onkeydown=e=>{if(e.key==="Enter")tabResponder()}}
   TT.t0=Date.now();
 }
@@ -81,4 +81,10 @@ function tabFim(){
   ${podeProx?`<button class="grande" onclick="tabIniciar('${T.id}','${prox}')">Próximo nível: ${ICN[prox]} ${NOME_N[prox]} ▶</button>`:""}
   <button class="${podeProx?"sec":"grande"}" onclick="tabIniciar('${T.id}','${T.n}')">Tentar de novo</button>
   <button class="sec" onclick="ir('estudar')">Voltar à trilha</button></div>`;
+}
+
+function abrirLampadaTT(){
+  if(!TT)return;const [a,b]=TT.qs[TT.i],it=TT.it;
+  let m=it.macete?macAch(it.macete):null;if(!m&&it.digitos===1)m=macetePorFatores([a,b]);
+  abrirLampada(m,it.digitos===1?`${a} × ${b} = ${a} somado ${b} vezes`:tabDecompor(a,b));
 }

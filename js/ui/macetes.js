@@ -6,6 +6,11 @@ function macExplica(id,a,b){
   if(id==="tab9")return`${a} × ${b}: 10 × ${b} = ${10*b}, menos ${b} = ${c}.`;
   if(id==="tab5")return`${a} × ${b}: 10 × ${b} = ${10*b}, a metade de ${10*b} é ${c}.`;
   if(id==="tab4")return`${a} × ${b}: o dobro de ${b} é ${2*b}, o dobro de ${2*b} é ${c}.`;
+  if(id==="tab2")return`${a} × ${b}: o dobro de ${b} é ${c}.`;
+  if(id==="tab3")return`${a} × ${b}: o dobro de ${b} é ${2*b}, mais ${b} = ${c}.`;
+  if(id==="tab6")return`${a} × ${b}: 5 × ${b} = ${5*b}, mais ${b} = ${c}.`;
+  if(id==="tab7")return`${a} × ${b}: 5 × ${b} = ${5*b} e 2 × ${b} = ${2*b}; ${5*b} + ${2*b} = ${c}.`;
+  if(id==="tab8")return`${a} × ${b}: 4 × ${b} = ${4*b}, o dobro de ${4*b} é ${c}.`;
   if(id==="tab10")return`${a} × ${b}: ${b} com um zero no fim fica ${c}.`;
   if(id==="tab11")return b<10?`${a} × ${b}: repita o ${b} e fica ${c}.`:`${a} × ${b}: 100 + 10 = ${c}.`;
   return`${a} × ${b} = ${c}`;
@@ -21,6 +26,10 @@ function macPerguntas(id){
      {tipo:"lacuna",texto:`Qual unidade vem logo depois de ${us[i]}?`,opcoes:o1,resp:us[i+1],expl:`Depois de ${us[i]} vem ${us[i+1]}: ${m.partes.map(p=>p.u).join(" → ")}.`},
      {tipo:"escolha",texto:"Quantos passos de km até m? (km → hm → dam → m)",opcoes:o3,resp:resp3,expl:"km → hm (1), hm → dam (2), dam → m (3): são 3 passos."}];
   }
+  if(m.gerador){const qs=[],vis=new Set();let g=0;
+    while(qs.length<4&&g++<80){const ex=GER[m.gerador](1,"escolha"),k=ex.chave||ex.enunciado;if(vis.has(k))continue;vis.add(k);
+      qs.push({tipo:"escolha",texto:ex.enunciado,opcoes:Array.from(ex.opcoes),resp:ex.resposta,expl:ex.erro})}
+    return qs}
   const a=m.a,bs=embaralhar([2,3,4,5,6,7,8,9]).slice(0,5);
   return bs.map(b=>({tipo:"conta",a,b,texto:`${a} × ${b}`,opcoes:opcoes(a,b),resp:a*b,expl:macExplica(id,a,b)}));
 }
@@ -39,6 +48,10 @@ function macFraseHtml(m){
 function macetesDaFase(f){const l=[].concat((f&&f.macete)||[]);return MACETES.filter(m=>l.includes(m.id))}
 function abrirMacetesFase(id){const f=FASES.find(x=>x.id===id),l=macetesDaFase(f);if(!l.length)return;MAC_VOLTA="fases";if(l.length===1)abrirMacete(l[0].id);else abrirMacetes(l.map(m=>m.id))}
 let MAC_VOLTA="estudar";
+function corpoMacete(m){
+  const frase=m.partes?`<p class="macFrase">${macFraseHtml(m)}</p><p class="macUni">${m.partes.map(p=>`<span>${p.u}</span>`).join(" › ")}</p>`:`<p class="macFrase"><b>${m.resumo}</b></p>`;
+  return frase+`<p>${m.explicacao}</p>`;
+}
 function abrirMacetes(ids){
   fecharFolha();if(!Array.isArray(ids))MAC_VOLTA="estudar";
   const lista=Array.isArray(ids)?MACETES.filter(m=>ids.includes(m.id)):MACETES;
@@ -46,8 +59,7 @@ function abrirMacetes(ids){
 }
 function abrirMacete(id){
   const m=macAch(id);if(!m)return;fecharFolha();
-  const corpo=m.partes?`<p class="macFrase">${macFraseHtml(m)}</p><p class="macUni">${m.partes.map(p=>`<span>${p.u}</span>`).join(" › ")}</p>`:`<p class="macFrase"><b>${m.resumo}</b></p>`;
-  app.innerHTML=`<h2>💡 Macete: ${m.titulo}</h2><div class="info"><div class="macPyri"><img src="${IMG(PYRI_ID)}" alt="Pyri"></div>${corpo}<p>${m.explicacao}</p><button class="grande" id="mac-praticar" onclick="praticarMacete('${m.id}')">Praticar</button></div><button class="sec" onclick="abrirMacetes()">Todos os macetes</button>`;
+  app.innerHTML=`<h2>💡 Macete: ${m.titulo}</h2><div class="info"><div class="macPyri"><img src="${IMG(PYRI_ID)}" alt="Pyri"></div>${corpoMacete(m)}<button class="grande" id="mac-praticar" onclick="praticarMacete('${m.id}')">Praticar</button></div><button class="sec" onclick="abrirMacetes()">Todos os macetes</button>`;
 }
 function praticarMacete(id){MAC={id,qs:macPerguntas(id),i:0,sel:[]};macTela()}
 function macTela(){
@@ -56,7 +68,7 @@ function macTela(){
     MAC.sel=[];
     corpo=`<p>${q.texto}</p><p class="macSeq" id="mac-seq">&nbsp;</p><div class="chips">${embaralhar(q.ordem).map(p=>`<button class="chip" data-p="${p}" onclick="macChip(this)">${p}</button>`).join("")}</div>`;
   }else{
-    corpo=`<div class="conta">${q.texto}</div><div class="ops">${q.opcoes.map(o=>`<button class="op mop" data-v="${o}" onclick="macOp(this)">${o}</button>`).join("")}</div>`;
+    corpo=`<div class="${q.tipo==="escolha"?"enun":"conta"}">${q.texto}</div><div class="ops">${q.opcoes.map(o=>`<button class="op mop" data-v="${o}" onclick="macOp(this)">${o}</button>`).join("")}</div>`;
   }
   app.innerHTML=`<div class="info"><div class="topq"><span>${MAC.i+1} de ${MAC.qs.length}</span><span>${m.icone} ${m.titulo}</span></div><div class="barra"><i style="width:${MAC.i/MAC.qs.length*100}%"></i></div></div><div class="tela">${corpo}<div id="mac-fb"></div></div><button class="sec" onclick="abrirMacete('${m.id}')">Sair</button>`;
 }
@@ -84,3 +96,24 @@ function macSeguinte(){
   const novo=macConcluir(MAC.id),m=macAch(MAC.id);
   app.innerHTML=`<div class="info"><h2>🎉 Macete concluído!</h2><div class="macPyri"><img src="${IMG(PYRI_ID)}" alt="Pyri"></div><p>${novo?"Você ganhou um pouco de XP por praticar hoje!":"Praticar de novo ajuda a fixar! (O XP deste macete já foi ganho hoje.)"}</p><button class="grande" onclick="praticarMacete('${m.id}')">Praticar outra vez</button></div><button class="sec" onclick="abrirMacetes()">Todos os macetes</button>`;
 }
+
+/* ---------- Lâmpada 💡: o macete aparece só se a criança tocar (no lugar da dica escrita) ---------- */
+const ORDEM_TAB=[9,6,8,7,4,3,5,10,11,2];
+function macetePorFatores(fat){const l=fat||[];for(const n of ORDEM_TAB)if(l.includes(n)&&macAch("tab"+n))return macAch("tab"+n);return null}
+function macetePara(f,ex){
+  const l=macetesDaFase(f);if(l.length<=1)return l[0]||null;
+  const t=macetePorFatores(ex&&ex.fat);return t&&l.includes(t)?t:l[0];
+}
+const botaoLampada=(fn,solto)=>`<button class="lampada ${solto?"lampadaIn":""}" id="bt-lamp" aria-label="Abrir o macete (dica)" onclick="${fn}">💡</button>`;
+function fecharLampada(){const e=document.getElementById("lampada");if(e)e.remove()}
+function abrirLampada(m,lembrete){
+  fecharLampada();
+  const d=document.createElement("div");d.id="lampada";d.className="folhaFundo";
+  d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",m?"Macete: "+m.titulo:"Lembrete");
+  d.innerHTML=`<div class="folha lamp"><div class="folhaTopo fHead"><span class="ic">💡</span><span class="fTxt"><b>${m?"Macete: "+m.titulo:"Lembrete"}</b></span><button class="lin fecha" aria-label="Fechar" onclick="fecharLampada()">✕</button></div>
+  <div class="lampCorpo"><div class="macPyri"><img src="${IMG(PYRI_ID)}" alt="Pyri"></div>${m?corpoMacete(m):`<p class="macFrase"><b>Lembrete</b></p><p>${lembrete||"Pense com calma, passo a passo."}</p>`}<button class="grande" id="lamp-ok" onclick="fecharLampada()">Entendi</button></div></div>`;
+  d.addEventListener("click",e=>{if(e.target===d)fecharLampada()});
+  document.body.appendChild(d);const b=d.querySelector("#lamp-ok");if(b)b.focus();
+}
+function abrirLampadaFase(){const s=FS.ses;if(!s||!s.fila[0])return;const ex=s.fila[0];abrirLampada(macetePara(s.fase,ex),ex.dica)}
+function abrirLampadaTab(a,b){abrirLampada(macetePorFatores([a,b]),dicaTexto(a,b))}
