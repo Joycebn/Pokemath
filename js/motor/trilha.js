@@ -106,8 +106,31 @@ function voltarExplicacao(){
 }
 
 /* ---- exercícios ---- */
+/* ---- desenhos em SVG feitos aqui (sem imagens de terceiros): figuras, relógio, moedas e notas ---- */
+function svgFigura(id){
+  const aria=id==="cubo"?"cubo":(FIGURAS.find(f=>f.id===id)||{nome:id}).nome;
+  if(id==="cubo")return `<svg viewBox="0 0 200 150" role="img" aria-label="cubo"><polygon points="30,60 110,60 110,140 30,140" fill="#ffd23f" stroke="#16224a" stroke-width="4" stroke-linejoin="round"/><polygon points="30,60 70,25 150,25 110,60" fill="#ffe98a" stroke="#16224a" stroke-width="4" stroke-linejoin="round"/><polygon points="110,60 150,25 150,105 110,140" fill="#e0a800" stroke="#16224a" stroke-width="4" stroke-linejoin="round"/></svg>`;
+  const v=vertsFig(id,100,78,64),pts=v.map(p=>p.join(",")).join(" ");
+  return `<svg viewBox="0 0 200 156" role="img" aria-label="${aria}"><polygon points="${pts}" fill="#ffd23f" stroke="#16224a" stroke-width="5" stroke-linejoin="round"/>${v.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5.5" fill="#e64a8d" stroke="#fff" stroke-width="2"/>`).join("")}</svg>`;
+}
+function svgRelogio(h,m){
+  const ang=(h%12)*30+m*0.5,tk=Array.from({length:60},(_,i)=>{const a=i*6*Math.PI/180,r1=i%5?90:84,r2=96;return `<line x1="${(100+r1*Math.sin(a)).toFixed(1)}" y1="${(100-r1*Math.cos(a)).toFixed(1)}" x2="${(100+r2*Math.sin(a)).toFixed(1)}" y2="${(100-r2*Math.cos(a)).toFixed(1)}" stroke="#16224a" stroke-width="${i%5?1:2.5}"/>`}).join("");
+  const nums=Array.from({length:12},(_,i)=>{const n=i+1,a=n*30*Math.PI/180;return `<text x="${(100+68*Math.sin(a)).toFixed(1)}" y="${(100-68*Math.cos(a)+7).toFixed(1)}" text-anchor="middle" font-size="20" font-weight="800" fill="#16224a">${n}</text>`}).join("");
+  return `<svg viewBox="0 0 200 200" role="img" aria-label="relógio"><circle cx="100" cy="100" r="98" fill="#fff" stroke="#16224a" stroke-width="5"/>${tk}${nums}<line class="ph" x1="100" y1="100" x2="100" y2="52" transform="rotate(${+ang.toFixed(2)} 100 100)" stroke="#16224a" stroke-width="7" stroke-linecap="round"/><line class="pmin" x1="100" y1="100" x2="100" y2="24" transform="rotate(${m*6} 100 100)" stroke="#d62839" stroke-width="4.5" stroke-linecap="round"/><circle cx="100" cy="100" r="6" fill="#16224a"/></svg>`;
+}
+const COR_MOEDA=v=>v>=100?["#f2c94c","#b8860b"]:v>=50?["#d5dbe2","#7b8794"]:["#d98a4a","#8a4b17"],COR_NOTA={2:"#aebfd1",5:"#c3a4e6",10:"#f08a8a",20:"#f6d55c",50:"#f2a65a",100:"#7fb5e6"};
+function svgDinheiro(itens){
+  const moeda=itens.every(i=>i.k==="moeda"),gap=moeda?68:104,W=Math.max(120,itens.length*gap+8),H=moeda?76:64;
+  const el=itens.map((it,i)=>{
+    if(it.k==="moeda"){const cx=8+i*gap+31,[f,b]=COR_MOEDA(it.v);return `<g class="moedinha"><circle cx="${cx}" cy="38" r="31" fill="${f}" stroke="${b}" stroke-width="4"/><text x="${cx}" y="42" text-anchor="middle" font-size="20" font-weight="800" fill="#4a3000">${it.v}</text><text x="${cx}" y="56" text-anchor="middle" font-size="8.5" font-weight="700" fill="#4a3000">centavos</text></g>`}
+    const x=8+i*gap;return `<g class="cedula"><rect x="${x}" y="8" width="94" height="48" rx="6" fill="${COR_NOTA[it.v]||"#cfe9d4"}" stroke="#16224a" stroke-width="3"/><rect x="${x+6}" y="14" width="82" height="36" rx="3" fill="none" stroke="#16224a" stroke-width="1.5" opacity=".35"/><text x="${x+47}" y="38" text-anchor="middle" font-size="19" font-weight="800" fill="#16224a">R$ ${it.v}</text></g>`}).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${moeda?"moedas":"notas"}" class="${moeda?"svgMoedas":"svgNotas"}">${el}</svg>`;
+}
 function visEstatico(v){
   if(!v)return"";
+  if(v.tipo==="figura")return `<div class="visSvg">${svgFigura(v.nome)}</div>`;
+  if(v.tipo==="relogio")return `<div class="visSvg relogio">${svgRelogio(v.h,v.m)}</div>`;
+  if(v.tipo==="dinheiro")return `<div class="visSvg dinheiro">${svgDinheiro(v.itens)}</div>`;
   if(v.tipo==="conta"){const a=String(v.a),b=String(v.b),w=Math.max(a.length,b.length)+1;
     return `<pre class="contaTxt">${a.padStart(w)}\n${maisTxt(v.op)}${b.padStart(w-1)}\n${"—".repeat(w)}</pre>`}
   if(v.tipo==="iguais")return `<div class="iguais">${Array.from({length:v.grupos},()=>`<div class="cx">${v.emoji.repeat(v.cada)}</div>`).join("")}</div>`;

@@ -65,7 +65,7 @@ Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 
 - Fases novas (ordens 7, 8 e 9 do 3º ano): `a3-comparar` (⚖️), `a3-paresimpares` (👯) e `a3-sequencias` (🔁), cada uma com 3 níveis, 2 vidas, os 4 tipos de questão (escrever, escolher, completar e ligar) e explicação animada do Pyri.
 - Geradores em `js/motor/geradores.js` (`GER.comparar`, `GER.parImpar`, `GER.sequencia`): respostas sempre numéricas. Comparar: 3 algarismos (Bronze/Prata) e 4 (Ouro), números parecidos para comparar casa por casa. Pares e ímpares: último algarismo, contagem e "par/ímpar logo antes/depois de". Sequências: de 2 em 2 até de 10 em 10; no Ouro também de 20, 25 e 50 e sequências que diminuem.
 - Roteiros em `js/motor/explicacao.js` (`ROT.comparar`, `ROT.parImpar`, `ROT.sequencia`), cada passo de 3 a 5 s.
-- "Tabuadas" saiu da lista "Em breve" (a aba Tabuada é a trilha da tabuada); a tela de fases ganhou o atalho 🔢 para ela. Restam em "Em breve": Figuras geométricas, Medidas de tempo e dinheiro, Tabelas e gráficos, Acaso e probabilidade (Lotes B e C).
+- "Tabuadas" saiu da lista "Em breve" (a aba Tabuada é a trilha da tabuada); a tela de fases ganhou o atalho 🔢 para ela. Restavam em "Em breve" 4 itens; o Lote B tirou Figuras e Tempo/dinheiro, restam Tabelas e gráficos e Acaso e probabilidade (Lote C).
 - Campo opcional `curto` na fase: nome curto da etiqueta na trilha ilustrada (o nome inteiro continua no rótulo de acessibilidade).
 
 ## Lâmpada 💡 com macetes (no lugar da dica escrita)
@@ -73,3 +73,17 @@ Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 
 - Qual macete abre: cada fase tem o campo `macete` (um id ou uma lista) em `js/conteudo/ano3.js`. Na Multiplicação a lâmpada escolhe pelos números da conta (ordem 9, 6, 8, 7, 4, 3, 5, 10, 11, 2); os geradores de conta guardam os fatores no campo `fat`. Fase sem macete mostra um "Lembrete" com a dica antiga.
 - 19 macetes em `js/conteudo/macetes.js`: medidas de comprimento (frase da Katia), casas dos números ("Um Dia Comi Mangas"), somar, "vai um", empréstimo, tabuadas do 2 ao 11, dividir, comparar (boca do sinal), pares e ímpares e sequências. Os da pesquisa (tabuadas e boca do sinal) vêm de Toda Matéria, Valor Final, Só Matemática e Psicopedagogia.com.br; os demais são propostas do projeto para ajuste.
 - Prática de cada macete (💡 Macetes na aba Tabuada): os de tabuada usam 5 contas; os conceituais usam 4 questões de escolha do gerador da fase; as medidas têm ordem, lacuna e aplicação.
+
+## Etapa 2, Lote B — 3º ano: Figuras geométricas, Medidas de comprimento, Medidas de tempo e Dinheiro
+- Fases novas (ordens 10 a 13 do 3º ano): `a3-figuras` 🔷, `a3-comprimento` 📏, `a3-tempo` 🕒 e `a3-dinheiro` 💰 (tempo e dinheiro são duas fases separadas). Cada uma tem 3 níveis, 2 vidas, os 4 tipos de questão (escrever, escolher, completar e ligar), respostas **sempre numéricas e inteiras** (dinheiro só em reais inteiros ou centavos, sem vírgula) e explicação animada do Pyri com passos de 3 a 5 s.
+- Geradores em `js/motor/geradores.js` (`GER.figuras`, `GER.comprimento`, `GER.tempo`, `GER.dinheiro`), todos montados por `montarFam`, que junta "famílias" de questões (enunciado, versão com ___, texto para ligar, resposta, explicação e desenho opcional). Bronze/Prata usam o nível fácil e o Ouro o difícil:
+  - Figuras: lados e vértices de triângulo, quadrado, retângulo, pentágono e hexágono; cubo (faces no Bronze/Prata; faces, vértices e arestas no Ouro).
+  - Comprimento: m↔cm, cm↔mm e km↔m; no Ouro também "2 m e 35 cm em cm", fitas juntas e diferença entre fios.
+  - Tempo: horas↔minutos, dias↔horas, semanas↔dias, anos↔meses, meia hora, relógio (Bronze/Prata: :00, :15, :30 e :45; Ouro: de 5 em 5 minutos, "1 hora e meia" e "quantos minutos faltam").
+  - Dinheiro: reais↔centavos, somar valores, troco (em reais e em centavos), somar moedas e notas desenhadas.
+- Desenhos em SVG feitos no próprio código (`svgFigura`, `svgRelogio`, `svgDinheiro` em `js/motor/trilha.js`, chamados por `visEstatico`), sem imagens de terceiros. Questões com desenho guardam o desenho na chave para não repetir. Estilos em `css/novo.css` (`.visSvg`, `.pm-txt`, `.pm-moeda`, `.pm-nota`).
+- Roteiros em `js/motor/explicacao.js` (`ROT.figuras`, `ROT.comprimento`, `ROT.tempo`, `ROT.dinheiro`): vértices acendem e o cubo aparece; a régua de 1 m se divide em 100 cm; o ponteiro grande dá a volta de 60 minutos; moedas e notas se juntam e o troco é completado.
+- Macetes novos em `js/conteudo/macetes.js` (agora 22): `figuras` (tri = 3, quadri = 4, penta = 5, hexa = 6; cubo como um dado), `tempo` (cada número do ponteiro grande vale 5 minutos) e `dinheiro` (troco: complete do preço até o valor pago). A fase de comprimento usa o macete que já existia (frase da Katia), com uma frase a mais explicando "1 m = 100 cm" e "1 km = 1000 m". A prática dos macetes agora também mostra o desenho da questão.
+- Em breve (3º ano): só restam Tabelas e gráficos e Acaso e probabilidade (Lote C).
+- Trilha ilustrada: 15 círculos (13 fases + 2 cadeados). Foi acrescentado 1 ponto no caminho de cima do vulcão em `js/conteudo/zonas.js`, e cada ponto aceita um 3º valor opcional (`"e"` ou `"d"`) para escolher o lado da etiqueta e evitar que ela cubra o círculo vizinho. Nomes curtos: Figuras, Comprimento, Tempo, Dinheiro.
+- `sw.js`: `pokemath-v14`.

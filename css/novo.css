@@ -117,3 +117,12 @@ nav button{padding:10px 1px;font-size:.7rem}
 .pm-pyri-corpo.foto{background:none;border:0;border-radius:0;width:170px;height:200px;font-size:0}.pm-pyri-corpo.foto img{width:100%;height:100%;object-fit:contain}
 .pyriAv.foto{background:none;border:0;border-radius:0;width:72px;height:84px;font-size:0}.pyriAv.foto img{width:100%;height:100%;object-fit:contain}
 @media (max-height:520px){.pm-pyri-corpo.foto{width:90px;height:105px}}
+
+/* Lote B: textos curtos, moedas, notas e desenhos SVG das questões */
+.pm-txt{font-size:.95rem;font-weight:800;color:#16224a;text-align:center}
+.pm-moeda{border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#d9a21b);border:4px solid #a8730a;color:#5a3b00;font-size:1rem;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.pm-nota{border-radius:8px;border:3px solid #14702f;background:#9bd7a8;color:#0b3d1c;font-size:1.05rem;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.visSvg{margin:6px auto;text-align:center}
+.visSvg svg{display:block;margin:0 auto;width:100%;max-width:230px;height:auto}
+.visSvg.relogio svg{max-width:190px}
+.visSvg.dinheiro svg{max-width:340px}

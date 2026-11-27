@@ -28,7 +28,7 @@ function macPerguntas(id){
   }
   if(m.gerador){const qs=[],vis=new Set();let g=0;
     while(qs.length<4&&g++<80){const ex=GER[m.gerador](1,"escolha"),k=ex.chave||ex.enunciado;if(vis.has(k))continue;vis.add(k);
-      qs.push({tipo:"escolha",texto:ex.enunciado,opcoes:Array.from(ex.opcoes),resp:ex.resposta,expl:ex.erro})}
+      qs.push({tipo:"escolha",texto:ex.enunciado,opcoes:Array.from(ex.opcoes),resp:ex.resposta,expl:ex.erro,visual:ex.visual})}
     return qs}
   const a=m.a,bs=embaralhar([2,3,4,5,6,7,8,9]).slice(0,5);
   return bs.map(b=>({tipo:"conta",a,b,texto:`${a} × ${b}`,opcoes:opcoes(a,b),resp:a*b,expl:macExplica(id,a,b)}));
@@ -68,7 +68,7 @@ function macTela(){
     MAC.sel=[];
     corpo=`<p>${q.texto}</p><p class="macSeq" id="mac-seq">&nbsp;</p><div class="chips">${embaralhar(q.ordem).map(p=>`<button class="chip" data-p="${p}" onclick="macChip(this)">${p}</button>`).join("")}</div>`;
   }else{
-    corpo=`<div class="${q.tipo==="escolha"?"enun":"conta"}">${q.texto}</div><div class="ops">${q.opcoes.map(o=>`<button class="op mop" data-v="${o}" onclick="macOp(this)">${o}</button>`).join("")}</div>`;
+    corpo=`<div class="${q.tipo==="escolha"?"enun":"conta"}">${q.texto}</div>${visEstatico(q.visual)}<div class="ops">${q.opcoes.map(o=>`<button class="op mop" data-v="${o}" onclick="macOp(this)">${o}</button>`).join("")}</div>`;
   }
   app.innerHTML=`<div class="info"><div class="topq"><span>${MAC.i+1} de ${MAC.qs.length}</span><span>${m.icone} ${m.titulo}</span></div><div class="barra"><i style="width:${MAC.i/MAC.qs.length*100}%"></i></div></div><div class="tela">${corpo}<div id="mac-fb"></div></div><button class="sec" onclick="abrirMacete('${m.id}')">Sair</button>`;
 }

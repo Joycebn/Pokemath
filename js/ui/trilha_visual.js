@@ -18,7 +18,7 @@ function medalhaFase(f){let m="";NIVEIS.forEach(n=>{if(estadoNivel(f,n)==="concl
 function anoCompleto(a){const fs=fasesDoAno(a);return fs.length>0&&!(EM_BREVE[a]||[]).length&&fs.every(f=>estadoFase(f)==="concluido")}
 
 /* pos = [x%,y%] quando a zona é ilustrada (círculo sobre a imagem); sem pos, vai no caminho em zigue-zague */
-const classePos=(i,pos)=>pos?(pos[0]>50?"esq":"dir"):`l${i%4}`;
+const classePos=(i,pos)=>pos?(pos[2]==="e"?"esq":pos[2]==="d"?"dir":pos[0]>50?"esq":"dir"):`l${i%4}`;
 const estiloPos=pos=>pos?` style="left:${pos[0]}%;top:${pos[1]}%"`:"";
 function noCirculo(f,i,pos){
   const st=estadoFase(f),m=medalhaFase(f);

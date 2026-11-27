@@ -291,7 +291,7 @@ const esperado={3:["Pyron",900003],4:["Lugia",249],5:["Ho-Oh",250],6:["Palkia",4
 try{t("zonas: existe a tabela ZONAS com os 7 anos (3º ao 9º)",zv("typeof ZONAS!=='undefined'&&Object.keys(ZONAS).join()")==="3,4,5,6,7,8,9");}catch(e){t("zonas: existe a tabela ZONAS com os 7 anos (3º ao 9º)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("zonas: cada ano tem o lendário combinado (3º Pyron, 4º Lugia, 5º Ho-Oh, 6º Palkia, 7º Mewtwo, 8º Rayquaza, 9º Arceus) e um nome de cenário",Object.entries(esperado).every(([a,[n,id]])=>zv(`ZONAS[${a}].lendario.nome`)===n&&zv(`ZONAS[${a}].lendario.id`)===id&&!!zv(`ZONAS[${a}].nome`)));}catch(e){t("zonas: cada ano tem o lendário combinado (3º Pyron, 4º Lugia, 5º Ho-Oh, 6º Palkia, 7º Mewtwo, 8º Rayquaza, 9º Arceus) e um nome de cenário  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("trilha: 7 zonas na tela, uma por ano",Q(".zona").length===7&&Q(".zona").map(e=>e.dataset.ano).join()==="3,4,5,6,7,8,9");}catch(e){t("trilha: 7 zonas na tela, uma por ano  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases",Q('.zona[data-ano="3"] button.circulo[data-fase]').map(e=>e.dataset.fase).join()===zv("fasesDoAno(3).map(f=>f.id).join()")&&zv("fasesDoAno(3).length")===9,Q('.zona[data-ano="3"] button.circulo[data-fase]').length);}catch(e){t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases",Q('.zona[data-ano="3"] button.circulo[data-fase]').map(e=>e.dataset.fase).join()===zv("fasesDoAno(3).map(f=>f.id).join()")&&zv("fasesDoAno(3).length")===13,Q('.zona[data-ano="3"] button.circulo[data-fase]').length);}catch(e){t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("trilha: os cartões antigos (com os 3 botões de nível dentro) saíram da tela",Q(".faseCard").length===0&&Q(".nv").length===0);}catch(e){t("trilha: os cartões antigos (com os 3 botões de nível dentro) saíram da tela  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("trilha: as fases 'Em breve' aparecem como círculos cinza desativados no fim do 3º ano",Q('.zona[data-ano="3"] .circulo.embreve[disabled]').length===zv("EM_BREVE[3].length"));}catch(e){t("trilha: as fases 'Em breve' aparecem como círculos cinza desativados no fim do 3º ano  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* estado do círculo = derivado dos 3 níveis */
@@ -345,7 +345,7 @@ try{t("círculos: cada um é um botão com rótulo (título + situação) e alvo
 try{t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha",/body\.reduzir[^{]*\{[^}]*animation:none/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/prefers-reduced-motion/.test(lerArq("css/trilha.css")));}catch(e){t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* arquivos */
 try{t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)",/css\/trilha\.css/.test(lerArq("index.html"))&&lerArq("index.html").indexOf("js/conteudo/zonas.js")>0&&lerArq("index.html").indexOf("js/conteudo/zonas.js")<lerArq("index.html").indexOf("js/ui/trilha_visual.js")&&lerArq("index.html").indexOf("js/ui/trilha_visual.js")<lerArq("index.html").indexOf("js/legado/jogo.js"));}catch(e){t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v13 e os 3 arquivos novos na lista",/const V="pokemath-v13"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v14 e os 3 arquivos novos na lista",/const V="pokemath-v14"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)",/function estadoNivel/.test(lerArq("js/motor/trilha.js"))&&/function abrirNivel/.test(lerArq("js/motor/trilha.js"))&&/restantesNivel/.test(lerArq("js/motor/trilha.js")));}catch(e){t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
@@ -357,16 +357,16 @@ zv("S.fases={};S.tentNivel=null;S.cfg.anoEscolar=3;save();ir('fases')");
 const P=zv("ZONAS[3].pontos")||[],F=zv("ZONAS[3].fundo");
 const arq="img/zonas/ano3.webp",W=360,H=360*1732/800;
 try{t("imagem: ZONAS[3].fundo aponta para img/zonas/ano3.webp e o arquivo existe, é WebP e leve (menos de 400 KB)",F===arq&&fs.existsSync(path.join(DIR,arq))&&(b=>b.slice(0,4).toString()==="RIFF"&&b.slice(8,12).toString()==="WEBP"&&b.length<400*1024)(fs.readFileSync(path.join(DIR,arq))))}catch(e){t("imagem do ano 3  [erro: "+String(e.message).slice(0,50)+"]",false)}
-try{t("pontos: há pelo menos 14 (6 fases + 8 'em breve'), todos dentro da imagem (3% a 97%)",P.length>=14&&P.every(p=>p[0]>=3&&p[0]<=97&&p[1]>=3&&p[1]<=97),P.length);}catch(e){t("pontos: há pelo menos 14 (6 fases + 8 'em breve'), todos dentro da imagem (3% a 97%)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("pontos: nenhum par de círculos se encosta (distância mínima de 50px numa tela de 360px de largura)",P.length>=14&&P.every((a,i)=>P.every((b,j)=>j<=i||Math.hypot((a[0]-b[0])*W/100,(a[1]-b[1])*H/100)>=50)));}catch(e){t("pontos: nenhum par de círculos se encosta (distância mínima de 50px numa tela de 360px de largura)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("pontos: a trilha SOBE — o primeiro ponto é o mais baixo da imagem e o último o mais alto",P.length>=14&&P[0][1]===Math.max(...P.map(p=>p[1]))&&P[13][1]<=Math.min(...P.slice(0,13).map(p=>p[1]))+12);}catch(e){t("pontos: a trilha SOBE — o primeiro ponto é o mais baixo da imagem e o último o mais alto  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("pontos: há pelo menos 15 (13 fases + 2 'em breve'), todos dentro da imagem (3% a 97%)",P.length>=15&&P.every(p=>p[0]>=3&&p[0]<=97&&p[1]>=3&&p[1]<=97),P.length);}catch(e){t("pontos: há pelo menos 15 (13 fases + 2 'em breve'), todos dentro da imagem (3% a 97%)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("pontos: nenhum par de círculos se encosta (distância mínima de 50px numa tela de 360px de largura)",P.length>=15&&P.every((a,i)=>P.every((b,j)=>j<=i||Math.hypot((a[0]-b[0])*W/100,(a[1]-b[1])*H/100)>=50)));}catch(e){t("pontos: nenhum par de círculos se encosta (distância mínima de 50px numa tela de 360px de largura)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("pontos: a trilha SOBE — o primeiro ponto é o mais baixo da imagem e o último o mais alto",P.length>=15&&P[0][1]===Math.max(...P.map(p=>p[1]))&&P[P.length-1][1]<=Math.min(...P.slice(0,P.length-1).map(p=>p[1]))+12);}catch(e){t("pontos: a trilha SOBE — o primeiro ponto é o mais baixo da imagem e o último o mais alto  [erro: "+String(e.message).slice(0,60)+"]",false)}
 const zi=U('.zona[data-ano="3"]');
 try{t("zona do 3º ano é ilustrada: tem a classe 'ilus' e usa a imagem como fundo",!!zi&&zi.classList.contains("ilus")&&/ano3\.webp/.test(zi.getAttribute("style")||""),zi&&zi.getAttribute("style"));}catch(e){t("zona do 3º ano é ilustrada: tem a classe 'ilus' e usa a imagem como fundo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 const nos=Q('.zona[data-ano="3"].ilus li.no');
-try{t("zona ilustrada: as 13 posições (9 fases + 4 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)",nos.length===13&&nos.every((n,i)=>P[i]&&n.style.left===P[i][0]+"%"&&n.style.top===P[i][1]+"%"),nos.map(n=>n.style.left+","+n.style.top).slice(0,2).join(" | "));}catch(e){t("zona ilustrada: as 13 posições (9 fases + 4 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 9ª mais acima",nos.length===13&&parseFloat(nos[0].style.top)>parseFloat(nos[8].style.top)&&nos[0].querySelector('button.circulo[data-fase]')&&nos[0].querySelector("button").dataset.fase===zv("fasesDoAno(3)[0].id"));}catch(e){t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 9ª mais acima  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("zona ilustrada: cada fase tem seu nome numa etiqueta escura (.tit) ao lado do círculo",nos.length===13&&nos.slice(0,9).every(n=>!!n.querySelector(".tit"))&&nos.every((n,i)=>n.classList.contains(P[i][0]>50?"esq":"dir")));}catch(e){t("zona ilustrada: cada nome fica numa etiqueta escura (.tit) do lado de fora da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("zona ilustrada: os 4 'em breve' são só cadeados (sem etiqueta, para não cobrir a trilha) e continuam com o nome no rótulo de acessibilidade e no title",nos.length===13&&nos.slice(9).every(n=>!n.querySelector(".tit")&&!!n.querySelector("button.circulo.embreve[disabled]")&&/em breve/.test(n.querySelector("button").getAttribute("aria-label"))&&!!n.querySelector("button").getAttribute("title")))}catch(e){t("em breve sem etiqueta  [erro]",false)}
+try{t("zona ilustrada: as 15 posições (13 fases + 2 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)",nos.length===15&&nos.every((n,i)=>P[i]&&n.style.left===P[i][0]+"%"&&n.style.top===P[i][1]+"%"),nos.map(n=>n.style.left+","+n.style.top).slice(0,2).join(" | "));}catch(e){t("zona ilustrada: as 15 posições (13 fases + 2 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 9ª mais acima",nos.length===15&&parseFloat(nos[0].style.top)>parseFloat(nos[8].style.top)&&nos[0].querySelector('button.circulo[data-fase]')&&nos[0].querySelector("button").dataset.fase===zv("fasesDoAno(3)[0].id"));}catch(e){t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 9ª mais acima  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: cada fase tem seu nome numa etiqueta escura (.tit) ao lado do círculo",nos.length===15&&nos.slice(0,13).every(n=>!!n.querySelector(".tit"))&&nos.every((n,i)=>n.classList.contains(P[i][2]==="e"?"esq":P[i][2]==="d"?"dir":P[i][0]>50?"esq":"dir")));}catch(e){t("zona ilustrada: cada nome fica numa etiqueta escura (.tit) do lado de fora da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: os 2 'em breve' são só cadeados (sem etiqueta, para não cobrir a trilha) e continuam com o nome no rótulo de acessibilidade e no title",nos.length===15&&nos.slice(13).every(n=>!n.querySelector(".tit")&&!!n.querySelector("button.circulo.embreve[disabled]")&&/em breve/.test(n.querySelector("button").getAttribute("aria-label"))&&!!n.querySelector("button").getAttribute("title")))}catch(e){t("em breve sem etiqueta  [erro]",false)}
 try{t("zona ilustrada: o portal do Pyron aparece perto do vulcão (parte alta) com a silhueta",!!U('.zona[data-ano="3"].ilus .portal img.sil')&&U('.zona[data-ano="3"] .portal').dataset.lendario==="900003");}catch(e){t("zona ilustrada: o portal do Pyron aparece perto do vulcão (parte alta) com a silhueta  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("os outros anos continuam com o degradê (sem 'ilus') até chegarem as imagens",Q(".zona").filter(e=>e.dataset.ano!=="3").every(e=>!e.classList.contains("ilus")));}catch(e){t("os outros anos continuam com o degradê (sem 'ilus') até chegarem as imagens  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("os estados e a folha continuam: tocar no círculo da 1ª fase abre a folha com os 3 níveis",(zv("abrirFolhaFase(fasesDoAno(3)[0].id)"),Q("#folha .nv").length===3));}catch(e){t("os estados e a folha continuam: tocar no círculo da 1ª fase abre a folha com os 3 níveis  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -376,7 +376,7 @@ const vistos=[];z.w.Element.prototype.scrollIntoView=function(){vistos.push(this
 zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");
 try{t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)",typeof zv("rolarTrilha")==="string"||zv("typeof rolarTrilha")==="function"?(zv("rolarTrilha()"),vistos.length>0&&vistos[vistos.length-1].dataset&&vistos[vistos.length-1].dataset.fase===zv("fasesDoAno(3)[1].id")):false,vistos.length);}catch(e){t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px",/\.zona\.ilus\{[^}]*aspect-ratio:800\/1732/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/\.ilus\.circulo\{[^}]*width:(4[4-9]|[5-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"").replace(/\.zona\.ilus\.circulo/g,".ilus.circulo")));}catch(e){t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v13 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v13"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v14 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v14"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -401,7 +401,7 @@ try{zv("fecharFolha()");}catch(e){}
 try{t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo",/\.folhaFundo\{[^}]*align-items:center/.test(css)&&!/\.folhaFundo\{[^}]*flex-end/.test(css)&&!/\.folha\{[^}]*border-radius:20px20px00/.test(css));}catch(e){t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)",/\.laje\.nv(\.refazer)?\{[^}]*width:(7[2-9]|[89]\d|1\d\d)px/.test(css.replace(/\.folha\.laje/g,".laje")));}catch(e){t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("movimento: 'reduzir movimento' desliga o brilho das medalhas",/body\.reduzir[^{]*\.nv[^{]*\{[^}]*animation:none/.test(css));}catch(e){t("movimento: 'reduzir movimento' desliga o brilho das medalhas  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v13",/const V="pokemath-v13"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v13  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v14",/const V="pokemath-v14"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v14  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -414,10 +414,10 @@ try{const b=fs.readFileSync(path.join(DIR,"img/pokemon/pyri.webp"));t("Pyri: img
 try{t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI",zv("IMG(PYRI_ID)")==="img/pokemon/pyri.webp"&&zv("IMG(PYRELIS_ID)===PYRI_IMG&&IMG(PYRON_ID)===PYRI_IMG")===true&&/PokeAPI\/sprites/.test(zv("IMG(25)")));}catch(e){t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("S.comp=PYRI_ID;ir('cuidar')");}catch(e){}
 try{t("Pyri: aparece na tela do Cuidar quando é o companheiro",/img\/pokemon\/pyri\.webp/.test(U("#app").innerHTML));}catch(e){t("Pyri: aparece na tela do Cuidar quando é o companheiro  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v13 e a figura do Pyri na lista (offline)",/const V="pokemath-v13"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v13 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v14 e a figura do Pyri na lista (offline)",/const V="pokemath-v14"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v14 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* ---------- Macetes: dados e funções ---------- */
 const IDM=zv("MACETES.map(m=>m.id).join()");
-try{t("macetes: a lista tem as medidas, as casas, somar, vai um, empréstimo, as tabuadas 2 a 11, dividir, comparar, pares/ímpares e sequências",IDM==="medidas-comprimento,casas,somar,vaium,emprestimo,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9,tab10,tab11,dividir,comparar,parimpar,sequencia",IDM);}catch(e){t("macetes: a lista tem comprimento, ×5, ×4, ×9, ×10 e ×11  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("macetes: a lista tem as medidas, as casas, somar, vai um, empréstimo, as tabuadas 2 a 11, dividir, comparar, pares/ímpares, sequências e (Lote B) figuras, tempo e dinheiro",IDM==="medidas-comprimento,casas,somar,vaium,emprestimo,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9,tab10,tab11,dividir,comparar,parimpar,sequencia,figuras,tempo,dinheiro",IDM);}catch(e){t("macetes: a lista tem comprimento, ×5, ×4, ×9, ×10 e ×11  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("macetes: a frase das medidas é exatamente 'Katia Herdou DA Mãe Dois Cachorrinhos Muito Mansinhos' e as unidades são km, hm, dam, m, dm, cm, mm",zv("MACETES[0].partes.map(p=>p.p).join(' ')")==="Katia Herdou DA Mãe Dois Cachorrinhos Muito Mansinhos"&&zv("MACETES[0].partes.map(p=>p.u).join()")==="km,hm,dam,m,dm,cm,mm");}catch(e){t("macetes: a frase das medidas é exatamente 'Katia Herdou DA Mãe Dois Cachorrinhos Muito Mansinhos' e as unidades são km, hm, dam, m, dm, cm, mm  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("macetes: macPerguntas das medidas dá 3 perguntas — ordem, lacuna e escolha — todas com a resposta certa dentro das opções",(q=>q&&q.length===3&&q.map(x=>x.tipo).join()==="ordem,lacuna,escolha"&&q[1].opcoes.includes(q[1].resp)&&q[2].opcoes.includes(q[2].resp)&&new Set(q[1].opcoes).size===q[1].opcoes.length)(zv("macPerguntas('medidas-comprimento')")));}catch(e){t("macetes: macPerguntas das medidas dá 3 perguntas — ordem, lacuna e escolha — todas com a resposta certa dentro das opções  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("macetes: macResponder(ordem) — errada não vale e explica com a frase; certa vale",zv("(()=>{const q=macPerguntas('medidas-comprimento')[0],c=MACETES[0].partes.map(p=>p.p);const a=macResponder(q,[...c].reverse()),b=macResponder(q,c);return !a.ok&&/Katia Herdou DA Mãe Dois Cachorrinhos Muito Mansinhos/.test(a.expl)&&b.ok})()")===true);}catch(e){t("macetes: macResponder(ordem) — errada não vale e explica com a frase; certa vale  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -427,7 +427,7 @@ try{t("macetes: XP só na 1ª conclusão do dia de cada macete (e volta a valer 
 try{zv("S.macetes={};ir('estudar')");}catch(e){}
 try{t("macetes: a aba Tabuada tem o botão 💡 Macetes",!!U("#bt-mac"));}catch(e){t("macetes: a aba Tabuada tem o botão 💡 Macetes  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("abrirMacetes()");}catch(e){}
-try{t("macetes: a lista mostra os 19 macetes",Q("#app .mac").length===19&&/medidas de comprimento/i.test(U("#app").textContent));}catch(e){t("macetes: a lista mostra os 6 macetes  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("macetes: a lista mostra os 22 macetes",Q("#app .mac").length===22&&/medidas de comprimento/i.test(U("#app").textContent));}catch(e){t("macetes: a lista mostra os 6 macetes  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("abrirMacete('medidas-comprimento')");}catch(e){}
 try{t("macete: mostra a frase com as iniciais em destaque, o Pyri e o botão Praticar",/Katia Herdou DA Mãe Dois Cachorrinhos Muito Mansinhos/.test(U("#app .macFrase").textContent)&&Q("#app .macFrase b").length>=7&&/pyri\.webp/.test(U("#app .macPyri img").src)&&!!U("#mac-praticar"));}catch(e){t("macete: mostra a frase com as iniciais em destaque, o Pyri e o botão Praticar  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{U("#mac-praticar").click();}catch(e){}
@@ -523,9 +523,9 @@ const IDS=["a3-comparar","a3-paresimpares","a3-sequencias"],GN={"a3-comparar":"c
 const sa=await sessao(null,{animate:true}),za=sa;
 const ev3=x=>{try{return sa.ev(x)}catch(e){return undefined}},U=x=>sa.w.document.querySelector(x);
 const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
-T("Lote A: as 3 fases novas existem no 3º ano (ordens 7, 8 e 9), com gerador, roteiro e tópicos",()=>ev3("FASES.filter(f=>f.ano===3).map(f=>f.id).slice(6).join()")===IDS.join()&&IDS.every((id,i)=>{const f=ev3(`FASES.find(f=>f.id==='${id}')`);return f&&f.ordem===7+i&&ev3(`typeof GER.${f.gerador}==='function'&&typeof ROT.${f.roteiro[0]}==='function'`)&&f.topicos.length>0&&f.resumo&&f.icone}));
+T("Lote A: as 3 fases novas existem no 3º ano (ordens 7, 8 e 9), com gerador, roteiro e tópicos",()=>ev3("FASES.filter(f=>f.ano===3).map(f=>f.id).slice(6,9).join()")===IDS.join()&&IDS.every((id,i)=>{const f=ev3(`FASES.find(f=>f.id==='${id}')`);return f&&f.ordem===7+i&&ev3(`typeof GER.${f.gerador}==='function'&&typeof ROT.${f.roteiro[0]}==='function'`)&&f.topicos.length>0&&f.resumo&&f.icone}));
 T("trilha ilustrada: os nomes curtos (curto) são usados na etiqueta e o nome inteiro continua no aria-label",()=>{ev3("ir('fases')");const b=U('button.circulo[data-fase="a3-paresimpares"]');return !!b&&b.parentNode.querySelector(".tit").textContent==="Pares"&&/Pares e ímpares/.test(b.getAttribute("aria-label"))});
-T("Lote A: 'Tabuadas' saiu da lista 'Em breve' (restam 4) e há um atalho para a aba Tabuada",()=>{const l=Array.from(ev3("EM_BREVE[3]"));ev3("ir('fases')");const b=U("#bt-atalho-tab");let ok=!l.includes("Tabuadas")&&l.length===4&&!!b;if(b){b.click();ok=ok&&ev3("tela")==="estudar"}return ok});
+T("Lote A: 'Tabuadas' saiu da lista 'Em breve' (restam 2 depois do Lote B) e há um atalho para a aba Tabuada",()=>{const l=Array.from(ev3("EM_BREVE[3]"));ev3("ir('fases')");const b=U("#bt-atalho-tab");let ok=!l.includes("Tabuadas")&&l.length===2&&!!b;if(b){b.click();ok=ok&&ev3("tela")==="estudar"}return ok});
 /* ---- geradores ---- */
 const num=s=>(s.match(/\d+/g)||[]).map(Number),pr=n=>n%2===0?"par":"ímpar";
 const nextPI=(k,dir,n)=>{let m=dir==="depois"?n+1:n-1;while(pr(m)!==k)m+=dir==="depois"?1:-1;return m};
@@ -622,6 +622,151 @@ T("Tabuada em trilha (2×1): a lâmpada mostra a decomposição, sem o resultado
 T("lâmpada: o cartão e o botão têm estilo (CSS) e rótulo de acessibilidade",()=>{const c=lerArq("css/trilha.css").replace(/\s+/g,"");return /\.lampada/.test(c)&&/aria-label=\"Abrir o macete/.test(lerArq("js/ui/macetes.js"))});
 z.w.close();
 }
+
+// ===== 3º ano, Lote B: Figuras geométricas, Medidas de comprimento, Medidas de tempo, Dinheiro =====
+{
+const IDS=["a3-figuras","a3-comprimento","a3-tempo","a3-dinheiro"],GN={"a3-figuras":"figuras","a3-comprimento":"comprimento","a3-tempo":"tempo","a3-dinheiro":"dinheiro"};
+const sb=await sessao(null,{animate:true});
+const ev3=x=>{try{return sb.ev(x)}catch(e){return undefined}},U=x=>sb.w.document.querySelector(x),Q=x=>[...sb.w.document.querySelectorAll(x)];
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+T("Lote B: as 4 fases novas existem no 3º ano (ordens 10 a 13), com gerador, roteiro, tópicos, ícone, nome curto e macete",()=>ev3("FASES.filter(f=>f.ano===3).map(f=>f.id).slice(9).join()")===IDS.join()&&IDS.every((id,i)=>{const f=ev3(`FASES.find(f=>f.id==='${id}')`);return f&&f.ordem===10+i&&ev3(`typeof GER.${f.gerador}==='function'&&typeof ROT.${f.roteiro[0]}==='function'`)&&f.gerador===GN[id]&&f.topicos.length>0&&f.resumo&&f.icone&&f.curto&&f.macete&&ev3(`macetesDaFase(FASES.find(f=>f.id==='${id}')).length>0`)}));
+T("Lote B: 'Figuras' e 'Medidas de tempo e dinheiro' saíram da lista 'Em breve' (restam só Tabelas e gráficos e Acaso e probabilidade)",()=>Array.from(ev3("EM_BREVE[3]")).join("|")==="Tabelas e gráficos|Acaso e probabilidade");
+T("Lote B: Medidas de comprimento usa o macete já existente (frase da Katia); as outras fases têm macete próprio",()=>ev3("macetesDaFase(FASES.find(f=>f.id==='a3-comprimento'))[0].id")==="medidas-comprimento"&&/100/.test(ev3("macAch('medidas-comprimento').explicacao"))&&/Katia/.test(ev3("macAch('medidas-comprimento').partes[0].p"))&&["figuras","tempo","dinheiro"].every(id=>ev3(`macAch('${id}')&&macAch('${id}').gerador==='${id}'&&typeof GER['${id}']==='function'`)));
+T("Lote B: a trilha ilustrada tem 15 posições (13 fases + 2 'em breve'), todas sobre a imagem",()=>{ev3("S.fases={};S.tentNivel=null;S.cfg.anoEscolar=3;save();ir('fases')");const P=Array.from(ev3("ZONAS[3].pontos")),nos=Q('.zona[data-ano="3"].ilus li.no');return P.length>=15&&nos.length===15&&nos.every((n,i)=>n.style.left===P[i][0]+"%")&&Q('.zona[data-ano="3"] button.circulo[data-fase]').length===13&&Q('.zona[data-ano="3"] .circulo.embreve[disabled]').length===2});
+T("Lote B: os círculos novos aparecem com nome curto (Figuras, Comprimento, Tempo, Dinheiro) e o nome inteiro no rótulo de acessibilidade",()=>{ev3("ir('fases')");const cur=["Figuras","Comprimento","Tempo","Dinheiro"];return IDS.every((id,i)=>{const b=U(`button.circulo[data-fase="${id}"]`);return !!b&&b.parentNode.querySelector(".tit").textContent===cur[i]&&b.getAttribute("aria-label").includes(ev3(`FASES.find(f=>f.id==='${id}').titulo`))})});
+T("Lote B: nenhum par de círculos da trilha se encosta (15 pontos, mínimo 50px em tela de 360px)",()=>{const P=Array.from(ev3("ZONAS[3].pontos")),W=360,H=360*1732/800;return P.length>=15&&P.every((a,i)=>P.every((b,j)=>j<=i||Math.hypot((a[0]-b[0])*W/100,(a[1]-b[1])*H/100)>=50))});
+/* ---- geradores ---- */
+const TF={"triângulo":{lados:3,"vértices":3},quadrado:{lados:4,"vértices":4},"retângulo":{lados:4,"vértices":4},"pentágono":{lados:5,"vértices":5},"hexágono":{lados:6,"vértices":6},cubo:{faces:6,"vértices":8,arestas:12}};
+const NOMEFIG={triangulo:"triângulo",quadrado:"quadrado",retangulo:"retângulo",pentagono:"pentágono",hexagono:"hexágono",cubo:"cubo"};
+const BASEC={km:1e6,m:1000,cm:10,mm:1},NOMEC={"quilômetro":"km","quilômetros":"km",metro:"m",metros:"m","centímetro":"cm","centímetros":"cm","milímetro":"mm","milímetros":"mm"};
+const BASET={minuto:1,minutos:1,hora:60,horas:60,dia:1440,dias:1440,semana:10080,semanas:10080,"mês":1,meses:1,ano:12,anos:12};
+const cv=(n,de,para)=>n*BASEC[de]/BASEC[para],ct=(n,de,para)=>n*BASET[de]/BASET[para];
+const esperadoFig=ex=>{let m;
+  if(m=ex.enunciado.match(/^Quant(?:os|as) (lados|vértices|faces|arestas) tem o (\S+)\?$/)){const tab=TF[m[2]];return tab&&tab[m[1]]!=null?{r:tab[m[1]],fig:m[2],cont:m[1]}:null}
+  if(m=ex.enunciado.match(/^O (\S+) tem ___ (lados|vértices|faces|arestas)\.$/)){const tab=TF[m[1]];return tab&&tab[m[2]]!=null?{r:tab[m[2]],fig:m[1],cont:m[2]}:null}return null};
+const esperadoComp=s=>{let m;
+  if(m=s.match(/^Quantos (\S+) há em (\d+) (\S+)\?$/))return NOMEC[m[1]]&&NOMEC[m[3]]?cv(+m[2],NOMEC[m[3]],NOMEC[m[1]]):null;
+  if(m=s.match(/^(\d+) (km|m|cm|mm) (?:= ___|em) (km|m|cm|mm)$/))return cv(+m[1],m[2],m[3]);
+  if(m=s.match(/^Quantos centímetros há em (\d+) m e (\d+) cm\?$/)||s.match(/^(\d+) m e (\d+) cm (?:= ___|em) cm$/))return +m[1]*100+ +m[2];
+  if(m=s.match(/^Uma fita tem (\d+) m e outra tem (\d+) m\. Quantos centímetros as duas têm juntas\?$/)||s.match(/^Duas fitas, (\d+) m e (\d+) m, juntas têm ___ cm\.$/)||s.match(/^(\d+) m \+ (\d+) m em cm$/))return(+m[1]+ +m[2])*100;
+  if(m=s.match(/^Um fio tem (\d+) m e outro tem (\d+) cm\. Quantos centímetros o maior tem a mais\?$/)||s.match(/^Um fio de (\d+) m e outro de (\d+) cm: o maior tem ___ cm a mais\.$/)||s.match(/^(\d+) m menos (\d+) cm em cm$/))return +m[1]*100-+m[2];
+  return null};
+const esperadoTempo=(s,vis)=>{let m;
+  if(m=s.match(/^Quant(?:os|as) (\S+) há em (\d+) (\S+)\?$/)||s.match(/^(\d+) (\S+) (?:= ___|em) (\S+)$/)){const q=/^Quant/.test(s),n=q?+m[2]:+m[1],de=q?m[3]:m[2],para=q?m[1]:m[3];return BASET[de]!=null&&BASET[para]!=null?ct(n,de,para):null}
+  if(/^(Meia hora tem quantos minutos\?|Meia hora = ___ minutos|meia hora em minutos)$/.test(s))return 30;
+  if(m=s.match(/^Quantos minutos há em (\d+) horas? e meia\?$/)||s.match(/^(\d+) horas? e meia (?:= ___ minutos|em minutos)$/))return +m[1]*60+30;
+  if(s==="Que horas o relógio marca? Responda só o número da hora."||s==="Olhe o relógio. A hora marcada é ___.")return vis&&vis.tipo==="relogio"&&vis.m===0?vis.h:null;
+  if(m=s.match(/^O relógio marca (\d+) horas? e quantos minutos\?$/)||s.match(/^Olhe o relógio: a hora é (\d+) e os minutos são ___\.$/))return vis&&vis.tipo==="relogio"&&vis.h===+m[1]&&vis.m>0?vis.m:null;
+  if(s==="Quantos minutos faltam para o relógio completar a hora?"||s==="Faltam ___ minutos para completar a hora.")return vis&&vis.tipo==="relogio"&&vis.m>0?60-vis.m:null;
+  return null};
+const esperadoDin=(s,vis)=>{let m;
+  if(m=s.match(/^Quantos centavos há em (\d+) (?:real|reais)\?$/)||s.match(/^R\$ (\d+) (?:= ___ centavos|em centavos)$/))return +m[1]*100;
+  if(m=s.match(/^Quantos reais há em (\d+) centavos\?$/)||s.match(/^(\d+) centavos (?:= R\$ ___|em reais)$/))return +m[1]%100===0?+m[1]/100:null;
+  if(m=s.match(/^Ana comprou um lápis de R\$ (\d+) e uma borracha de R\$ (\d+)\. Quantos reais ela gastou\?$/)||s.match(/^R\$ (\d+) \+ R\$ (\d+) (?:= R\$ ___|)$/)||s.match(/^R\$ (\d+) \+ R\$ (\d+)$/))return +m[1]+ +m[2];
+  if(m=s.match(/^Paguei R\$ (\d+) por algo que custa R\$ (\d+)\. Qual é o troco, em reais\?$/)||s.match(/^Paguei R\$ (\d+) e custava R\$ (\d+): troco de R\$ ___$/)||s.match(/^troco de R\$ (\d+) para R\$ (\d+)$/))return +m[1]-+m[2];
+  if(m=s.match(/^Paguei R\$ 1 por algo que custa (\d+) centavos\. Qual é o troco, em centavos\?$/)||s.match(/^Paguei R\$ 1 e custava (\d+) centavos: troco de ___ centavos$/)||s.match(/^troco de R\$ 1 para (\d+) centavos$/))return 100-+m[1];
+  if(/^(Quantos centavos há nestas moedas\?|Estas moedas valem ___ centavos\.)$/.test(s))return vis&&vis.tipo==="dinheiro"&&vis.itens.length>=2&&vis.itens.every(i=>i.k==="moeda")?vis.itens.reduce((a,i)=>a+i.v,0):null;
+  if(/^(Quantos reais há nestas notas\?|Estas notas valem R\$ ___ no total\.)$/.test(s))return vis&&vis.tipo==="dinheiro"&&vis.itens.length>=2&&vis.itens.every(i=>i.k==="nota")?vis.itens.reduce((a,i)=>a+i.v,0):null;
+  return null};
+const visDe=ex=>ex.visual?JSON.parse(JSON.stringify(ex.visual)):null;
+for(const nome of["figuras","comprimento","tempo","dinheiro"]){let bom=true,msg="";const chk=(c,m)=>{if(!c&&bom){bom=false;msg=nome+": "+m}};
+ let cuboAlto=false,compDificil=false,minNaoPadrao=false,visualVisto=false;
+ for(const d of[1,3])for(const tp of["digitar","escolha","lacuna","relacionar"])for(let i=0;i<70;i++){
+  const ex=ev3(`GER.${nome}(${d},'${tp}')`);if(!ex){chk(false,"sem questão");break}
+  chk(ex.tipo===tp,"tipo "+tp+"->"+ex.tipo);chk(ex.dica&&ex.dica.length>8&&ex.erro&&ex.erro.length>8,"sem dica/explicação");
+  if(tp!=="relacionar")chk(Number.isInteger(ex.resposta)&&ex.resposta>0,"resposta inválida "+ex.resposta);
+  if(tp==="escolha"){const o=Array.from(ex.opcoes);chk(o.length===4&&new Set(o).size===4&&o.includes(ex.resposta)&&o.every(Number.isInteger),"opções")}
+  if(tp==="lacuna")chk(ex.enunciado.includes("___"),"lacuna sem ___");
+  if(tp==="relacionar"){const P=Array.from(ex.pares),D=Array.from(ex.direita);chk(P.length>=3&&P.length<=4&&D.length===P.length&&new Set(D).size===D.length&&P.every(p=>D.includes(p.d))&&ex.resposta===1&&ex.chave&&!ex.visual,"relacionar")}
+  const vis=visDe(ex);if(vis){visualVisto=true;chk(!!ex.chave&&ex.chave.includes(JSON.stringify(vis)),"questão com figura precisa de chave que inclua a figura (para não repetir)")}
+  const textos=[ex.enunciado,...(tp==="relacionar"?Array.from(ex.pares).map(p=>p.e):[])];
+  chk(textos.every(s=>!/\d,\d/.test(s)),"vírgula decimal: "+textos.join("|"));
+  if(nome==="figuras"){
+   if(tp==="relacionar"){chk(Array.from(ex.pares).every(p=>{const m=p.e.match(/^(lados|vértices|faces|arestas) do (\S+)$/);return m&&TF[m[2]]&&TF[m[2]][m[1]]===+p.d}),"par figuras errado: "+JSON.stringify(ex.pares))}
+   else{const e=esperadoFig(ex);chk(!!e&&e.r===ex.resposta,"figuras: "+ex.enunciado+" -> "+ex.resposta);
+     if(e){if(tp!=="lacuna"){chk(ex.visual&&ex.visual.tipo==="figura"&&NOMEFIG[ex.visual.nome]===e.fig,"figura desenhada diferente da citada: "+ex.enunciado+JSON.stringify(ex.visual))}
+       if(d===1&&e.fig==="cubo")chk(e.cont==="faces","Bronze/Prata só pergunta faces do cubo: "+ex.enunciado);
+       if(d>=3&&e.fig==="cubo"&&e.cont!=="faces")cuboAlto=true}}
+  }
+  if(nome==="comprimento"){
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>esperadoComp(p.e)===+p.d&&esperadoComp(p.e)>0),"par comprimento errado: "+JSON.stringify(ex.pares));
+   else{chk(esperadoComp(ex.enunciado)===ex.resposta,"comprimento: "+ex.enunciado+" -> "+ex.resposta);
+     if(/ fita | fio |m e \d+ cm/.test(ex.enunciado)){compDificil=true;chk(d>=3,"questão composta no Bronze/Prata: "+ex.enunciado)}}
+  }
+  if(nome==="tempo"){
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>esperadoTempo(p.e)===+p.d&&+p.d>0),"par tempo errado: "+JSON.stringify(ex.pares));
+   else{chk(esperadoTempo(ex.enunciado,vis)===ex.resposta,"tempo: "+ex.enunciado+" -> "+ex.resposta+" "+JSON.stringify(vis));
+     if(vis){chk(vis.tipo==="relogio"&&vis.h>=1&&vis.h<=12&&vis.m>=0&&vis.m<60&&vis.m%5===0,"relógio inválido "+JSON.stringify(vis));
+       if(d===1)chk([0,15,30,45].includes(vis.m),"Bronze/Prata só usa :00, :15, :30 e :45 — "+JSON.stringify(vis));
+       if(d>=3&&![0,15,30,45].includes(vis.m))minNaoPadrao=true}}
+  }
+  if(nome==="dinheiro"){
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>esperadoDin(p.e)===+p.d&&+p.d>0),"par dinheiro errado: "+JSON.stringify(ex.pares));
+   else{chk(esperadoDin(ex.enunciado,vis)===ex.resposta,"dinheiro: "+ex.enunciado+" -> "+ex.resposta+" "+JSON.stringify(vis));
+     if(vis)chk(vis.itens.every(i=>(i.k==="moeda"?[5,10,25,50,100].includes(i.v):[2,5,10,20,50,100].includes(i.v))),"valor de moeda/nota inexistente "+JSON.stringify(vis))}
+  }
+ }
+ if(nome==="figuras")chk(cuboAlto,"o Ouro nunca perguntou vértices/arestas do cubo");
+ if(nome==="comprimento")chk(compDificil,"o Ouro nunca trouxe conta composta (m e cm, fitas, fios)");
+ if(nome==="tempo"){chk(minNaoPadrao,"o Ouro nunca usou minutos de 5 em 5");chk(visualVisto,"nenhuma questão de relógio")}
+ if(nome==="dinheiro")chk(visualVisto,"nenhuma questão com moedas/notas");
+ t(`geradores ${nome}: os 4 tipos × 2 dificuldades, todos válidos, só números inteiros e com a resposta certa`,bom,msg);
+}
+/* ---- desenhos em SVG (feitos por mim, sem imagens de terceiros) ---- */
+T("desenho: visEstatico desenha cada figura (nº de pontos = nº de lados) e o cubo, em SVG",()=>{const pts={triangulo:3,quadrado:4,retangulo:4,pentagono:5,hexagono:6};
+  for(const[n,k]of Object.entries(pts)){const h=ev3(`visEstatico({tipo:'figura',nome:'${n}'})`),m=h.match(/<polygon[^>]*points="([^"]+)"/);if(!/<svg/.test(h)||!m||m[1].trim().split(/\s+/).length!==k)return n+": "+h.slice(0,120)}
+  const c=ev3("visEstatico({tipo:'figura',nome:'cubo'})");return /<svg/.test(c)&&(c.match(/<polygon/g)||[]).length>=3});
+T("desenho: o relógio mostra o ponteiro das horas e o dos minutos na posição certa (3:15, 12:00, 6:30, 9:45)",()=>{
+  for(const[h,m]of[[3,15],[12,0],[6,30],[9,45]]){const html=ev3(`visEstatico({tipo:'relogio',h:${h},m:${m}})`);if(!/<svg/.test(html))return "sem svg";
+    const hh=html.match(/class="ph"[^>]*transform="rotate\(([\d.]+)/),mm=html.match(/class="pmin"[^>]*transform="rotate\(([\d.]+)/);
+    if(!hh||!mm||Math.abs(+hh[1]-((h%12)*30+m*0.5))>0.01||Math.abs(+mm[1]-m*6)>0.01)return h+":"+m+" -> "+(hh&&hh[1])+"/"+(mm&&mm[1]);
+    if((html.match(/<text/g)||[]).length<12)return "faltam os números do relógio"}return true});
+T("desenho: moedas e notas aparecem desenhadas com o valor escrito (centavos nas moedas, R$ nas notas)",()=>{
+  const a=ev3("visEstatico({tipo:'dinheiro',itens:[{k:'moeda',v:50},{k:'moeda',v:25},{k:'moeda',v:10}]})"),b=ev3("visEstatico({tipo:'dinheiro',itens:[{k:'nota',v:10},{k:'nota',v:2}]})");
+  return /<svg/.test(a)&&(a.match(/class="moedinha"/g)||[]).length===3&&/>50</.test(a)&&/>25</.test(a)&&/centavos/.test(a)&&/<svg/.test(b)&&(b.match(/class="cedula"/g)||[]).length===2&&/R\$ 10/.test(b)&&/R\$ 2/.test(b)});
+T("desenho: a questão com figura mostra o SVG na tela do exercício (figura, relógio e dinheiro)",()=>{
+  ev3("S.fases={};S.tentNivel=null;ir('fases')");let ok=true,msg="";
+  for(const [g,rx] of [["figuras",/<polygon/],["tempo",/class="pmin"/],["dinheiro",/class="(moedinha|cedula)"/]]){
+    let achou=false;for(let i=0;i<60&&!achou;i++){const ex=ev3(`GER.${g}(1,'digitar')`);if(ex.visual){ev3(`FS.ses=novaSessao(FASES.find(f=>f.gerador==='${g}'),'bronze');FS.ses.fila[0]=${JSON.stringify(ex)};FS.fase=FS.ses.fase;FS.vista='exerc';render()`);achou=rx.test(ev3("document.getElementById('app').innerHTML"))&&!!U("#app svg");if(!achou){ok=false;msg=g}else break}}
+    if(!achou&&ok){ok=false;msg=g+" sem figura"}}
+  ev3("voltarTrilha()");return ok||msg});
+/* ---- macetes ---- */
+T("macetes novos (figuras, tempo, dinheiro): ícone, resumo, explicação e a dica certa (tri 3 / 5 minutos / troco)",()=>{const g=id=>ev3(`macAch('${id}')`);return /tri.*3/.test(g("figuras").explicacao)&&/penta.*5/.test(g("figuras").explicacao)&&/5 minutos/.test(g("tempo").resumo)&&/troco/i.test(g("dinheiro").resumo)&&["figuras","tempo","dinheiro"].every(id=>g(id).icone&&g(id).titulo&&g(id).explicacao.length>60)});
+T("macetes: a prática dos novos usa as questões do gerador e MANTÉM o desenho (relógio, figuras, moedas)",()=>{
+  for(const id of["figuras","tempo","dinheiro"]){let vi=false;for(let i=0;i<30;i++){const qs=ev3(`macPerguntas('${id}')`);if(qs.length!==4||!qs.every(x=>x.tipo==='escolha'&&x.opcoes.includes(x.resp)&&x.texto&&x.expl))return id+" perguntas";
+    for(const q of qs){if(q.visual)vi=true;if(/relógio|moedas|notas/.test(q.texto)&&!q.visual)return id+" perdeu o desenho: "+q.texto}}
+    if(id!=="figuras"&&!vi)return id+" nunca trouxe desenho"}return true});
+T("macetes: a tela da prática desenha o SVG da questão",()=>{ev3("MAC={id:'tempo',qs:[{tipo:'escolha',texto:'Quantos minutos?',opcoes:[10,15,20,25],resp:15,expl:'x',visual:{tipo:'relogio',h:3,m:15}}],i:0,sel:[]};macTela()");return !!U("#app svg")&&/class="pmin"/.test(U("#app").innerHTML)});
+/* ---- roteiros animados ---- */
+ev3(OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao","a3-comparar","a3-paresimpares","a3-sequencias"])+";save()");
+const rod=(nome,args)=>ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.${nome}(${args});const R=rot.montar(ctx);const g=[],all=[];
+  for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length]);ctx.stage.querySelectorAll('.pm-res').forEach(e=>{if(!all.includes(e.textContent))all.push(e.textContent)})}window.__g=g;window.__res=all;return true})()`);
+ev3("ir('fases');abrirExplicacao('a3-figuras')");ev3("FS.auto=false;pararAnimacoes()");
+T("explicação de Figuras abre a partir da trilha (liberada depois dos 3 níveis de Sequências)",()=>ev3("FS.vista")==="explica"&&ev3("FS.fase.id")==="a3-figuras");
+ev3("FS.vel=0.001");
+for(const[n,a,passos,fim]of[["figuras","'pentagono'",5,/5 lados.*12 arestas/],["comprimento","3",5,/300.*10 mm.*1000 m/],["tempo","2",6,/60 min.*120 min.*30 min.*24 h.*7 dias.*12 meses/],["dinheiro","10,7",5,/R\$ 1 = 100 centavos.*R\$ 5 \+ R\$ 2 = R\$ 7.*troco = R\$ 3/]]){
+  ev3("S.cfg.reduzir=false");sb.w.__anims.length=0;try{await rod(n,a)}catch(e){}await sleep(300);const g=Array.from(ev3("window.__g")||[]);ev3("window.__g=null");
+  t(`roteiro ${n}(${a}): ${passos} passos, cada um de 3 a 5 s, falas curtas e números/figuras viajam`,g.length===passos&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sb.w.__anims.length>0,JSON.stringify(g.map(x=>x[0]))+" anims:"+sb.w.__anims.length);
+  const res=Array.from(ev3("window.__res")||[]).join("|");
+  t(`roteiro ${n}(${a}): os resultados aparecem em destaque (.pm-res), na ordem certa, e o último passo termina com um resultado na tela`,fim.test(res)&&ev3("document.querySelectorAll('#exp-stage .pm-res').length")>0,res);
+}
+T("roteiros novos: figuras mostra os vértices (pontos) e depois o cubo; tempo gira o ponteiro grande de 12 a 12 (uma volta = 60 minutos)",()=>{const f=lerArq("js/motor/explicacao.js");return /figuras\(/.test(f)&&/cubo/.test(f)&&/60 minutos/.test(f)&&/ponteiro/.test(f)});
+sb.w.close();
+/* ---- jogar os 3 níveis das fases novas + lâmpada de cada uma ---- */
+{const s=await sessao(),ev=s.ev;await ev("escolher(25)");
+ ev(OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao","a3-comparar","a3-paresimpares","a3-sequencias"])+";save();ir('fases')");
+ const lamp={"a3-figuras":/tri.*3/,"a3-comprimento":/Katia/,"a3-tempo":/5 minutos/,"a3-dinheiro":/troco/i};
+ for(const id of IDS){const st2=()=>st(ev,id);
+  try{await jogarNivel(s,id,"bronze");await jogarNivel(s,id,"prata");now+=DIA;await jogarNivel(s,id,"ouro");
+  t(`jogar ${id}: Bronze, Prata e Ouro concluídos sem erro libera a próxima fase`,st2()==="concluido,concluido,concluido",st2())}catch(e){t(`jogar ${id}  [erro: ${String(e.message).slice(0,50)}]`,false)}
+  try{ev("voltarTrilha()");ev(`S.tentNivel=null;abrirNivel('${id}','bronze')`);const b=s.w.document.getElementById("bt-lamp");b.click();const L=s.w.document.getElementById("lampada");
+   t(`lâmpada de ${id}: abre o macete certo da fase e fecha com Entendi`,!!L&&lamp[id].test(L.textContent)&&(s.w.document.getElementById("lamp-ok").click(),!s.w.document.getElementById("lampada")));ev("voltarTrilha()")}catch(e){t(`lâmpada ${id}  [erro: ${String(e.message).slice(0,50)}]`,false)}
+  now+=DIA}
+ try{t("depois das 4 fases novas, Dinheiro conta como concluída e o 3º ano só falta o 'em breve'",ev("estadoFase(FASES.find(f=>f.id==='a3-dinheiro'))")==="concluido"&&ev("fasesDoAno(3).every(f=>estadoFase(f)==='concluido')"))}catch(e){t("estado Dinheiro  [erro]",false)}
+ s.w.close()}
+t("sw.js: pokemath-v14 (arquivos mudaram)",/const V="pokemath-v14"/.test(lerArq("sw.js")));
+}
+
 t("nenhum erro de script durante todos os testes",erros.length===0,erros.join(" | "));
 console.log(`\nPASSARAM: ${ok}   FALHARAM: ${bad.length}`);bad.forEach(b=>console.log(" ✗ "+b));process.exit(0);
 })().catch(e=>{console.error("ERRO NO TESTE:",e);process.exit(1)});

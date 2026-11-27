@@ -54,7 +54,10 @@ const PM_CSS=`.pm-cena{position:relative;margin:0 auto}
 .pm-cubo{background:#1e6fe0;border:1px solid #8ec0ff;border-radius:2px;box-shadow:inset -2px -2px 0 rgba(0,0,0,.25)}
 .pm-barra{border:1px solid #14702f;border-radius:3px;background:linear-gradient(90deg,#1f9d4a calc(100% - 1px),#a5e6b9 calc(100% - 1px)) 0 0/10% 100% repeat-x}
 .pm-placa{border:2px solid #c46a00;border-radius:4px;background:linear-gradient(90deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/10% 100%,linear-gradient(0deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/100% 10%,#f28c1b}
-.pm-milhar{border:2px solid #5e2a7e;border-radius:6px;background:#8e44ad;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3)}`;
+.pm-milhar{border:2px solid #5e2a7e;border-radius:6px;background:#8e44ad;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3)}
+.pm-txt{font-size:.95rem;font-weight:800;color:#16224a;text-align:center}
+.pm-moeda{border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#d9a21b);border:4px solid #a8730a;color:#5a3b00;font-size:1rem;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.pm-nota{border-radius:8px;border:3px solid #14702f;background:#9bd7a8;color:#0b3d1c;font-size:1.05rem;box-shadow:0 3px 0 rgba(0,0,0,.25)}`;
 let estilosOk=false;
 function garantirEstilos(){
   if(estilosOk)return true;
@@ -123,6 +126,13 @@ function novaCena(ctx,W,H){
 const dizer=(ctx,t)=>{ctx.cap.textContent=t};
 const glowRes=R=>R.box.querySelectorAll(".pm-res").forEach(e=>e.classList.add("pm-glow"));
 const P=(fala,dur,acao,termos)=>({fala,dur,acao,termos});
+const resSub=(R,txt,x,y,w)=>{R.box.querySelectorAll(".pm-res").forEach(e=>e.remove());return criar(R.box,txt,"pm-txt pm-res pm-pop",x,y,w,40)};
+/* gira um ponteiro (graus) com a duração do passo; com "reduzir movimento" ou no replay instantâneo, só troca a posição */
+async function girar(ctx,el,deg,ms){
+  if(ctx.instant||semMov()){el.style.transition="none";el.style.transform=`rotate(${deg}deg)`;await esperar(ctx,Math.min(ms,900));return}
+  el.style.transition=`transform ${ms*FS.vel}ms linear`;void el.offsetWidth;el.style.transform=`rotate(${deg}deg)`;await esperar(ctx,ms);
+}
+
 
 /* ---- apoio visual: maçãs, pacotes e bandejas (as imagens NUNCA substituem os números) ----
    Nada aparece do nada: as imagens nascem dos algarismos, se juntam, se partem, se repartem e se transformam.
@@ -444,6 +454,120 @@ const ROT={
       const cl=criar(R.box,String(t[4]),"pm-d cn",o._x,o._y,54,48);await voarVarios(ctx,[[cl,cx(4),90]],1800);cl.remove();
       criar(R.box,String(t[4]),"pm-d cn pm-res pm-pop",cx(4),90,54,48);glowRes(R);dizer(ctx,`${t[3]} + ${k} = ${t[4]}`);await esperar(ctx,900)}));
     return{montar:ctx=>{const box=novaCena(ctx,W,H);return{box,ops:[],t:t.slice(0,4).map((v,i)=>criar(box,String(v),"pm-d cn",cx(i),-70,54,48))}},passos};
+  },
+  /* ---------- Lote B: figuras geométricas (vértices acendem, lados, nome e cubo) ---------- */
+  figuras(id){
+    const fg=FIGURAS.find(f=>f.id===id)||FIGURAS[3],n=fg.lados,W=300,H=264,cx=150,cy=112,V=vertsFig(fg.id,cx,cy,82),passos=[];
+    const fora=(x,y,k)=>{const dx=x-cx,dy=y-cy,d=Math.hypot(dx,dy)||1;return[x+dx/d*k,y+dy/d*k]};
+    const meio=i=>{const a=V[i],b=V[(i+1)%n];return[(a[0]+b[0])/2,(a[1]+b[1])/2]};
+    passos.push(P(`Vamos conhecer o ${fg.nome}. Os cantinhos se chamam vértices. Veja os pontos nos cantinhos!`,4500,async(ctx,R)=>{
+      await voarVarios(ctx,R.dots.map((e,i)=>[e,V[i][0]-13,V[i][1]-13]),1200,250)},{"vértice":"o cantinho de uma figura","lado":"cada traço entre dois vértices"}));
+    passos.push(P(`Vamos contar os vértices: de 1 até ${n}. O ${fg.nome} tem ${n} vértices!`,4500,async(ctx,R)=>{
+      R.vn=Array.from({length:n},(_,i)=>criar(R.box,String(i+1),"pm-d cd pm-mini",cx,-60,32,34));
+      await voarVarios(ctx,R.vn.map((e,i)=>{const[x,y]=fora(V[i][0],V[i][1],26);return[e,x-16,y-17]}),900,400);
+      resSub(R,`${n} vértices`,60,220,180);glowRes(R);dizer(ctx,`${n} vértices`);await esperar(ctx,800)}));
+    passos.push(P(`Lado é cada traço entre dois vértices. Vamos contar os lados: de 1 até ${n}. São ${n} lados!`,4500,async(ctx,R)=>{
+      R.ln=Array.from({length:n},(_,i)=>criar(R.box,String(i+1),"pm-d cu pm-mini",cx,-60,32,34));
+      await voarVarios(ctx,R.ln.map((e,i)=>{const m=meio(i),[x,y]=fora(m[0],m[1],-20);return[e,x-16,y-17]}),900,400);
+      resSub(R,`${n} lados`,60,220,180);glowRes(R);dizer(ctx,`${n} lados`);await esperar(ctx,800)}));
+    passos.push(P(`Repare no nome: “${fg.pref}” quer dizer ${n}. Tri = 3, quadri = 4, penta = 5 e hexa = 6.`,4000,async(ctx,R)=>{
+      R.box.innerHTML="";const L=[["tri",3],["quadri",4],["penta",5],["hexa",6]],ch=L.map((p,i)=>criar(R.box,`${p[0]} = ${p[1]}`,"pm-pacote bgn",90,-60,120,38));
+      await voarVarios(ctx,ch.map((e,i)=>[e,90,14+i*50]),900,350);
+      const k=L.findIndex(p=>p[0]===fg.pref);ch[k].classList.add("pm-glow");
+      resSub(R,`${fg.pref} = ${n}`,90,224,120);glowRes(R);dizer(ctx,`${fg.pref} = ${n}`);await esperar(ctx,800)}));
+    passos.push(P("E o cubo? Ele é como um dado: tem 6 faces, 8 vértices e 12 arestas. Aresta é a borda!",5000,async(ctx,R)=>{
+      R.box.innerHTML=`<svg class="pm-svg" style="position:absolute;left:75px;top:0" width="150" height="112" viewBox="0 0 200 150">${svgFigura("cubo").replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"")}</svg>`;
+      const ch=[["6 faces",8],["8 vértices",104],["12 arestas",200]].map(p=>criar(R.box,p[0],"pm-pacote bgn",p[1]+40,-60,92,38));
+      await voarVarios(ctx,ch.map((e,i)=>[e,[4,104,204][i],130]),1000,500);
+      resSub(R,"cubo: 6 faces, 8 vértices, 12 arestas",10,190,280);glowRes(R);dizer(ctx,"cubo: 6 faces, 8 vértices, 12 arestas");await esperar(ctx,900)}));
+    return{montar:ctx=>{const box=novaCena(ctx,W,H),R={box,dots:[]};
+      box.insertAdjacentHTML("afterbegin",`<svg class="pm-svg" style="position:absolute;left:0;top:0" width="${W}" height="${H}"><polygon points="${V.map(p=>p.join(",")).join(" ")}" fill="#fff3c4" stroke="#16224a" stroke-width="5" stroke-linejoin="round"/></svg>`);
+      V.forEach(()=>R.dots.push(criar(box,"","pm-ponto",cx,-60,26,26)));return R},passos};
+  },
+  /* ---------- Lote B: comprimento (1 m = 100 cm, 1 cm = 10 mm, 1 km = 1000 m) ---------- */
+  comprimento(n){
+    const W=300,H=250,N=n*100,passos=[];
+    passos.push(P("Esta régua grande mede 1 metro. Vamos ver quantos centímetros cabem nela!",4500,async(ctx,R)=>{
+      R.reg=criar(R.box,"","pm-barra",10,-60,280,32);await voarVarios(ctx,[[R.reg,10,20]],1500);
+      R.lb=criar(R.box,"1 metro","pm-txt pm-pop",90,58,120,30);dizer(ctx,"1 metro");await esperar(ctx,600)},{metro:"unidade de comprimento",centímetro:"o 100º pedaço de 1 metro"}));
+    passos.push(P("O metro tem 100 pedacinhos iguais: os centímetros. Veja 10 blocos de 10 centímetros cada!",5000,async(ctx,R)=>{
+      R.bl=Array.from({length:10},()=>criar(R.box,"10","pm-pacote bgn",10,20,26,30));
+      await voarVarios(ctx,R.bl.map((e,i)=>[e,10+i*28,110]),900,170);dizer(ctx,"10 blocos de 10 cm = 100 cm");
+      resSub(R,"1 m = 100 cm",70,170,160);glowRes(R);await esperar(ctx,800)}));
+    passos.push(P(`Então 1 metro tem 100 centímetros. E ${n} ${plu(n,"metro","metros")} têm ${n} × 100 = ${N} centímetros.`,4500,async(ctx,R)=>{
+      R.box.innerHTML="";const a=criar(R.box,String(n),"pm-d cn pm-mini",20,-60,50,40),x=criar(R.box,"×","pm-op pm-mini",20,-60,30,40),b=criar(R.box,"100","pm-d cc pm-mini",20,-60,60,40);
+      await voarVarios(ctx,[[a,30,60],[x,95,60],[b,135,60]],1200,300);
+      resSub(R,`${n} × 100 = ${N} cm`,40,130,220);glowRes(R);dizer(ctx,`${n} m = ${N} cm`);await esperar(ctx,900)}));
+    passos.push(P("E o centímetro? Cada centímetro é dividido em 10 milímetros. Veja os pedacinhos!",4500,async(ctx,R)=>{
+      R.box.innerHTML="";const cm=criar(R.box,"1 cm","pm-pacote bgn",10,-60,120,40);await voarVarios(ctx,[[cm,90,20]],1200);
+      const mm=Array.from({length:10},()=>criar(R.box,"1","pm-pacote bgd",90,20,24,32));
+      await voarVarios(ctx,mm.map((e,i)=>[e,30+i*24,110]),900,150);
+      resSub(R,"1 cm = 10 mm",70,180,160);glowRes(R);dizer(ctx,"1 cm = 10 mm");await esperar(ctx,700)}));
+    passos.push(P("Para distâncias grandes usamos o quilômetro: 1 quilômetro tem 1000 metros.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";const a=criar(R.box,"1 km","pm-pacote bgn",10,-60,100,44),ig=criar(R.box,"=","pm-op pm-mini",10,-60,30,40),b=criar(R.box,"1000 m","pm-pacote bgc",10,-60,110,44);
+      await voarVarios(ctx,[[a,30,80],[ig,140,80],[b,170,80]],1300,300);
+      resSub(R,"1 km = 1000 m",70,150,160);glowRes(R);dizer(ctx,"1 km = 1000 m");await esperar(ctx,800)}));
+    return{montar:ctx=>({box:novaCena(ctx,W,H)}),passos};
+  },
+  /* ---------- Lote B: tempo (relógio, 60 min, meia hora, dia, semana e ano) ---------- */
+  tempo(h){
+    const W=300,H=298,cx=150,cy=118,passos=[],pos=(k,r)=>{const a=k*30*Math.PI/180;return[cx+r*Math.sin(a),cy-r*Math.cos(a)]};
+    const mao=(R,L,larg,cor)=>{const e=document.createElement("i");e.className="pm-pop";e.style.cssText=`position:absolute;left:${cx-larg/2}px;top:${cy-L}px;width:${larg}px;height:${L}px;background:${cor};border-radius:${larg}px;transform-origin:50% 100%;z-index:3`;R.box.append(e);return e};
+    passos.push(P("O relógio tem 12 números. O ponteiro pequeno mostra a hora e o ponteiro grande mostra os minutos.",4500,async(ctx,R)=>{
+      R.box.insertAdjacentHTML("afterbegin",`<svg class="pm-svg" style="position:absolute;left:${cx-100}px;top:${cy-100}px" width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="98" fill="#fff" stroke="#16224a" stroke-width="5"/>${Array.from({length:60},(_,i)=>{const a=i*6*Math.PI/180,r1=i%5?90:84;return `<line x1="${(100+r1*Math.sin(a)).toFixed(1)}" y1="${(100-r1*Math.cos(a)).toFixed(1)}" x2="${(100+96*Math.sin(a)).toFixed(1)}" y2="${(100-96*Math.cos(a)).toFixed(1)}" stroke="#16224a" stroke-width="${i%5?1:2.5}"/>`}).join("")}</svg>`);
+      R.nums=Array.from({length:12},(_,i)=>criar(R.box,String(i+1),"pm-d cn pm-mini",cx,-60,30,34));
+      await voarVarios(ctx,R.nums.map((e,i)=>{const[x,y]=pos(i+1,70);return[e,x-15,y-17]}),900,150);
+      R.ph=mao(R,48,7,"#16224a");R.pmin=mao(R,76,5,"#d62839");await esperar(ctx,700)},{ponteiro:"mostra as horas ou os minutos"}));
+    passos.push(P("Cada número do relógio vale 5 minutos: o 1 vale 5, o 2 vale 10, o 3 vale 15... até o 12, que vale 60.",5000,async(ctx,R)=>{
+      R.cinco=Array.from({length:12},(_,i)=>criar(R.box,String((i+1)*5),"pm-pacote bgn",cx,-60,34,24));
+      await voarVarios(ctx,R.cinco.map((e,i)=>{const[x,y]=pos(i+1,113);return[e,x-17,y-12]}),600,250);dizer(ctx,"cada número vale 5 minutos");await esperar(ctx,700)}));
+    passos.push(P("O ponteiro grande dá uma volta inteira, do 12 até o 12. Uma volta completa são 60 minutos, ou seja, 1 hora!",5000,async(ctx,R)=>{
+      R.ph.style.transition="none";
+      const a=girar(ctx,R.pmin,360,3000),b=girar(ctx,R.ph,30,3000);await Promise.all([a,b]);
+      R.pmin.style.transition="none";R.pmin.style.transform="rotate(0deg)";R.ph.style.transition="none";R.ph.style.transform="rotate(0deg)";
+      resSub(R,"1 h = 60 min",70,254,160);glowRes(R);dizer(ctx,"1 hora = 60 minutos");await esperar(ctx,900)}));
+    passos.push(P(`${h} ${plu(h,"hora","horas")} são ${h} ${plu(h,"volta","voltas")}. Cada volta tem 60 minutos: ${h} × 60 = ${h*60} minutos.`,5000,async(ctx,R)=>{
+      const a=criar(R.box,String(h),"pm-d cn pm-mini",20,-60,40,34),x=criar(R.box,"×","pm-op pm-mini",20,-60,30,34),b=criar(R.box,"60","pm-d cc pm-mini",20,-60,44,34);
+      await voarVarios(ctx,[[a,20,254],[x,60,254],[b,90,254]],1200,300);[a,x,b].forEach(e=>e.remove());
+      resSub(R,`${h} × 60 = ${h*60} min`,40,254,220);glowRes(R);dizer(ctx,`${h} h = ${h*60} min`);await esperar(ctx,900)}));
+    passos.push(P("Meia volta, do 12 até o 6, são 30 minutos. É meia hora!",4000,async(ctx,R)=>{
+      await girar(ctx,R.pmin,180,2400);
+      resSub(R,"meia hora = 30 min",60,254,180);glowRes(R);dizer(ctx,"meia hora = 30 minutos");await esperar(ctx,900)}));
+    passos.push(P("Um dia tem 24 horas, uma semana tem 7 dias e um ano tem 12 meses.",5000,async(ctx,R)=>{
+      R.box.innerHTML="";
+      const L=[["1 dia","24","24 h"],["1 semana","7","7 dias"],["1 ano","12","12 meses"]],chips=L.map(p=>criar(R.box,p[1],"pm-d cc pm-mini",150,-60,60,36));
+      L.forEach((p,i)=>criar(R.box,p[0]+" =","pm-txt",20,30+i*70,110,36));
+      await voarVarios(ctx,chips.map((e,i)=>[e,150,30+i*70]),1000,500);
+      chips.forEach((e,i)=>{e.remove();criar(R.box,L[i][2],"pm-txt pm-res pm-pop",140,30+i*70,130,36)});
+      glowRes(R);dizer(ctx,"1 dia = 24 h · 1 semana = 7 dias · 1 ano = 12 meses");await esperar(ctx,900)}));
+    return{montar:ctx=>({box:novaCena(ctx,W,H)}),passos};
+  },
+  /* ---------- Lote B: dinheiro (R$ 1 = 100 centavos, somar valores, troco) ---------- */
+  dinheiro(pago,custo){
+    const W=300,H=250,t=pago-custo,a=custo>5?5:custo-1,b=custo-a,passos=[];
+    const cofre=(R)=>{const c=document.createElement("i");c.className="pm-caixa pm-pop";c.style.cssText="left:20px;top:110px;width:260px;height:80px";R.box.append(c)};
+    passos.push(P("No Brasil usamos reais e centavos. Uma moeda de 1 real vale 100 centavos.",4500,async(ctx,R)=>{
+      const m=criar(R.box,"R$ 1","pm-moeda",10,-60,72,72),ig=criar(R.box,"=","pm-op pm-mini",10,-60,30,40),c=criar(R.box,"100 centavos","pm-pacote bgn",10,-60,130,44);
+      await voarVarios(ctx,[[m,20,30],[ig,105,46],[c,145,44]],1300,300);
+      resSub(R,"R$ 1 = 100 centavos",40,140,220);glowRes(R);dizer(ctx,"R$ 1 = 100 centavos");await esperar(ctx,800)},{centavo:"uma das 100 partes de 1 real",troco:"o dinheiro que sobra e volta para você"}));
+    passos.push(P("Duas moedas de 50 centavos juntas valem 1 real: 50 + 50 = 100 centavos.",4000,async(ctx,R)=>{
+      R.box.innerHTML="";cofre(R);const m=[0,1].map(()=>criar(R.box,"50","pm-moeda",10,-60,60,60));
+      await voarVarios(ctx,[[m[0],100,20],[m[1],170,20]],1000,300);await voarVarios(ctx,[[m[0],90,125],[m[1],150,125]],900,200);
+      resSub(R,"50 + 50 = 100 centavos",30,200,240);glowRes(R);dizer(ctx,"50 + 50 = 100");await esperar(ctx,800)}));
+    passos.push(P("Quatro moedas de 25 centavos também formam 1 real: 25 + 25 + 25 + 25 = 100.",4000,async(ctx,R)=>{
+      R.box.innerHTML="";cofre(R);const m=[0,1,2,3].map(()=>criar(R.box,"25","pm-moeda",10,-60,52,52));
+      await voarVarios(ctx,m.map((e,i)=>[e,40+i*58,20]),900,250);await voarVarios(ctx,m.map((e,i)=>[e,50+i*58,128]),800,150);
+      resSub(R,"25 + 25 + 25 + 25 = 100 centavos",10,200,280);glowRes(R);dizer(ctx,"25 + 25 + 25 + 25 = 100");await esperar(ctx,700)}));
+    passos.push(P(`Para juntar valores, some: uma nota de R$ ${a} e uma de R$ ${b} valem ${a} + ${b} = ${custo} reais.`,4500,async(ctx,R)=>{
+      R.box.innerHTML="";cofre(R);const n1=criar(R.box,`R$ ${a}`,"pm-nota",10,-60,92,52),n2=criar(R.box,`R$ ${b}`,"pm-nota",10,-60,92,52);
+      await voarVarios(ctx,[[n1,40,20],[n2,168,20]],1000,300);await voarVarios(ctx,[[n1,60,122],[n2,148,122]],900,200);
+      resSub(R,`R$ ${a} + R$ ${b} = R$ ${custo}`,30,200,240);glowRes(R);dizer(ctx,`${a} + ${b} = ${custo}`);await esperar(ctx,800)}));
+    passos.push(P(`Você pagou R$ ${pago} por algo de R$ ${custo}. Conte de ${custo} até ${pago}: faltam ${t}. O troco é R$ ${t}!`,5000,async(ctx,R)=>{
+      R.box.innerHTML="";const nota=criar(R.box,`R$ ${pago}`,"pm-nota",10,-60,92,52),pr=criar(R.box,`custa ${custo}`,"pm-pacote bgn",10,-60,110,40),tr=criar(R.box,String(t),"pm-d cd pm-mini",10,-60,44,40);
+      await voarVarios(ctx,[[nota,20,20],[pr,150,26]],1000,300);await voarVarios(ctx,[[tr,226,78]],1200);tr.classList.add("pm-glow");
+      criar(R.box,`R$ ${custo} + R$ ${t} = R$ ${pago}`,"pm-txt pm-res pm-pop",20,128,260,40);
+      criar(R.box,`troco = R$ ${t}`,"pm-txt pm-res pm-pop",60,184,180,44);glowRes(R);dizer(ctx,`troco = R$ ${t}`);await esperar(ctx,900)}));
+    return{montar:ctx=>({box:novaCena(ctx,W,H)}),passos};
   },
   /* ---------- 12 ÷ 3: frutas nos pratos ---------- */
   divide(t,p){
