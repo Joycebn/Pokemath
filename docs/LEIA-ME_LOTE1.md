@@ -60,3 +60,10 @@ Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 
 ### Ajustes após a Etapa 3
 - O Pyri (figura) aparece no tutorial inicial, na introdução da trilha de fases e na explicação animada (antes eram um círculo com 🔥).
 - Macetes nas fases: campo `macete` da fase aceita um id ou uma lista; a laje da fase mostra 💡 e abre só os macetes dela. A Multiplicação do 3º ano já traz as tabuadas do 4, 5, 9, 10 e 11. O macete das medidas será ligado à fase de medidas quando ela existir.
+
+## Etapa 2, Lote A — 3º ano: Comparar e ordenar, Pares e ímpares, Sequências
+- Fases novas (ordens 7, 8 e 9 do 3º ano): `a3-comparar` (⚖️), `a3-paresimpares` (👯) e `a3-sequencias` (🔁), cada uma com 3 níveis, 2 vidas, os 4 tipos de questão (escrever, escolher, completar e ligar) e explicação animada do Pyri.
+- Geradores em `js/motor/geradores.js` (`GER.comparar`, `GER.parImpar`, `GER.sequencia`): respostas sempre numéricas. Comparar: 3 algarismos (Bronze/Prata) e 4 (Ouro), números parecidos para comparar casa por casa. Pares e ímpares: último algarismo, contagem e "par/ímpar logo antes/depois de". Sequências: de 2 em 2 até de 10 em 10; no Ouro também de 20, 25 e 50 e sequências que diminuem.
+- Roteiros em `js/motor/explicacao.js` (`ROT.comparar`, `ROT.parImpar`, `ROT.sequencia`), cada passo de 3 a 5 s.
+- "Tabuadas" saiu da lista "Em breve" (a aba Tabuada é a trilha da tabuada); a tela de fases ganhou o atalho 🔢 para ela. Restam em "Em breve": Figuras geométricas, Medidas de tempo e dinheiro, Tabelas e gráficos, Acaso e probabilidade (Lotes B e C).
+- Campo opcional `curto` na fase: nome curto da etiqueta na trilha ilustrada (o nome inteiro continua no rótulo de acessibilidade).

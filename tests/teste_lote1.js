@@ -291,7 +291,7 @@ const esperado={3:["Pyron",900003],4:["Lugia",249],5:["Ho-Oh",250],6:["Palkia",4
 try{t("zonas: existe a tabela ZONAS com os 7 anos (3º ao 9º)",zv("typeof ZONAS!=='undefined'&&Object.keys(ZONAS).join()")==="3,4,5,6,7,8,9");}catch(e){t("zonas: existe a tabela ZONAS com os 7 anos (3º ao 9º)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("zonas: cada ano tem o lendário combinado (3º Pyron, 4º Lugia, 5º Ho-Oh, 6º Palkia, 7º Mewtwo, 8º Rayquaza, 9º Arceus) e um nome de cenário",Object.entries(esperado).every(([a,[n,id]])=>zv(`ZONAS[${a}].lendario.nome`)===n&&zv(`ZONAS[${a}].lendario.id`)===id&&!!zv(`ZONAS[${a}].nome`)));}catch(e){t("zonas: cada ano tem o lendário combinado (3º Pyron, 4º Lugia, 5º Ho-Oh, 6º Palkia, 7º Mewtwo, 8º Rayquaza, 9º Arceus) e um nome de cenário  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("trilha: 7 zonas na tela, uma por ano",Q(".zona").length===7&&Q(".zona").map(e=>e.dataset.ano).join()==="3,4,5,6,7,8,9");}catch(e){t("trilha: 7 zonas na tela, uma por ano  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases",Q('.zona[data-ano="3"] button.circulo[data-fase]').map(e=>e.dataset.fase).join()===IDS.join()&&IDS.length===6,Q('.zona[data-ano="3"] button.circulo[data-fase]').length);}catch(e){t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases",Q('.zona[data-ano="3"] button.circulo[data-fase]').map(e=>e.dataset.fase).join()===zv("fasesDoAno(3).map(f=>f.id).join()")&&zv("fasesDoAno(3).length")===9,Q('.zona[data-ano="3"] button.circulo[data-fase]').length);}catch(e){t("trilha: o 3º ano mostra um CÍRCULO por fase, na ordem das fases  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("trilha: os cartões antigos (com os 3 botões de nível dentro) saíram da tela",Q(".faseCard").length===0&&Q(".nv").length===0);}catch(e){t("trilha: os cartões antigos (com os 3 botões de nível dentro) saíram da tela  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("trilha: as fases 'Em breve' aparecem como círculos cinza desativados no fim do 3º ano",Q('.zona[data-ano="3"] .circulo.embreve[disabled]').length===zv("EM_BREVE[3].length"));}catch(e){t("trilha: as fases 'Em breve' aparecem como círculos cinza desativados no fim do 3º ano  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* estado do círculo = derivado dos 3 níveis */
@@ -363,10 +363,10 @@ try{t("pontos: a trilha SOBE — o primeiro ponto é o mais baixo da imagem e o 
 const zi=U('.zona[data-ano="3"]');
 try{t("zona do 3º ano é ilustrada: tem a classe 'ilus' e usa a imagem como fundo",!!zi&&zi.classList.contains("ilus")&&/ano3\.webp/.test(zi.getAttribute("style")||""),zi&&zi.getAttribute("style"));}catch(e){t("zona do 3º ano é ilustrada: tem a classe 'ilus' e usa a imagem como fundo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 const nos=Q('.zona[data-ano="3"].ilus li.no');
-try{t("zona ilustrada: as 14 posições (6 fases + 8 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)",nos.length===14&&nos.every((n,i)=>P[i]&&n.style.left===P[i][0]+"%"&&n.style.top===P[i][1]+"%"),nos.map(n=>n.style.left+","+n.style.top).slice(0,2).join(" | "));}catch(e){t("zona ilustrada: as 14 posições (6 fases + 8 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 6ª mais acima",nos.length===14&&parseFloat(nos[0].style.top)>parseFloat(nos[5].style.top)&&nos[0].querySelector('button.circulo[data-fase]')&&nos[0].querySelector("button").dataset.fase===zv("fasesDoAno(3)[0].id"));}catch(e){t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 6ª mais acima  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("zona ilustrada: cada fase tem seu nome numa etiqueta escura (.tit) ao lado do círculo",nos.length===14&&nos.slice(0,6).every(n=>!!n.querySelector(".tit"))&&nos.every((n,i)=>n.classList.contains(P[i][0]>50?"esq":"dir")));}catch(e){t("zona ilustrada: cada nome fica numa etiqueta escura (.tit) do lado de fora da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("zona ilustrada: os 8 'em breve' são só cadeados (sem etiqueta, para não cobrir a trilha) e continuam com o nome no rótulo de acessibilidade e no title",nos.length===14&&nos.slice(6).every(n=>!n.querySelector(".tit")&&!!n.querySelector("button.circulo.embreve[disabled]")&&/em breve/.test(n.querySelector("button").getAttribute("aria-label"))&&!!n.querySelector("button").getAttribute("title")))}catch(e){t("em breve sem etiqueta  [erro]",false)}
+try{t("zona ilustrada: as 13 posições (9 fases + 4 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)",nos.length===13&&nos.every((n,i)=>P[i]&&n.style.left===P[i][0]+"%"&&n.style.top===P[i][1]+"%"),nos.map(n=>n.style.left+","+n.style.top).slice(0,2).join(" | "));}catch(e){t("zona ilustrada: as 13 posições (9 fases + 4 em breve) estão sobre a imagem, cada uma no seu ponto (left/top em %)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 9ª mais acima",nos.length===13&&parseFloat(nos[0].style.top)>parseFloat(nos[8].style.top)&&nos[0].querySelector('button.circulo[data-fase]')&&nos[0].querySelector("button").dataset.fase===zv("fasesDoAno(3)[0].id"));}catch(e){t("zona ilustrada: a 1ª fase fica EMBAIXO (ponto mais baixo) e a 9ª mais acima  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: cada fase tem seu nome numa etiqueta escura (.tit) ao lado do círculo",nos.length===13&&nos.slice(0,9).every(n=>!!n.querySelector(".tit"))&&nos.every((n,i)=>n.classList.contains(P[i][0]>50?"esq":"dir")));}catch(e){t("zona ilustrada: cada nome fica numa etiqueta escura (.tit) do lado de fora da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("zona ilustrada: os 4 'em breve' são só cadeados (sem etiqueta, para não cobrir a trilha) e continuam com o nome no rótulo de acessibilidade e no title",nos.length===13&&nos.slice(9).every(n=>!n.querySelector(".tit")&&!!n.querySelector("button.circulo.embreve[disabled]")&&/em breve/.test(n.querySelector("button").getAttribute("aria-label"))&&!!n.querySelector("button").getAttribute("title")))}catch(e){t("em breve sem etiqueta  [erro]",false)}
 try{t("zona ilustrada: o portal do Pyron aparece perto do vulcão (parte alta) com a silhueta",!!U('.zona[data-ano="3"].ilus .portal img.sil')&&U('.zona[data-ano="3"] .portal').dataset.lendario==="900003");}catch(e){t("zona ilustrada: o portal do Pyron aparece perto do vulcão (parte alta) com a silhueta  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("os outros anos continuam com o degradê (sem 'ilus') até chegarem as imagens",Q(".zona").filter(e=>e.dataset.ano!=="3").every(e=>!e.classList.contains("ilus")));}catch(e){t("os outros anos continuam com o degradê (sem 'ilus') até chegarem as imagens  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("os estados e a folha continuam: tocar no círculo da 1ª fase abre a folha com os 3 níveis",(zv("abrirFolhaFase(fasesDoAno(3)[0].id)"),Q("#folha .nv").length===3));}catch(e){t("os estados e a folha continuam: tocar no círculo da 1ª fase abre a folha com os 3 níveis  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -515,6 +515,80 @@ try{zv("abrirFolhaFase('a3-multiplicacao')");t("fases: a laje da Multiplicação
 try{zv("abrirFolhaFase('a3-adicao')");t("fases: fase sem macete não mostra o botão 💡",!U("#folha .pm-macete"))}catch(e){t("sem macete  [erro]",false)}
 try{zv("abrirMacetes(['tab4'])");t("macetes: abrirMacetes com lista filtra (1 macete)",Q("#app .mac").length===1)}catch(e){t("filtro macetes  [erro]",false)}
 z.w.close();
+}
+
+// ===== 3º ano, Lote A: Comparar e ordenar, Pares e ímpares, Sequências =====
+{
+const IDS=["a3-comparar","a3-paresimpares","a3-sequencias"],GN={"a3-comparar":"comparar","a3-paresimpares":"parImpar","a3-sequencias":"sequencia"};
+const sa=await sessao(null,{animate:true}),za=sa;
+const ev3=x=>{try{return sa.ev(x)}catch(e){return undefined}},U=x=>sa.w.document.querySelector(x);
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+T("Lote A: as 3 fases novas existem no 3º ano (ordens 7, 8 e 9), com gerador, roteiro e tópicos",()=>ev3("FASES.filter(f=>f.ano===3).map(f=>f.id).slice(6).join()")===IDS.join()&&IDS.every((id,i)=>{const f=ev3(`FASES.find(f=>f.id==='${id}')`);return f&&f.ordem===7+i&&ev3(`typeof GER.${f.gerador}==='function'&&typeof ROT.${f.roteiro[0]}==='function'`)&&f.topicos.length>0&&f.resumo&&f.icone}));
+T("trilha ilustrada: os nomes curtos (curto) são usados na etiqueta e o nome inteiro continua no aria-label",()=>{ev3("ir('fases')");const b=U('button.circulo[data-fase="a3-paresimpares"]');return !!b&&b.parentNode.querySelector(".tit").textContent==="Pares"&&/Pares e ímpares/.test(b.getAttribute("aria-label"))});
+T("Lote A: 'Tabuadas' saiu da lista 'Em breve' (restam 4) e há um atalho para a aba Tabuada",()=>{const l=Array.from(ev3("EM_BREVE[3]"));ev3("ir('fases')");const b=U("#bt-atalho-tab");let ok=!l.includes("Tabuadas")&&l.length===4&&!!b;if(b){b.click();ok=ok&&ev3("tela")==="estudar"}return ok});
+/* ---- geradores ---- */
+const num=s=>(s.match(/\d+/g)||[]).map(Number),pr=n=>n%2===0?"par":"ímpar";
+const nextPI=(k,dir,n)=>{let m=dir==="depois"?n+1:n-1;while(pr(m)!==k)m+=dir==="depois"?1:-1;return m};
+const diffSeq=toks=>{for(let i=0;i<toks.length-1;i++)if(/^\d+$/.test(toks[i])&&/^\d+$/.test(toks[i+1]))return +toks[i+1]-+toks[i];return null};
+const seqOk=(txt,resp)=>{const toks=txt.split(/,\s*/).map(x=>x.trim());const d=diffSeq(toks);if(d==null||d===0)return false;const h=toks.findIndex(x=>!/^\d+$/.test(x));if(h<0)return false;
+  const vals=toks.map((x,i)=>/^\d+$/.test(x)?+x:null);const ref=vals.findIndex(v=>v!=null);const esperado=vals[ref]+(h-ref)*d;
+  return resp===esperado&&vals.every((v,i)=>v==null||v===vals[ref]+(i-ref)*d)};
+for(const nome of["comparar","parImpar","sequencia"]){let bom=true,msg="";const chk=(c,m)=>{if(!c){bom=false;msg=nome+": "+m}};
+ for(const d of[1,3])for(const tp of["digitar","escolha","lacuna","relacionar"])for(let i=0;i<80;i++){
+  const ex=ev3(`GER.${nome}(${d},'${tp}')`);if(!ex){chk(false,"sem questão");break}
+  chk(ex.tipo===tp,"tipo "+tp+"->"+ex.tipo);chk(ex.dica&&ex.dica.length>8&&ex.erro&&ex.erro.length>8,"sem dica/explicação");
+  if(tp!=="relacionar")chk(Number.isInteger(ex.resposta)&&ex.resposta>=0,"resposta inválida "+ex.resposta);
+  if(tp==="escolha"){const o=Array.from(ex.opcoes);chk(o.length===4&&new Set(o).size===4&&o.includes(ex.resposta),"opções")}
+  if(tp==="lacuna")chk(ex.enunciado.includes("___"),"lacuna sem ___");
+  if(tp==="relacionar"){const P=Array.from(ex.pares),D=Array.from(ex.direita);chk(P.length>=3&&P.length<=4&&D.length===P.length&&new Set(D).size===D.length&&P.every(p=>D.includes(p.d))&&ex.resposta===1&&ex.chave,"relacionar")}
+  /* conteúdo certo */
+  if(nome==="comparar"){
+   if(tp==="escolha"){const o=Array.from(ex.opcoes),mx=/maior/.test(ex.enunciado);chk(ex.resposta===(mx?Math.max(...o):Math.min(...o)),"escolha comparar: "+ex.enunciado+o)}
+   if(tp==="digitar"){const n=num(ex.enunciado.split(":")[1]),mx=/maior/.test(ex.enunciado);chk(n.length>=2&&ex.resposta===(mx?Math.max(...n):Math.min(...n)),"digitar comparar: "+ex.enunciado)}
+   if(tp==="lacuna"){const m=ex.enunciado.match(/Os números (\d+), (\d+) e (\d+) em ordem (crescente|decrescente)/);chk(!!m,"lacuna comparar formato: "+ex.enunciado);if(m){const n=[+m[1],+m[2],+m[3]].sort((a,b)=>a-b);chk(ex.resposta===n[1],"lacuna comparar: "+ex.enunciado+" -> "+ex.resposta)}}
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>{const m=p.e.match(/^o (maior|menor): (\d+) ou (\d+)$/);return m&&+p.d===(m[1]==="maior"?Math.max(+m[2],+m[3]):Math.min(+m[2],+m[3]))&&+m[2]!==+m[3]}),"par comparar errado")
+   const dg=d>=3?4:3;if(tp==="digitar"||tp==="escolha")chk(num(ex.enunciado.split(":")[1]||"").concat(Array.from(ex.opcoes||[])).every(n=>String(n).length===dg),"número com tamanho errado")
+  }
+  if(nome==="parImpar"){
+   if(tp==="escolha"){const k=/ímpar/.test(ex.enunciado)?"ímpar":"par",o=Array.from(ex.opcoes);chk(o.filter(x=>pr(x)===k).length===1&&pr(ex.resposta)===k,"escolha par/ímpar: "+ex.enunciado+o)}
+   if(tp==="digitar"){let m=ex.enunciado.match(/^Quantos números (pares|ímpares) há aqui\? (.*)$/);if(m){const k=m[1]==="pares"?"par":"ímpar",n=num(m[2]);chk(ex.resposta===n.filter(x=>pr(x)===k).length&&n.length>=5,"contagem: "+ex.enunciado)}
+     else{m=ex.enunciado.match(/^Qual é o número (par|ímpar) logo (depois|antes) de (\d+)\?$/);chk(!!m&&ex.resposta===nextPI(m[1],m[2],+m[3]),"digitar par/ímpar: "+ex.enunciado+" -> "+ex.resposta)}}
+   if(tp==="lacuna"){const m=ex.enunciado.match(/O número (par|ímpar) logo (depois|antes) de (\d+) é ___/);chk(!!m&&ex.resposta===nextPI(m[1],m[2],+m[3]),"lacuna par/ímpar: "+ex.enunciado)}
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>{const m=p.e.match(/^(par|ímpar) logo (depois|antes) de (\d+)$/);return m&&+p.d===nextPI(m[1],m[2],+m[3])}),"par par/ímpar errado")
+  }
+  if(nome==="sequencia"){
+   const corpo=e=>e.replace(/^[^:?]*[:?]\s*/,"");
+   if(tp==="digitar")chk(seqOk(corpo(ex.enunciado),ex.resposta),"seq digitar: "+ex.enunciado+" -> "+ex.resposta);
+   if(tp==="lacuna")chk(seqOk(corpo(ex.enunciado),ex.resposta),"seq lacuna: "+ex.enunciado+" -> "+ex.resposta);
+   if(tp==="escolha")chk(seqOk(corpo(ex.enunciado),ex.resposta),"seq escolha: "+ex.enunciado+" -> "+ex.resposta);
+   if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>seqOk(p.e,+p.d)),"par seq errado")
+  }
+ }
+ t(`geradores ${nome}: os 4 tipos × 2 dificuldades, todos válidos e com a resposta certa`,bom,msg);
+}
+T("Ouro de Comparar usa números de 4 algarismos e Bronze/Prata de 3 (conferido acima), e Sequências do Ouro inclui sequências que diminuem",()=>{let dec=false,cresc=false;for(let i=0;i<200;i++){const ex=ev3("GER.sequencia(3,'digitar')");const toks=ex.enunciado.replace(/^[^:]*:\s*/,"").split(/,\s*/);const d=diffSeq(toks);if(d<0)dec=true;if(d>0)cresc=true}let decB=false;for(let i=0;i<200;i++){const ex=ev3("GER.sequencia(1,'digitar')");const d=diffSeq(ex.enunciado.replace(/^[^:]*:\s*/,"").split(/,\s*/));if(d<0)decB=true}return dec&&cresc&&!decB});
+/* ---- roteiros animados ---- */
+ev3(OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao"])+";save()");
+ev3("ir('fases');abrirExplicacao('a3-comparar')");ev3("FS.auto=false;pararAnimacoes()");
+T("explicação de Comparar abre a partir da trilha (fase liberada depois dos 3 níveis da Divisão)",()=>ev3("FS.vista")==="explica"&&ev3("FS.fase.id")==="a3-comparar");
+const rod=(nome,args)=>ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.${nome}(${args});const R=rot.montar(ctx);const g=[];
+  for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length])}window.__g=g;return true})()`);
+ev3("FS.vel=0.001");
+for(const[n,a,passosEsperados,fim]of[["comparar","358,385",4,/>|</],["comparar","4521,4575",5,/>|</],["parImpar","7",7,/ímpar/],["sequencia","3,4",5,/19/]]){
+  ev3("S.cfg.reduzir=false");sa.w.__anims.length=0;try{await rod(n,a)}catch(e){}await sleep(300);const g=Array.from(ev3("window.__g")||[]);ev3("window.__g=null");
+  t(`roteiro ${n}(${a}): ${passosEsperados} passos, cada um de 3 a 5 s, falas curtas e números/figuras viajam`,g.length===passosEsperados&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sa.w.__anims.length>0,JSON.stringify(g.map(x=>x[0]))+" anims:"+sa.w.__anims.length);
+  t(`roteiro ${n}(${a}): termina com o resultado em destaque (.pm-res)`,fim.test(ev3("[...document.querySelectorAll('#exp-stage .pm-res')].map(e=>e.textContent).join('|')")||""),ev3("[...document.querySelectorAll('#exp-stage .pm-res')].map(e=>e.textContent).join('|')"));
+}
+sa.w.close();
+/* ---- jogar os 3 níveis das fases novas ---- */
+{const s=await sessao(),ev=s.ev;await ev("escolher(25)");
+ ev(OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao"])+";save();ir('fases')");
+ for(const id of IDS){const st2=()=>st(ev,id);
+  try{await jogarNivel(s,id,"bronze");await jogarNivel(s,id,"prata");now+=DIA;await jogarNivel(s,id,"ouro");
+  t(`jogar ${id}: Bronze, Prata e Ouro concluídos sem erro libera a próxima fase`,st2()==="concluido,concluido,concluido",st2())}catch(e){t(`jogar ${id}  [erro: ${String(e.message).slice(0,50)}]`,false)}
+  ev("voltarTrilha()");now+=DIA}
+ try{t("depois das 3 fases novas, a fase de Sequências conta como concluída na trilha",ev("estadoFase(FASES.find(f=>f.id==='a3-sequencias'))")==="concluido")}catch(e){t("estado Sequências  [erro]",false)}
+ s.w.close()}
 }
 t("nenhum erro de script durante todos os testes",erros.length===0,erros.join(" | "));
 console.log(`\nPASSARAM: ${ok}   FALHARAM: ${bad.length}`);bad.forEach(b=>console.log(" ✗ "+b));process.exit(0);

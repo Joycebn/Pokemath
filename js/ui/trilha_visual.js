@@ -22,7 +22,7 @@ const classePos=(i,pos)=>pos?(pos[0]>50?"esq":"dir"):`l${i%4}`;
 const estiloPos=pos=>pos?` style="left:${pos[0]}%;top:${pos[1]}%"`:"";
 function noCirculo(f,i,pos){
   const st=estadoFase(f),m=medalhaFase(f);
-  return `<li class="no ${classePos(i,pos)} ${st==="concluido"?"feito":""}"${estiloPos(pos)}><button class="circulo ${st}" data-fase="${f.id}" data-estado="${st}" aria-label="${f.titulo}, ${ROT_CIRC[st]}" onclick="abrirFolhaFase('${f.id}')"><span class="ic">${f.icone}</span>${st==="bloqueado"?`<span class="cad">🔒</span>`:""}${m?`<span class="medalha">${m}</span>`:""}</button><span class="tit">${f.titulo}</span></li>`;
+  return `<li class="no ${classePos(i,pos)} ${st==="concluido"?"feito":""}"${estiloPos(pos)}><button class="circulo ${st}" data-fase="${f.id}" data-estado="${st}" aria-label="${f.titulo}, ${ROT_CIRC[st]}" onclick="abrirFolhaFase('${f.id}')"><span class="ic">${f.icone}</span>${st==="bloqueado"?`<span class="cad">🔒</span>`:""}${m?`<span class="medalha">${m}</span>`:""}</button><span class="tit">${pos&&f.curto?f.curto:f.titulo}</span></li>`;
 }
 function noEmBreve(t,i,pos){
   /* na zona ilustrada os "em breve" são só cadeados (o nome fica no rótulo e no title) para não cobrir a trilha da imagem */

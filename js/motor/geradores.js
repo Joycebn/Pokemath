@@ -87,13 +87,81 @@ function montarPosicional(d,tipo){
   return{tipo:"digitar",enunciado:`Quanto é ${vals.join(" + ")}?`,resposta:n,dica,erro:`Junte as partes: ${vals.join(" + ")} = ${n}.`};
 }
 const tipoAleatorio=()=>TIPOS_Q[Math.floor(Math.random()*TIPOS_Q.length)];
+
+/* ---------- Lote A do 3º ano: comparar e ordenar, pares e ímpares, sequências (respostas sempre numéricas) ---------- */
+const umDe=a=>a[Math.floor(Math.random()*a.length)];
+const listaE=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" ou "+a[a.length-1];
+/* n números distintos com o mesmo tamanho; no Ouro e às vezes nos outros níveis começam iguais (para comparar casa por casa) */
+function numerosParecidos(n,len,d){
+  const k=d>=3?rnd(1,2):rnd(0,1),pre=k?String(rnd(1,9))+(k>1?String(rnd(0,9)):""):"";
+  const s=new Set();let g=0;
+  while(s.size<n&&g++<400){let x=pre;while(x.length<len)x+=String(x.length===0?rnd(1,9):rnd(0,9));s.add(+x)}
+  while(s.size<n)s.add(rnd(Math.pow(10,len-1),Math.pow(10,len)-1));
+  return embaralhar([...s]);
+}
+function montarComparar(d,tipo){
+  const len=d>=3?4:3,dica="Compare casa por casa, começando pela esquerda (a casa de maior valor). O primeiro algarismo diferente decide qual é o maior.";
+  const ordem=o=>[...o].sort((a,b)=>a-b),w=()=>Math.random()<.5?"maior":"menor";
+  const expl=(o,q,r)=>`Em ordem do menor para o maior: ${ordem(o).join(" < ")}. O ${q} é ${r}. Compare casa por casa, da esquerda para a direita.`;
+  if(tipo==="escolha"){const o=numerosParecidos(4,len,d),q=w(),r=q==="maior"?Math.max(...o):Math.min(...o);
+    return{tipo:"escolha",enunciado:`Qual destes números é o ${q}?`,opcoes:o,resposta:r,chave:"e"+ordem(o).join()+q,dica,erro:expl(o,q,r)}}
+  if(tipo==="digitar"){const o=numerosParecidos(d>=3?3:rnd(2,3),len,d),q=w(),r=q==="maior"?Math.max(...o):Math.min(...o);
+    return{tipo:"digitar",enunciado:`Escreva o ${q} número: ${listaE(o)}.`,resposta:r,dica,erro:expl(o,q,r)}}
+  if(tipo==="lacuna"){const o=numerosParecidos(3,len,d),cr=Math.random()<.5,s=ordem(o),f=cr?s:[...s].reverse();
+    return{tipo:"lacuna",enunciado:`Os números ${o.join(", ").replace(/, (\d+)$/," e $1")} em ordem ${cr?"crescente (do menor para o maior)":"decrescente (do maior para o menor)"}: ${f[0]}, ___, ${f[2]}.`,resposta:s[1],dica,erro:`Em ordem ${cr?"crescente":"decrescente"}: ${f.join(", ")}. O número do meio é ${s[1]}.`}}
+  const L=[];const vis=new Set();let g=0;
+  while(L.length<3&&g++<200){const o=numerosParecidos(2,len,d),q=w(),r=q==="maior"?Math.max(...o):Math.min(...o);if(vis.has(r))continue;vis.add(r);L.push({e:`o ${q}: ${o[0]} ou ${o[1]}`,d:String(r)})}
+  const respTxt=L.map(p=>`${p.e} = ${p.d}`).join("; ");
+  return{tipo:"relacionar",enunciado:"Ligue cada pergunta ao número certo.",pares:L,direita:embaralhar(L.map(p=>p.d)),resposta:1,respTxt,chave:respTxt,dica,erro:`As ligações certas são: ${respTxt}.`};
+}
+const parDe=n=>n%2===0?"par":"ímpar";
+function vizinhoPI(k,dir,n){let m=dir==="depois"?n+1:n-1;while(parDe(m)!==k)m+=dir==="depois"?1:-1;return m}
+function montarParImpar(d,tipo){
+  const lo=d>=3?100:10,hi=d>=3?999:99,dica="Número par termina em 0, 2, 4, 6 ou 8 e dá para formar duplas sem sobrar. Número ímpar termina em 1, 3, 5, 7 ou 9 e sempre sobra um.";
+  const dif=(q,n)=>{const s=new Set();while(s.size<n)s.add(rnd(lo,hi));return[...s]};
+  const lado=()=>({k:umDe(["par","ímpar"]),dir:umDe(["depois","antes"])});
+  const cena=()=>{const {k,dir}=lado();const n=rnd(lo+3,hi-3);return{k,dir,n,r:vizinhoPI(k,dir,n)}};
+  const explViz=c=>`O número ${c.k} logo ${c.dir} de ${c.n} é ${c.r}, porque ${c.r} termina em ${c.r%10} e é ${c.k}.`;
+  if(tipo==="escolha"){const k=umDe(["par","ímpar"]);let o;do{const r=rnd(lo,hi),outros=[];while(outros.length<3){const x=rnd(lo,hi);if(parDe(x)!==k&&!outros.includes(x)&&x!==r)outros.push(x)}
+      const r2=(()=>{let x=r;if(parDe(x)!==k)x=x===hi?x-1:x+1;return x})();o={r:r2,l:embaralhar([r2,...outros])}}while(new Set(o.l).size<4);
+    const outros=o.l.filter(x=>x!==o.r);
+    return{tipo:"escolha",enunciado:`Qual destes números é ${k}?`,opcoes:o.l,resposta:o.r,chave:"pi"+[...o.l].sort().join()+k,dica,erro:`${o.r} termina em ${o.r%10}, então é ${k}. Os outros (${outros.join(", ")}) são ${k==="par"?"ímpares":"pares"}.`}}
+  if(tipo==="digitar"){
+    if(Math.random()<.5){const n=rnd(5,6),L=dif(0,n),k=umDe(["pares","ímpares"]),kk=k==="pares"?"par":"ímpar",r=L.filter(x=>parDe(x)===kk).length;
+      return{tipo:"digitar",enunciado:`Quantos números ${k} há aqui? ${L.join(", ")}`,resposta:r,dica,erro:`${k==="pares"?"Pares":"Ímpares"} nessa lista: ${L.filter(x=>parDe(x)===kk).join(", ")||"nenhum"}. São ${r}.`}}
+    const c=cena();return{tipo:"digitar",enunciado:`Qual é o número ${c.k} logo ${c.dir} de ${c.n}?`,resposta:c.r,dica,erro:explViz(c)};
+  }
+  if(tipo==="lacuna"){const c=cena();return{tipo:"lacuna",enunciado:`O número ${c.k} logo ${c.dir} de ${c.n} é ___`,resposta:c.r,dica,erro:explViz(c)}}
+  const L=[],vis=new Set();let g=0;while(L.length<3&&g++<200){const c=cena();if(vis.has(c.r))continue;vis.add(c.r);L.push({e:`${c.k} logo ${c.dir} de ${c.n}`,d:String(c.r)})}
+  const respTxt=L.map(p=>`${p.e} = ${p.d}`).join("; ");
+  return{tipo:"relacionar",enunciado:"Ligue cada pista ao número certo.",pares:L,direita:embaralhar(L.map(p=>p.d)),resposta:1,respTxt,chave:respTxt,dica,erro:`As ligações certas são: ${respTxt}.`};
+}
+function regraSeq(d){
+  const dec=d>=3&&Math.random()<.4,k=umDe(d>=3?[2,3,4,5,6,7,8,9,10,20,25,50]:[2,3,4,5,10]),ini=dec?k*6+rnd(0,40):rnd(1,d>=3?200:30);
+  return{k,dec,ini,sq:i=>dec?ini-i*k:ini+i*k};
+}
+function montarSequencia(d,tipo){
+  const dica="Veja de quanto em quanto os números aumentam (ou diminuem) e continue com a mesma regra.";
+  const expl=(g,h)=>`A sequência ${g.dec?"diminui":"aumenta"} de ${g.k} em ${g.k}. ${g.sq(h-1)} ${g.dec?"−":"+"} ${g.k} = ${g.sq(h)}.`;
+  const com=(g,h,marca)=>[0,1,2,3,4].map(i=>i===h?marca:g.sq(i)).join(", ");
+  if(tipo==="digitar"){const g=regraSeq(d);return{tipo:"digitar",enunciado:`Continue a sequência: ${[0,1,2,3].map(g.sq).join(", ")}, ?`,resposta:g.sq(4),dica,erro:expl(g,4)}}
+  if(tipo==="escolha"){const g=regraSeq(d),h=rnd(1,3),r=g.sq(h);
+    return{tipo:"escolha",enunciado:`Qual número completa a sequência? ${com(g,h,"___")}`,opcoes:opcoesNum(r,[r+g.k,r-g.k,r+2*g.k]),resposta:r,dica,erro:expl(g,h)}}
+  if(tipo==="lacuna"){const g=regraSeq(d),h=rnd(1,4);return{tipo:"lacuna",enunciado:`Complete a sequência: ${com(g,h,"___")}`,resposta:g.sq(h),dica,erro:expl(g,h)}}
+  const L=[],vis=new Set();let n=0;while(L.length<3&&n++<200){const g=regraSeq(d),r=g.sq(3);if(vis.has(r))continue;vis.add(r);L.push({e:`${[0,1,2].map(g.sq).join(", ")}, ?`,d:String(r)})}
+  const respTxt=L.map(p=>`${p.e} = ${p.d}`).join("; ");
+  return{tipo:"relacionar",enunciado:"Ligue cada sequência ao próximo número.",pares:L,direita:embaralhar(L.map(p=>p.d)),resposta:1,respTxt,chave:respTxt,dica,erro:`As ligações certas são: ${respTxt}.`};
+}
 const GER={
   valorPosicional:(d,tipo)=>montarPosicional(d,tipo||tipoAleatorio()),
   adicao:(d,tipo)=>montarOp("adicao",d,tipo||tipoAleatorio()),
   adicaoVaiUm:(d,tipo)=>montarOp("adicaoVaiUm",d,tipo||tipoAleatorio()),
   subtracao:(d,tipo)=>montarOp("subtracao",d,tipo||tipoAleatorio()),
   multiplicacao:(d,tipo)=>montarOp("multiplicacao",d,tipo||tipoAleatorio()),
-  divisao:(d,tipo)=>montarOp("divisao",d,tipo||tipoAleatorio())
+  divisao:(d,tipo)=>montarOp("divisao",d,tipo||tipoAleatorio()),
+  comparar:(d,tipo)=>montarComparar(d,tipo||tipoAleatorio()),
+  parImpar:(d,tipo)=>montarParImpar(d,tipo||tipoAleatorio()),
+  sequencia:(d,tipo)=>montarSequencia(d,tipo||tipoAleatorio())
 };
 /* os tipos se alternam (sem repetir o mesmo seguido) e todos aparecem em cada nível */
 function sequenciaTipos(n){let seq=[];while(seq.length<n){const b=embaralhar(TIPOS_Q);if(seq.length&&b[0]===seq[seq.length-1])b.push(b.shift());seq=seq.concat(b)}return seq.slice(0,n)}

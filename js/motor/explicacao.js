@@ -393,6 +393,58 @@ const ROT={
       criar(R.box,String(res),"pm-d cn pm-res pm-pop",R.slot.x,R.slot.y,60,56);glowRes(R);dizer(ctx,`${g} × ${c} = ${res}`);await esperar(ctx,1000)}));
     return{montar:ctx=>{const box=novaCena(ctx,W,H);return Object.assign(expressaoCena(ctx,box,g,"×",c),{W,pontos:[]})},passos};
   },
+  /* ---------- Lote A: comparar dois números da esquerda para a direita (mesmo tamanho) ---------- */
+  comparar(a,b){
+    const sa=String(a),sb=String(b),L=sa.length,W=300,H=250,cx=i=>(W-L*CW)/2+i*CW,kk=i=>L-1-i,passos=[];
+    let dif=0;while(dif<L-1&&sa[dif]===sb[dif])dif++;
+    const sinal=a>b?">":a<b?"<":"=",maior=Math.max(a,b);
+    passos.push(P(`Vamos comparar ${a} e ${b}. Cada algarismo está na sua casa, com a sua cor.`,4000,async(ctx,R)=>{
+      await voarVarios(ctx,[...R.da.map((e,i)=>[e,cx(i),40]),...R.db.map((e,i)=>[e,cx(i),130])],1500,150)},{comparar:"descobrir qual número é maior ou menor"}));
+    for(let i=0;i<=dif;i++){const x=sa[i],y=sb[i],igual=x===y,s=igual?"=":(+x>+y?">":"<");
+      passos.push(P(igual?`Casa das ${nomePos(kk(i))}: ${x} e ${y} são iguais. Então olhamos a próxima casa.`:`Casa das ${nomePos(kk(i))}: ${x} ${+x>+y?"é maior":"é menor"} que ${y}. Já descobrimos!`,4000,async(ctx,R)=>{
+        R.da[i].classList.add("pm-glow");R.db[i].classList.add("pm-glow");
+        const m=criar(R.box,s,"pm-op pm-pop",cx(i)+8,-60);await voarVarios(ctx,[[m,cx(i)+8,84]],1200);R.sims.push(m);dizer(ctx,`${x} ${s} ${y}`);await esperar(ctx,800)}))}
+    passos.push(P(`Então ${a} ${sinal} ${b}. O maior número é ${maior}!`,4000,async(ctx,R)=>{
+      const u=a>=b?R.da[0]:R.db[0],cl=criar(R.box,String(maior),"pm-d cn",u._x,u._y);await voarVarios(ctx,[[cl,(W-200)/2,190]],1600);cl.remove();
+      criar(R.box,`${a} ${sinal} ${b}`,"pm-d cn pm-res pm-pop",(W-200)/2,190,200,56);glowRes(R);dizer(ctx,`${a} ${sinal} ${b}`);await esperar(ctx,1000)}));
+    return{montar:ctx=>{const box=novaCena(ctx,W,H),R={box,da:[],db:[],sims:[]};
+      [...sa].forEach((d,i)=>R.da.push(criar(box,d,"pm-d "+clsPos(kk(i)),cx(i),-70)));
+      [...sb].forEach((d,i)=>R.db.push(criar(box,d,"pm-d "+clsPos(kk(i)),cx(i),-70)));return R},passos};
+  },
+  /* ---------- Lote A: pares e ímpares com duplas de maçãs ---------- */
+  parImpar(n){
+    const W=300,H=250,sp=26,np=Math.floor(n/2),sobra=n%2,bw=2*sp+12,bx=j=>8+j*(bw+6),passos=[],tipo=sobra?"ímpar":"par";
+    passos.push(P(`Vamos descobrir se ${n} é par ou ímpar. Temos ${n} maçãs. Vamos formar duplas!`,4500,async(ctx,R)=>{
+      await voarVarios(ctx,R.mac.map((e,i)=>[e,6+i*sp,50]),900,110)},{par:"dá para formar duplas sem sobrar",ímpar:"sempre sobra um sem dupla"}));
+    for(let j=0;j<np;j++)passos.push(P(`Dupla ${j+1}: duas maçãs juntas.`,3500,async(ctx,R)=>{
+      const c=document.createElement("i");c.className="pm-caixa pm-pop";c.style.cssText=`left:${bx(j)}px;top:140px;width:${bw}px;height:42px`;R.box.append(c);
+      await voarVarios(ctx,[[R.mac[2*j],bx(j)+6,150],[R.mac[2*j+1],bx(j)+6+sp,150]],1000);dizer(ctx,`${2*(j+1)} maçãs em ${j+1} ${j===0?"dupla":"duplas"}`)}));
+    passos.push(P(sobra?"Sobrou 1 maçã sem dupla!":"Não sobrou nenhuma maçã. Todas têm dupla!",3500,async(ctx,R)=>{
+      if(sobra){const e=R.mac[n-1];e.classList.add("pm-glow");await voarVarios(ctx,[[e,bx(np)+6,150]],1000);dizer(ctx,"sobrou 1")}else{R.mac.forEach(e=>e.classList.add("pm-glow"));await esperar(ctx,900);dizer(ctx,"não sobrou nenhuma")}}));
+    passos.push(P("Dica: olhe o último algarismo! Terminou em 0, 2, 4, 6 ou 8? É par. Em 1, 3, 5, 7 ou 9? É ímpar.",5000,async(ctx,R)=>{
+      R.box.innerHTML="";R.dg={};
+      const it=[0,2,4,6,8].map((d,i)=>{const e=criar(R.box,String(d),"pm-d cu",10+i*56,-70,50,44);R.dg[d]=e;return[e,10+i*56,30]}).concat([1,3,5,7,9].map((d,i)=>{const e=criar(R.box,String(d),"pm-d cc",10+i*56,-70,50,44);R.dg[d]=e;return[e,10+i*56,110]}));
+      await voarVarios(ctx,it,1400,150);dizer(ctx,"Em cima: pares · Embaixo: ímpares")}));
+    passos.push(P(`${n} termina em ${n%10}. Então ${n} é ${tipo}!`,4000,async(ctx,R)=>{
+      R.dg[n%10].classList.add("pm-glow");const cl=criar(R.box,String(n),"pm-d cn",(W-60)/2,-60,60,50);await voarVarios(ctx,[[cl,(W-200)/2,185]],1500);cl.remove();
+      criar(R.box,`${n} é ${tipo}`,"pm-d cn pm-res pm-pop",(W-200)/2,185,200,56);glowRes(R);dizer(ctx,`${n} é ${tipo}`);await esperar(ctx,1000)}));
+    return{montar:ctx=>{const box=novaCena(ctx,W,H),R={box,mac:[],dg:{}};
+      for(let i=0;i<n;i++)R.mac.push(criar(box,"🍎","pm-fruta",6+i*sp,-60));return R},passos};
+  },
+  /* ---------- Lote A: sequência crescente (ini, ini+k, ...) ---------- */
+  sequencia(ini,k){
+    const W=300,H=220,t=[0,1,2,3,4].map(i=>ini+i*k),cx=i=>8+i*58,passos=[];
+    passos.push(P(`Uma sequência é uma fila de números que segue uma regra. Esta começa com ${t[0]}, ${t[1]}, ${t[2]}, ${t[3]}...`,4500,async(ctx,R)=>{
+      await voarVarios(ctx,R.t.map((e,i)=>[e,cx(i),90]),1200,250)},{sequência:"números em fila, com uma regra"}));
+    for(let i=0;i<3;i++)passos.push(P(i===0?`De ${t[0]} para ${t[1]} o número aumentou ${k}. Vamos anotar +${k}.`:`De ${t[i]} para ${t[i+1]}: de novo +${k}!`,4000,async(ctx,R)=>{
+      R.t[i].classList.add("pm-glow");R.t[i+1].classList.add("pm-glow");
+      const o=criar(R.box,"+"+k,"pm-op pm-pop",cx(i)+30,-60);await voarVarios(ctx,[[o,cx(i)+30,30]],1200);R.ops.push(o);dizer(ctx,`${t[i]} + ${k} = ${t[i+1]}`);await esperar(ctx,800)}));
+    passos.push(P(`A regra é somar ${k}. Depois de ${t[3]} vem ${t[3]} + ${k} = ${t[4]}!`,4500,async(ctx,R)=>{
+      const o=criar(R.box,"+"+k,"pm-op pm-pop",cx(3)+30,-60);await voarVarios(ctx,[[o,cx(3)+30,30]],1200);
+      const cl=criar(R.box,String(t[4]),"pm-d cn",o._x,o._y,54,48);await voarVarios(ctx,[[cl,cx(4),90]],1800);cl.remove();
+      criar(R.box,String(t[4]),"pm-d cn pm-res pm-pop",cx(4),90,54,48);glowRes(R);dizer(ctx,`${t[3]} + ${k} = ${t[4]}`);await esperar(ctx,900)}));
+    return{montar:ctx=>{const box=novaCena(ctx,W,H);return{box,ops:[],t:t.slice(0,4).map((v,i)=>criar(box,String(v),"pm-d cn",cx(i),-70,54,48))}},passos};
+  },
   /* ---------- 12 ÷ 3: frutas nos pratos ---------- */
   divide(t,p){
     const c=t/p,W=300,H=250,sp=Math.min(26,Math.floor(288/t)),px=k=>(W-p*88)/2+k*88,passos=[];
