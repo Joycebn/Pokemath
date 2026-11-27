@@ -26,7 +26,7 @@ function estadoNivel(f,n){
 /* tentativas: no máximo cfgF("tentativasFaseDia") por dia PARA CADA NÍVEL de cada fase */
 const chaveT=(id,n)=>id+":"+n;
 const tentativasNivel=(id,n)=>S.tentNivel&&S.tentNivel.dia===hoje()?(S.tentNivel.c[chaveT(id,n)]||0):0;
-const restantesNivel=(id,n)=>Math.max(0,cfgF("tentativasFaseDia")-tentativasNivel(id,n));
+const restantesNivel=(id,n)=>SEM_LIMITE_TENTATIVAS?cfgF("tentativasFaseDia"):Math.max(0,cfgF("tentativasFaseDia")-tentativasNivel(id,n));
 function gastarTentativa(id,n){
   const h=hoje();if(!S.tentNivel||S.tentNivel.dia!==h)S.tentNivel={dia:h,c:{}};
   S.tentNivel.c[chaveT(id,n)]=(S.tentNivel.c[chaveT(id,n)]||0)+1;save();
