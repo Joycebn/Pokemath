@@ -72,7 +72,7 @@ function abrirFolhaFase(id){
     :NIVEIS.map(n=>`<div class="nvTrava" aria-hidden="true">${medalhaSvg(n,true)}</div>`).join("");
   const d=document.createElement("div");d.id="folha";d.className="folhaFundo";
   d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",f.titulo);
-  d.innerHTML=`<div class="folha"><div class="folhaTopo fHead"><span class="ic">${f.icone}</span><span class="fTxt"><b>${f.titulo}</b><small>${f.resumo}</small></span>${f.macete?`<button class="lin pm-macete" aria-label="Ver macete" onclick="abrirMacete('${f.macete}')">💡</button>`:""}${lib?`<button class="lin pm-livro" onclick="abrirExplicacao('${f.id}')" aria-label="Ver explicação">📖</button>`:""}<button class="lin fecha" aria-label="Fechar" onclick="fecharFolha()">✕</button></div>
+  d.innerHTML=`<div class="folha"><div class="folhaTopo fHead"><span class="ic">${f.icone}</span><span class="fTxt"><b>${f.titulo}</b><small>${f.resumo}</small></span>${macetesDaFase(f).length?`<button class="lin pm-macete" aria-label="Ver macetes" onclick="abrirMacetesFase('${f.id}')">💡</button>`:""}${lib?`<button class="lin pm-livro" onclick="abrirExplicacao('${f.id}')" aria-label="Ver explicação">📖</button>`:""}<button class="lin fecha" aria-label="Fechar" onclick="fecharFolha()">✕</button></div>
     ${laje(medalhas)}
     ${lib?"":`<p class="aviso folhaAviso">${anoLiberado(f.ano)?"Termine os 3 níveis da fase anterior primeiro!":"Esse ano ainda não está liberado."}</p>`}</div>`;
   d.addEventListener("click",e=>{if(e.target===d)fecharFolha()});

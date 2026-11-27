@@ -36,9 +36,13 @@ function macConcluir(id){
 function macFraseHtml(m){
   return m.partes.map(p=>p.p.split(" ").map(w=>w===w.toUpperCase()&&w.length>1?`<b>${w}</b>`:`<b>${w[0]}</b>${w.slice(1)}`).join(" ")).join(" ");
 }
-function abrirMacetes(){
-  fecharFolha();
-  app.innerHTML=`<h2>💡 Macetes</h2><div class="info"><p>Truques para lembrar mais fácil.</p>${MACETES.map(m=>`<button class="lin mac" onclick="abrirMacete('${m.id}')"><span>${m.icone}</span> <b>${m.titulo}</b> <small>${m.resumo}</small>${S.macetes&&S.macetes[m.id]?" ✅":""}</button>`).join("")}</div><button class="sec" onclick="ir('estudar')">Voltar</button>`;
+function macetesDaFase(f){const l=[].concat((f&&f.macete)||[]);return MACETES.filter(m=>l.includes(m.id))}
+function abrirMacetesFase(id){const f=FASES.find(x=>x.id===id),l=macetesDaFase(f);if(!l.length)return;MAC_VOLTA="fases";if(l.length===1)abrirMacete(l[0].id);else abrirMacetes(l.map(m=>m.id))}
+let MAC_VOLTA="estudar";
+function abrirMacetes(ids){
+  fecharFolha();if(!Array.isArray(ids))MAC_VOLTA="estudar";
+  const lista=Array.isArray(ids)?MACETES.filter(m=>ids.includes(m.id)):MACETES;
+  app.innerHTML=`<h2>💡 Macetes</h2><div class="info"><p>Truques para lembrar mais fácil.</p>${lista.map(m=>`<button class="lin mac" onclick="abrirMacete('${m.id}')"><span>${m.icone}</span> <b>${m.titulo}</b> <small>${m.resumo}</small>${S.macetes&&S.macetes[m.id]?" ✅":""}</button>`).join("")}</div><button class="sec" onclick="ir(MAC_VOLTA)">Voltar</button>`;
 }
 function abrirMacete(id){
   const m=macAch(id);if(!m)return;fecharFolha();

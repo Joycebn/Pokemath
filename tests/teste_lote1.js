@@ -503,6 +503,19 @@ try{t("tabuada: arquivos novos no index.html (dados antes da tela, tudo antes do
 try{t("tabuada: estilos da trilha da tabuada e do 'Livre' existem no CSS",/\.zTab/.test(css3)&&/\.livre/.test(css3)&&/\.macFrase/.test(css3));}catch(e){t("tabuada: estilos da trilha da tabuada e do 'Livre' existem no CSS  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
+
+// ===== Ajustes pós-Etapa 3: Pyri no tutorial/balões e macetes nas fases =====
+{
+const z=await sessao(),zv=x=>{try{return z.ev(x)}catch(e){return undefined}},U=x=>z.w.document.querySelector(x),Q=x=>[...z.w.document.querySelectorAll(x)];
+try{zv("S.tutorialVisto=false;tutorialPyri(true)");t("Pyri no tutorial inicial: aparece a FIGURA do Pyri (não o emoji 🔥)",!!U(".pm-tut .pm-pyri-corpo img")&&/pyri\.webp/.test(U(".pm-tut .pm-pyri-corpo img").src)&&!/🔥/.test(U(".pm-tut .pm-pyri-corpo").textContent))}catch(e){t("tutorial Pyri  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{zv("fecharTutorial();S.tutorialVisto=true;ir('fases')");t("Pyri na introdução da trilha de fases: figura no lugar do emoji",!!U(".pyriBox .pyriAv img")&&/pyri\.webp/.test(U(".pyriBox .pyriAv img").src))}catch(e){t("intro trilha Pyri  [erro]",false)}
+try{zv("abrirExplicacao('a3-adicao')");t("Pyri na explicação animada: figura no lugar do emoji",!!U(".pyriBox .pyriAv img")&&/pyri\.webp/.test(U(".pyriBox .pyriAv img").src))}catch(e){t("explicação Pyri  [erro]",false)}
+try{zv("ir('fases')");t("fases: a multiplicação tem os macetes das tabuadas (4, 5, 9, 10 e 11)",zv("macetesDaFase(FASES.find(f=>f.id==='a3-multiplicacao')).map(m=>m.id).join()")==="tab5,tab4,tab9,tab10,tab11"||zv("macetesDaFase(FASES.find(f=>f.id==='a3-multiplicacao')).map(m=>m.id).sort().join()")==="tab10,tab11,tab4,tab5,tab9")}catch(e){t("macetes da fase  [erro]",false)}
+try{zv("abrirFolhaFase('a3-multiplicacao')");t("fases: a laje da Multiplicação mostra o botão 💡 e ele abre só os macetes dessa fase",!!U("#folha .pm-macete")&&(U("#folha .pm-macete").click(),Q("#app .mac").length===5&&!U("#folha")))}catch(e){t("botão macete na laje  [erro]",false)}
+try{zv("abrirFolhaFase('a3-adicao')");t("fases: fase sem macete não mostra o botão 💡",!U("#folha .pm-macete"))}catch(e){t("sem macete  [erro]",false)}
+try{zv("abrirMacetes(['tab4'])");t("macetes: abrirMacetes com lista filtra (1 macete)",Q("#app .mac").length===1)}catch(e){t("filtro macetes  [erro]",false)}
+z.w.close();
+}
 t("nenhum erro de script durante todos os testes",erros.length===0,erros.join(" | "));
 console.log(`\nPASSARAM: ${ok}   FALHARAM: ${bad.length}`);bad.forEach(b=>console.log(" ✗ "+b));process.exit(0);
 })().catch(e=>{console.error("ERRO NO TESTE:",e);process.exit(1)});

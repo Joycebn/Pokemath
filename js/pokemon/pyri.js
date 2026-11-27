@@ -55,7 +55,7 @@ function tutorialPyri(comTitulo){
   const ov=document.createElement("div");ov.className="pm-tut";ov.setAttribute("role","dialog");ov.setAttribute("aria-label","Pyri explica o jogo");
   ov.innerHTML=`<div class="pm-tut-titulo" id="tut-tit">${[..."Pyri"].map((c,i)=>`<span style="animation-delay:${i*.18}s">${c}</span>`).join("")}</div>
   <div class="pm-tut-palco" id="tut-palco" style="display:none">
-    <div class="pm-tut-pyri" id="tut-pyri"><div class="pm-pyri-corpo">🔥</div></div>
+    <div class="pm-tut-pyri" id="tut-pyri"><div class="pm-pyri-corpo foto"><img src="${IMG(PYRI_ID)}" alt="Pyri"></div></div>
     <div class="pm-tut-balao"><div id="tut-fala" class="pm-tut-fala"></div><div class="pm-tut-ico" id="tut-ico"></div></div>
     <div class="pm-tut-pontos" id="tut-pontos"></div>
     <div class="pm-tut-btns"><button class="pm-bt" id="tut-ant">◀ Voltar</button><button class="pm-bt pm-bt-prox" id="tut-prox">Próximo ▶</button></div>

@@ -60,7 +60,7 @@ function cartaoFase(f){
     return `<button class="nv ${n} ${st}" data-estado="${st}" onclick="abrirNivel('${f.id}','${n}')"><span class="nvi">${ICN[n]}</span><b>${NOME_N[n]}</b><small>${ROT_ESTADO[st]}${st!=="bloqueado"&&rest<=0?" · volte amanhã":""}</small></button>`}).join("")}</div></div>`;
 }
 /* introdução (Pyri) da tela de fases */
-function introTrilha(){return `<div class="pyriBox"><div class="pyriAv">🔥</div><div class="balao">Escolha uma fase! Cada fase tem 3 níveis: 🥉 Bronze, 🥈 Prata e 🥇 Ouro. Em cada nível você tem 2 vidas ❤️❤️. Para ir à próxima fase, termine os 3 níveis. Cada nível pode ser tentado ${cfgF("tentativasFaseDia")} vezes por dia.</div></div>`;}
+function introTrilha(){return `<div class="pyriBox"><div class="pyriAv foto"><img src="${IMG(PYRI_ID)}" alt="Pyri"></div><div class="balao">Escolha uma fase! Cada fase tem 3 níveis: 🥉 Bronze, 🥈 Prata e 🥇 Ouro. Em cada nível você tem 2 vidas ❤️❤️. Para ir à próxima fase, termine os 3 níveis. Cada nível pode ser tentado ${cfgF("tentativasFaseDia")} vezes por dia.</div></div>`;}
 /* a tela das fases é a trilha por zonas (js/ui/trilha_visual.js); a lista antiga fica só como reserva se esse arquivo não carregar */
 function htmlTrilha(){return typeof htmlTrilhaZonas==="function"?htmlTrilhaZonas():htmlTrilhaLista()}
 function htmlTrilhaLista(){

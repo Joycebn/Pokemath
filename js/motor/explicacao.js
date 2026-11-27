@@ -417,7 +417,7 @@ function htmlExplica(){
   const f=FS.fase;
   return `<div class="faseTop"><button class="lin" onclick="voltarTrilha()">← Trilha</button><b>${f.icone} ${f.titulo}</b></div>
   <div class="dots" id="exp-dots"></div>
-  <div class="pyriBox"><div class="pyriAv" aria-label="Pyri">🔥</div><div class="balao" id="exp-fala"></div></div>
+  <div class="pyriBox"><div class="pyriAv foto" aria-label="Pyri"><img src="${IMG(PYRI_ID)}" alt="Pyri"></div><div class="balao" id="exp-fala"></div></div>
   <div class="termos" id="exp-termos"></div>
   <div class="pm-repr" id="exp-repr" style="display:none"><span>Imagens:</span><button data-r="dourado" onclick="trocarRepr('dourado')">🧊 Material dourado</button><button data-r="macas" onclick="trocarRepr('macas')">🍎 Maçãs</button></div>
   <div class="palcoExp" id="exp-stage"></div>
