@@ -22,7 +22,7 @@ FASES.push(
  topicos:["Sequências numéricas crescentes e decrescentes","Regra de formação de uma sequência"],roteiro:["sequencia",3,4]},
 /* Lote B: geometria, medidas e dinheiro */
 {id:"a3-figuras",macete:"figuras",ano:3,ordem:10,area:"Geometria",icone:"🔷",titulo:"Figuras geométricas",curto:"Figuras",resumo:"Lados, vértices e faces",gerador:"figuras",
- topicos:["Figuras planas: triângulo, quadrado, retângulo, pentágono e hexágono","Lados e vértices das figuras","Figura espacial: o cubo (faces, vértices e arestas)"],roteiro:["figuras","pentagono"]},
+ topicos:["Figuras planas: triângulo, quadrado, retângulo e quadrilátero","Pentágono, hexágono, heptágono, octógono, eneágono e decágono","Lados e vértices das figuras"],roteiro:["figuras"]},
 {id:"a3-comprimento",macete:"medidas-comprimento",ano:3,ordem:11,area:"Grandezas e Medidas",icone:"📏",titulo:"Medidas de comprimento",curto:"Comprimento",resumo:"Metro, centímetro e quilômetro",gerador:"comprimento",
  topicos:["Unidades de comprimento: metro, centímetro, milímetro e quilômetro","Transformações entre unidades de comprimento","Resolução de problemas com medidas"],roteiro:["comprimento",3]},
 {id:"a3-tempo",macete:"tempo",ano:3,ordem:12,area:"Grandezas e Medidas",icone:"🕒",titulo:"Medidas de tempo",curto:"Tempo",resumo:"Relógio, horas, dias e meses",gerador:"tempo",

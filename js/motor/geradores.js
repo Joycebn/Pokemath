@@ -180,25 +180,24 @@ function montarFam(fams,d,tipo,dica,tituloRel){
 /* geometria: vértices de cada figura plana (compartilhado com o desenho e com a animação) */
 const FIGURAS=[
  {id:"triangulo",nome:"triângulo",lados:3,pref:"tri"},{id:"quadrado",nome:"quadrado",lados:4,pref:"quadri"},{id:"retangulo",nome:"retângulo",lados:4,pref:"quadri"},
- {id:"pentagono",nome:"pentágono",lados:5,pref:"penta"},{id:"hexagono",nome:"hexágono",lados:6,pref:"hexa"}];
-const CUBO={faces:6,"vértices":8,arestas:12};
+ {id:"quadrilatero",nome:"quadrilátero",lados:4,pref:"quadri"},{id:"pentagono",nome:"pentágono",lados:5,pref:"penta"},{id:"hexagono",nome:"hexágono",lados:6,pref:"hexa"},
+ {id:"heptagono",nome:"heptágono",lados:7,pref:"hepta"},{id:"octogono",nome:"octógono",lados:8,pref:"octo"},{id:"eneagono",nome:"eneágono",lados:9,pref:"eneá"},{id:"decagono",nome:"decágono",lados:10,pref:"deca"}];
+const CUBO={faces:6,"vértices":8,arestas:12};   /* guardado para quando a Joyce pedir o cubo de volta; as questões não usam */
 function vertsFig(id,cx,cy,r){
   if(id==="retangulo")return[[cx-r*1.05,cy-r*.62],[cx+r*1.05,cy-r*.62],[cx+r*1.05,cy+r*.62],[cx-r*1.05,cy+r*.62]];
+  if(id==="quadrilatero")return[[cx-r*.95,cy-r*.45],[cx+r*.55,cy-r*.85],[cx+r*1.0,cy+r*.5],[cx-r*.55,cy+r*.85]].map(p=>p.map(v=>+v.toFixed(1)));
   const f=FIGURAS.find(x=>x.id===id),n=f?f.lados:4,rot=id==="quadrado"?45:0;
   return Array.from({length:n},(_,i)=>{const a=(rot+i*360/n)*Math.PI/180;return[+(cx+r*Math.sin(a)).toFixed(1),+(cy-r*Math.cos(a)).toFixed(1)]});
 }
+const EXPL_FIG={triangulo:"“tri” quer dizer 3: o triângulo tem 3 lados e 3 vértices.",quadrado:"O quadrado tem 4 lados iguais e 4 vértices (cantinhos).",retangulo:"O retângulo tem 4 lados e 4 vértices (4 cantos retos).",
+  quadrilatero:"“quadri” quer dizer 4 e “látero” quer dizer lado: o quadrilátero tem 4 lados e 4 vértices.",pentagono:"“penta” quer dizer 5: o pentágono tem 5 lados e 5 vértices.",hexagono:"“hexa” quer dizer 6: o hexágono tem 6 lados e 6 vértices.",
+  heptagono:"“hepta” quer dizer 7: o heptágono tem 7 lados e 7 vértices.",octogono:"“octo” quer dizer 8: o octógono tem 8 lados e 8 vértices.",eneagono:"“eneá” quer dizer 9: o eneágono tem 9 lados e 9 vértices.",decagono:"“deca” quer dizer 10: o decágono tem 10 lados e 10 vértices."};
 function famFiguras(d){
-  const cubo=Math.random()<.28;
-  if(cubo){const c=umDe(d>=3?["faces","vértices","arestas"]:["faces"]),r=CUBO[c],pl=c==="faces"?"Quantas":"Quantos";
-    const ex={faces:"O cubo é como um dado: tem 6 faces (6 quadrados).","vértices":"O cubo tem 8 vértices (cantinhos): 4 em cima e 4 embaixo.",arestas:"O cubo tem 12 arestas (as bordas): 4 em cima, 4 embaixo e 4 nas laterais."}[c];
-    return{q:`${pl} ${c} tem o cubo?`,lac:`O cubo tem ___ ${c}.`,e:`${c} do cubo`,r,alt:[6,8,12,4],erro:ex,visual:{tipo:"figura",nome:"cubo"}}}
-  const f=umDe(FIGURAS),c=umDe(["lados","vértices"]),r=f.lados;
-  const ex={triangulo:"“tri” quer dizer 3: o triângulo tem 3 lados e 3 vértices.",quadrado:"O quadrado tem 4 lados iguais e 4 vértices (cantinhos).",retangulo:"O retângulo tem 4 lados e 4 vértices (4 cantos retos).",
-    pentagono:"“penta” quer dizer 5: o pentágono tem 5 lados e 5 vértices.",hexagono:"“hexa” quer dizer 6: o hexágono tem 6 lados e 6 vértices."}[f.id];
-  return{q:`Quantos ${c} tem o ${f.nome}?`,lac:`O ${f.nome} tem ___ ${c}.`,e:`${c} do ${f.nome}`,r,alt:[3,4,5,6,7],erro:ex,visual:{tipo:"figura",nome:f.id}};
+  const pool=d>=3?FIGURAS:FIGURAS.filter(f=>f.lados<=6),f=umDe(pool),c=umDe(["lados","vértices"]),r=f.lados;
+  return{q:`Quantos ${c} tem o ${f.nome}?`,lac:`O ${f.nome} tem ___ ${c}.`,e:`${c} do ${f.nome}`,r,alt:[3,4,5,6,7,8,9,10],erro:EXPL_FIG[f.id],visual:{tipo:"figura",nome:f.id}};
 }
 function montarFiguras(d,tipo){
-  return montarFam([famFiguras],d,tipo,"Conte os lados (os traços) e os vértices (os cantinhos). O começo do nome ajuda: tri = 3, quadri = 4, penta = 5 e hexa = 6.","Ligue cada pergunta ao número certo.");
+  return montarFam([famFiguras],d,tipo,"Conte os lados (os traços) e os vértices (os cantinhos). O começo do nome ajuda: tri = 3, quadri = 4, penta = 5, hexa = 6, hepta = 7, octo = 8, eneá = 9 e deca = 10.","Ligue cada pergunta ao número certo.");
 }
 /* conversão entre unidades vizinhas: pares = [[maior, menor, quantas do menor cabem no maior]] */
 function famConv(d,pares,nome,qt,ab,kmax){
@@ -228,11 +227,13 @@ function famTempoHoraMeia(){const n=rnd(1,4);
   return{q:`Quantos minutos há em ${n} ${plu(n,"hora","horas")} e meia?`,lac:`${n} ${plu(n,"hora","horas")} e meia = ___ minutos`,e:`${n} ${plu(n,"hora","horas")} e meia em minutos`,r:n*60+30,alt:[n*60,n*60+60,n*30,n*60+15],erro:`${n} ${plu(n,"hora","horas")} = ${n*60} minutos e a meia hora = 30 minutos. ${n*60} + 30 = ${n*60+30} minutos.`}}
 function famRelogioHora(){const h=rnd(1,12);
   return{q:"Que horas o relógio marca? Responda só o número da hora.",lac:"Olhe o relógio. A hora marcada é ___.",r:h,alt:[h+1,h-1,h+2,h-2],visual:{tipo:"relogio",h,m:0},erro:`O ponteiro pequeno aponta para o ${h} e o grande para o 12: são ${h} ${plu(h,"hora","horas")}.`}}
-function famRelogioMin(d){const h=rnd(1,12),m=umDe(d>=3?[5,10,15,20,25,30,35,40,45,50,55]:[15,30,45]);
+let NIVEL_TEMPO="bronze";   /* Bronze: :00, :15, :30 e :45; Prata e Ouro: também as horas quebradas (1:30, 2:20, 3:55…) */
+function famRelogioMin(d){const h=rnd(1,12),m=umDe(NIVEL_TEMPO!=="bronze"?[5,10,15,20,25,30,35,40,45,50,55]:[15,30,45]);
   return{q:`O relógio marca ${h} ${plu(h,"hora","horas")} e quantos minutos?`,lac:`Olhe o relógio: a hora é ${h} e os minutos são ___.`,r:m,alt:[m+5,m-5,m+10,m/5],visual:{tipo:"relogio",h,m},erro:`O ponteiro grande está no ${m/5}. Cada número vale 5 minutos: ${m/5} × 5 = ${m} minutos.`}}
 function famRelogioFalta(){const h=rnd(1,12),m=umDe([5,10,15,20,25,30,35,40,45,50,55]);
   return{q:"Quantos minutos faltam para o relógio completar a hora?",lac:"Faltam ___ minutos para completar a hora.",r:60-m,alt:[m,60-m+5,60-m-5,30],visual:{tipo:"relogio",h,m},erro:`Já passaram ${m} minutos. Faltam 60 − ${m} = ${60-m} minutos.`}}
-function montarTempo(d,tipo){
+function montarTempo(d,tipo,nivel){
+  NIVEL_TEMPO=nivel||(d>=3?"ouro":"bronze");
   const fams=d>=3?[famTempoConv,famTempoConv,famTempoMeia,famTempoHoraMeia,famRelogioHora,famRelogioMin,famRelogioMin,famRelogioFalta]:[famTempoConv,famTempoConv,famTempoMeia,famRelogioHora,famRelogioMin,famRelogioMin];
   return montarFam(fams,d,tipo,"Lembre: 1 hora = 60 minutos, 1 dia = 24 horas, 1 semana = 7 dias e 1 ano = 12 meses. No relógio, cada número do ponteiro grande vale 5 minutos.","Ligue cada tempo ao valor certo.");
 }
@@ -266,7 +267,7 @@ const GER={
   sequencia:(d,tipo)=>montarSequencia(d,tipo||tipoAleatorio()),
   figuras:(d,tipo)=>montarFiguras(d,tipo||tipoAleatorio()),
   comprimento:(d,tipo)=>montarComprimento(d,tipo||tipoAleatorio()),
-  tempo:(d,tipo)=>montarTempo(d,tipo||tipoAleatorio()),
+  tempo:(d,tipo,nivel)=>montarTempo(d,tipo||tipoAleatorio(),nivel),
   dinheiro:(d,tipo)=>montarDinheiro(d,tipo||tipoAleatorio())
 };
 /* os tipos se alternam (sem repetir o mesmo seguido) e todos aparecem em cada nível */
@@ -275,6 +276,6 @@ function sequenciaTipos(n){let seq=[];while(seq.length<n){const b=embaralhar(TIP
 const QTD_NIVEL={bronze:-2,prata:0,ouro:2},VIDAS_NIVEL=2;
 function novaSessao(fase,nivel){
   nivel=nivel||"bronze";const n=Math.max(4,cfgF("questoesPorFase")+QTD_NIVEL[nivel]),dif=nivel==="ouro"?3:1,tipos=sequenciaTipos(n),fila=[],vistos=new Set();
-  for(const tp of tipos){let ex,g=0;do{ex=GER[fase.gerador](dif,tp)}while(vistos.has(ex.chave||ex.enunciado)&&g++<60);vistos.add(ex.chave||ex.enunciado);fila.push(ex)}
+  for(const tp of tipos){let ex,g=0;do{ex=GER[fase.gerador](dif,tp,nivel)}while(vistos.has(ex.chave||ex.enunciado)&&g++<60);vistos.add(ex.chave||ex.enunciado);fila.push(ex)}
   return{fase,nivel,dica:nivel==="bronze",fila,total:fila.length,feitas:0,erros:0,vidas:VIDAS_NIVEL,acertosPrimeira:0,moedas:0,estado:"pergunta",msg:"",fala:"",emAndamento:true};
 }

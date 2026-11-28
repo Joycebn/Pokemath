@@ -144,3 +144,10 @@ nav button{padding:10px 1px;font-size:.7rem}
 .dicaMoeda:disabled{opacity:.45;cursor:default}
 .dicaPaga{margin:6px 0 10px;padding:10px 12px;border-radius:12px;background:#fff6d6;border:2px solid #d9a400;font-size:.95rem;text-align:left}
 .op:disabled{opacity:.3;text-decoration:line-through}
+
+/* Pyri andando pelas casas do quadro de ordem (explicação de Comprimento) */
+.pm-pyri-anda{width:34px;height:34px;background:url(../img/pokemon/pyri.webp) center/contain no-repeat;z-index:4}
+
+/* moedas e cédulas desenhadas dentro da animação de Dinheiro */
+.pm-dinSvg{background:none;border:0;box-shadow:none;padding:0;line-height:0}
+.pm-dinSvg svg{width:100%;height:100%;display:block}

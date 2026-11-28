@@ -118,12 +118,42 @@ function svgRelogio(h,m){
   const nums=Array.from({length:12},(_,i)=>{const n=i+1,a=n*30*Math.PI/180;return `<text x="${(100+68*Math.sin(a)).toFixed(1)}" y="${(100-68*Math.cos(a)+7).toFixed(1)}" text-anchor="middle" font-size="20" font-weight="800" fill="#16224a">${n}</text>`}).join("");
   return `<svg viewBox="0 0 200 200" role="img" aria-label="relógio"><circle cx="100" cy="100" r="98" fill="#fff" stroke="#16224a" stroke-width="5"/>${tk}${nums}<line class="ph" x1="100" y1="100" x2="100" y2="52" transform="rotate(${+ang.toFixed(2)} 100 100)" stroke="#16224a" stroke-width="7" stroke-linecap="round"/><line class="pmin" x1="100" y1="100" x2="100" y2="24" transform="rotate(${m*6} 100 100)" stroke="#d62839" stroke-width="4.5" stroke-linecap="round"/><circle cx="100" cy="100" r="6" fill="#16224a"/></svg>`;
 }
-const COR_MOEDA=v=>v>=100?["#f2c94c","#b8860b"]:v>=50?["#d5dbe2","#7b8794"]:["#d98a4a","#8a4b17"],COR_NOTA={2:"#aebfd1",5:"#c3a4e6",10:"#f08a8a",20:"#f6d55c",50:"#f2a65a",100:"#7fb5e6"};
+/* Cédulas e moedas: desenhos PRÓPRIOS e estilizados (não são cópias das cédulas do Banco Central), marcados com "ILUSTRAÇÃO". */
+const OURO_M="#e3b53d",PRATA_M="#d5dbe2",COBRE_M="#c9783f";
+const COR_NOTA={2:"#8fb4e3",5:"#b48cd9",10:"#ef7d78",20:"#f3d34c",50:"#d9955a",100:"#6fb0c9"};
+/* o bicho de cada cédula, feito de formas simples; (cx,cy) é o centro do medalhão */
+function bichoNota(v,cx,cy){
+  const e=(rx,ry,x,y,f,extra)=>`<ellipse cx="${(cx+x).toFixed(1)}" cy="${(cy+y).toFixed(1)}" rx="${rx}" ry="${ry}" fill="${f}" stroke="#16224a" stroke-width="1.2"${extra||""}/>`,
+        c=(r,x,y,f)=>`<circle cx="${(cx+x).toFixed(1)}" cy="${(cy+y).toFixed(1)}" r="${r}" fill="${f}" stroke="#16224a" stroke-width="1.2"/>`;
+  const A={
+    2:`${e(11,7,0,3,"#5aa05a")}${e(5,3.5,-2,2,"#3f7f3f")}${c(3.6,11,0,"#7bbf6a")}${e(2.6,1.8,-8,10,"#7bbf6a")}${e(2.6,1.8,6,10,"#7bbf6a")}`,
+    5:`${e(8,5,-1,5,"#fff")}<path d="M5 4 C9 -2 6 -8 3 -10" fill="none" stroke="#16224a" stroke-width="3" transform="translate(${cx} ${cy})"/>${c(3,3,-11,"#fff")}<path d="M5 -11 L11 -10 L5 -9 Z" fill="#f2a900" stroke="#16224a" stroke-width="1" transform="translate(${cx} ${cy})"/>`,
+    10:`${c(7.5,0,-2,"#d62839")}${e(4.5,9,-6,6,"#2f6fdb")}<path d="M3 -3 L11 0 L3 2 Z" fill="#f2c94c" stroke="#16224a" stroke-width="1.1" transform="translate(${cx} ${cy})"/>${c(1.5,2,-5,"#fff")}`,
+    20:`${c(11,0,0,"#e8891b")}${c(7.5,0,1,"#f5b94f")}${c(2.4,-9,-8,"#e8891b")}${c(2.4,9,-8,"#e8891b")}${c(1.2,-3,0,"#16224a")}${c(1.2,3,0,"#16224a")}`,
+    50:`${c(10,0,1,"#f0b848")}${c(3.2,-8,-8,"#f0b848")}${c(3.2,8,-8,"#f0b848")}${c(1.7,-4,-2,"#5a3b00")}${c(1.7,4,-2,"#5a3b00")}${c(1.4,0,5,"#5a3b00")}${c(1.1,-6,4,"#5a3b00")}${c(1.1,6,4,"#5a3b00")}`,
+    100:`${e(12,6.5,-1,1,"#3d8fb0")}<path d="M10 1 L18 -6 L18 8 Z" fill="#2a6f8d" stroke="#16224a" stroke-width="1.2" transform="translate(${cx} ${cy})"/>${c(1.6,-7,-1,"#fff")}${e(4,2,-1,5,"#8ccbe0")}`
+  };
+  return `<g data-animal="${{2:"tartaruga",5:"garça",10:"arara",20:"mico-leão",50:"onça",100:"garoupa"}[v]||"bicho"}">${A[v]||c(8,0,0,"#cfe9d4")}</g>`;
+}
+function svgCedula(v,x,y){
+  const w=112,h=52,cor=COR_NOTA[v]||"#cfe9d4",fs=String(v).length>=3?15.5:String(v).length===2?18:21;
+  return `<g class="cedula"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${cor}" stroke="#16224a" stroke-width="3"/><rect x="${x+4}" y="${y+4}" width="${w-8}" height="${h-8}" rx="3" fill="none" stroke="#16224a" stroke-width="1.2" opacity=".4"/>`+
+        `<text x="${x+8}" y="${y+14}" font-size="6.5" font-weight="800" fill="#16224a" letter-spacing="1">BRASIL</text>`+
+    `<text x="${x+8}" y="${y+35}" font-size="${fs}" font-weight="800" fill="#16224a">R$ ${v}</text>`+
+    `<text x="${x+8}" y="${y+45}" font-size="6.5" font-weight="800" fill="#16224a" letter-spacing="1">REAL</text>`+
+    `<circle cx="${x+86}" cy="${y+24}" r="16" fill="#fff" fill-opacity=".55" stroke="#16224a" stroke-width="1.5"/>${bichoNota(v,x+86,y+24)}`+
+    `<text x="${x+w-6}" y="${y+h-6}" text-anchor="end" font-size="4.6" font-weight="700" fill="#16224a" opacity=".6">ILUSTRAÇÃO</text></g>`;
+}
+function svgMoeda(v,cx){
+  const bi=v>=100,f=bi?OURO_M:v>=50?(v===50?PRATA_M:COBRE_M):(v===10?OURO_M:COBRE_M),b=bi?"#9b7416":v===50?"#7b8794":v===10?"#9b7416":"#8a4b17";
+  const miolo=bi?`<circle cx="${cx}" cy="38" r="21" fill="${PRATA_M}" stroke="#7b8794" stroke-width="2"/>`:"";
+  const dig=bi?`<text x="${cx}" y="41" text-anchor="middle" font-size="22" font-weight="800" fill="#4a3000">1</text><text x="${cx}" y="53" text-anchor="middle" font-size="8.5" font-weight="800" fill="#4a3000">REAL</text>`:
+    `<text x="${cx}" y="42" text-anchor="middle" font-size="20" font-weight="800" fill="#4a3000">${v}</text><text x="${cx}" y="56" text-anchor="middle" font-size="8.5" font-weight="700" fill="#4a3000">centavos</text>`;
+  return `<g class="moedinha" data-v="${v}"><circle cx="${cx}" cy="38" r="31" fill="${f}" stroke="${b}" stroke-width="4"/><circle cx="${cx}" cy="38" r="28" fill="none" stroke="${b}" stroke-width="1" stroke-dasharray="2 2.2" opacity=".7"/>${miolo}${dig}</g>`;
+}
 function svgDinheiro(itens){
-  const moeda=itens.every(i=>i.k==="moeda"),gap=moeda?68:104,W=Math.max(120,itens.length*gap+8),H=moeda?76:64;
-  const el=itens.map((it,i)=>{
-    if(it.k==="moeda"){const cx=8+i*gap+31,[f,b]=COR_MOEDA(it.v);return `<g class="moedinha"><circle cx="${cx}" cy="38" r="31" fill="${f}" stroke="${b}" stroke-width="4"/><text x="${cx}" y="42" text-anchor="middle" font-size="20" font-weight="800" fill="#4a3000">${it.v}</text><text x="${cx}" y="56" text-anchor="middle" font-size="8.5" font-weight="700" fill="#4a3000">centavos</text></g>`}
-    const x=8+i*gap;return `<g class="cedula"><rect x="${x}" y="8" width="94" height="48" rx="6" fill="${COR_NOTA[it.v]||"#cfe9d4"}" stroke="#16224a" stroke-width="3"/><rect x="${x+6}" y="14" width="82" height="36" rx="3" fill="none" stroke="#16224a" stroke-width="1.5" opacity=".35"/><text x="${x+47}" y="38" text-anchor="middle" font-size="19" font-weight="800" fill="#16224a">R$ ${it.v}</text></g>`}).join("");
+  const moeda=itens.every(i=>i.k==="moeda"),gap=moeda?68:120,W=moeda?itens.length*gap+8:Math.max(128,itens.length*gap+8),H=moeda?76:64;
+  const el=itens.map((it,i)=>it.k==="moeda"?svgMoeda(it.v,8+i*gap+31):svgCedula(it.v,8+i*gap,6)).join("");
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${moeda?"moedas":"notas"}" class="${moeda?"svgMoedas":"svgNotas"}">${el}</svg>`;
 }
 function visEstatico(v){

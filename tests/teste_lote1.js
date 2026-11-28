@@ -637,8 +637,8 @@ T("Lote B: a trilha ilustrada tem 15 posições (13 fases + 2 'em breve'), todas
 T("Lote B: os círculos novos aparecem com nome curto (Figuras, Comprimento, Tempo, Dinheiro) e o nome inteiro no rótulo de acessibilidade",()=>{ev3("ir('fases')");const cur=["Figuras","Comprimento","Tempo","Dinheiro"];return IDS.every((id,i)=>{const b=U(`button.circulo[data-fase="${id}"]`);return !!b&&b.parentNode.querySelector(".tit").textContent===cur[i]&&b.getAttribute("aria-label").includes(ev3(`FASES.find(f=>f.id==='${id}').titulo`))})});
 T("Lote B: nenhum par de círculos da trilha se encosta (15 pontos, mínimo 50px em tela de 360px)",()=>{const P=Array.from(ev3("ZONAS[3].pontos")),W=360,H=360*1732/800;return P.length>=15&&P.every((a,i)=>P.every((b,j)=>j<=i||Math.hypot((a[0]-b[0])*W/100,(a[1]-b[1])*H/100)>=50))});
 /* ---- geradores ---- */
-const TF={"triângulo":{lados:3,"vértices":3},quadrado:{lados:4,"vértices":4},"retângulo":{lados:4,"vértices":4},"pentágono":{lados:5,"vértices":5},"hexágono":{lados:6,"vértices":6},cubo:{faces:6,"vértices":8,arestas:12}};
-const NOMEFIG={triangulo:"triângulo",quadrado:"quadrado",retangulo:"retângulo",pentagono:"pentágono",hexagono:"hexágono",cubo:"cubo"};
+const TF={"triângulo":{lados:3,"vértices":3},quadrado:{lados:4,"vértices":4},"retângulo":{lados:4,"vértices":4},"quadrilátero":{lados:4,"vértices":4},"pentágono":{lados:5,"vértices":5},"hexágono":{lados:6,"vértices":6},"heptágono":{lados:7,"vértices":7},"octógono":{lados:8,"vértices":8},"eneágono":{lados:9,"vértices":9},"decágono":{lados:10,"vértices":10}};
+const NOMEFIG={triangulo:"triângulo",quadrado:"quadrado",retangulo:"retângulo",quadrilatero:"quadrilátero",pentagono:"pentágono",hexagono:"hexágono",heptagono:"heptágono",octogono:"octógono",eneagono:"eneágono",decagono:"decágono"};
 const BASEC={km:1e6,m:1000,cm:10,mm:1},NOMEC={"quilômetro":"km","quilômetros":"km",metro:"m",metros:"m","centímetro":"cm","centímetros":"cm","milímetro":"mm","milímetros":"mm"};
 const BASET={minuto:1,minutos:1,hora:60,horas:60,dia:1440,dias:1440,semana:10080,semanas:10080,"mês":1,meses:1,ano:12,anos:12};
 const cv=(n,de,para)=>n*BASEC[de]/BASEC[para],ct=(n,de,para)=>n*BASET[de]/BASET[para];
@@ -686,8 +686,8 @@ for(const nome of["figuras","comprimento","tempo","dinheiro"]){let bom=true,msg=
    if(tp==="relacionar"){chk(Array.from(ex.pares).every(p=>{const m=p.e.match(/^(lados|vértices|faces|arestas) do (\S+)$/);return m&&TF[m[2]]&&TF[m[2]][m[1]]===+p.d}),"par figuras errado: "+JSON.stringify(ex.pares))}
    else{const e=esperadoFig(ex);chk(!!e&&e.r===ex.resposta,"figuras: "+ex.enunciado+" -> "+ex.resposta);
      if(e){if(tp!=="lacuna"){chk(ex.visual&&ex.visual.tipo==="figura"&&NOMEFIG[ex.visual.nome]===e.fig,"figura desenhada diferente da citada: "+ex.enunciado+JSON.stringify(ex.visual))}
-       if(d===1&&e.fig==="cubo")chk(e.cont==="faces","Bronze/Prata só pergunta faces do cubo: "+ex.enunciado);
-       if(d>=3&&e.fig==="cubo"&&e.cont!=="faces")cuboAlto=true}}
+       if(d===1)chk(TF[e.fig].lados<=6,"Bronze/Prata só vai até o hexágono: "+ex.enunciado);
+       if(d>=3&&TF[e.fig].lados>=9)cuboAlto=true}}
   }
   if(nome==="comprimento"){
    if(tp==="relacionar")chk(Array.from(ex.pares).every(p=>esperadoComp(p.e)===+p.d&&esperadoComp(p.e)>0),"par comprimento errado: "+JSON.stringify(ex.pares));
@@ -707,14 +707,14 @@ for(const nome of["figuras","comprimento","tempo","dinheiro"]){let bom=true,msg=
      if(vis)chk(vis.itens.every(i=>(i.k==="moeda"?[5,10,25,50,100].includes(i.v):[2,5,10,20,50,100].includes(i.v))),"valor de moeda/nota inexistente "+JSON.stringify(vis))}
   }
  }
- if(nome==="figuras")chk(cuboAlto,"o Ouro nunca perguntou vértices/arestas do cubo");
+ if(nome==="figuras")chk(cuboAlto,"o Ouro nunca perguntou o eneágono ou o decágono");
  if(nome==="comprimento")chk(compDificil,"o Ouro nunca trouxe conta composta (m e cm, fitas, fios)");
  if(nome==="tempo"){chk(minNaoPadrao,"o Ouro nunca usou minutos de 5 em 5");chk(visualVisto,"nenhuma questão de relógio")}
  if(nome==="dinheiro")chk(visualVisto,"nenhuma questão com moedas/notas");
  t(`geradores ${nome}: os 4 tipos × 2 dificuldades, todos válidos, só números inteiros e com a resposta certa`,bom,msg);
 }
 /* ---- desenhos em SVG (feitos por mim, sem imagens de terceiros) ---- */
-T("desenho: visEstatico desenha cada figura (nº de pontos = nº de lados) e o cubo, em SVG",()=>{const pts={triangulo:3,quadrado:4,retangulo:4,pentagono:5,hexagono:6};
+T("desenho: visEstatico desenha cada figura (nº de pontos = nº de lados) e o cubo, em SVG",()=>{const pts={triangulo:3,quadrado:4,retangulo:4,quadrilatero:4,pentagono:5,hexagono:6,heptagono:7,octogono:8,eneagono:9,decagono:10};
   for(const[n,k]of Object.entries(pts)){const h=ev3(`visEstatico({tipo:'figura',nome:'${n}'})`),m=h.match(/<polygon[^>]*points="([^"]+)"/);if(!/<svg/.test(h)||!m||m[1].trim().split(/\s+/).length!==k)return n+": "+h.slice(0,120)}
   const c=ev3("visEstatico({tipo:'figura',nome:'cubo'})");return /<svg/.test(c)&&(c.match(/<polygon/g)||[]).length>=3});
 T("desenho: o relógio mostra o ponteiro das horas e o dos minutos na posição certa (3:15, 12:00, 6:30, 9:45)",()=>{
@@ -745,13 +745,13 @@ const rod=(nome,args)=>ev3(`(async()=>{const ctx={stage:document.getElementById(
 ev3("ir('fases');abrirExplicacao('a3-figuras')");ev3("FS.auto=false;pararAnimacoes()");
 T("explicação de Figuras abre a partir da trilha (liberada depois dos 3 níveis de Sequências)",()=>ev3("FS.vista")==="explica"&&ev3("FS.fase.id")==="a3-figuras");
 ev3("FS.vel=0.001");
-for(const[n,a,passos,fim]of[["figuras","'pentagono'",5,/5 lados.*12 arestas/],["comprimento","3",5,/300.*10 mm.*1000 m/],["tempo","2",6,/60 min.*120 min.*30 min.*24 h.*7 dias.*12 meses/],["dinheiro","10,7",5,/R\$ 1 = 100 centavos.*R\$ 5 \+ R\$ 2 = R\$ 7.*troco = R\$ 3/]]){
+for(const[n,a,passos,fim]of[["tempo","2",7,/60 min.*120 min.*30 min.*3:55.*24 h.*7 dias.*12 meses/],["dinheiro","10,7",5,/R\$ 1 = 100 centavos.*R\$ 5 \+ R\$ 2 = R\$ 7.*troco = R\$ 3/]]){
   ev3("S.cfg.reduzir=false");sb.w.__anims.length=0;try{await rod(n,a)}catch(e){}await sleep(300);const g=Array.from(ev3("window.__g")||[]);ev3("window.__g=null");
   t(`roteiro ${n}(${a}): ${passos} passos, cada um de 3 a 5 s, falas curtas e números/figuras viajam`,g.length===passos&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sb.w.__anims.length>0,JSON.stringify(g.map(x=>x[0]))+" anims:"+sb.w.__anims.length);
   const res=Array.from(ev3("window.__res")||[]).join("|");
   t(`roteiro ${n}(${a}): os resultados aparecem em destaque (.pm-res), na ordem certa, e o último passo termina com um resultado na tela`,fim.test(res)&&ev3("document.querySelectorAll('#exp-stage .pm-res').length")>0,res);
 }
-T("roteiros novos: figuras mostra os vértices (pontos) e depois o cubo; tempo gira o ponteiro grande de 12 a 12 (uma volta = 60 minutos)",()=>{const f=lerArq("js/motor/explicacao.js");return /figuras\(/.test(f)&&/cubo/.test(f)&&/60 minutos/.test(f)&&/ponteiro/.test(f)});
+T("roteiros novos: figuras mostra os vértices (pontos) e depois o cubo; tempo gira o ponteiro grande de 12 a 12 (uma volta = 60 minutos)",()=>{const f=lerArq("js/motor/explicacao.js");return /figuras\(/.test(f)&&/60 minutos/.test(f)&&/ponteiro/.test(f)});
 sb.w.close();
 /* ---- jogar os 3 níveis das fases novas + lâmpada de cada uma ---- */
 {const s=await sessao(),ev=s.ev;await ev("escolher(25)");
@@ -939,6 +939,157 @@ T("a dica paga também vale na repetição da questão errada e não cobra de no
 T("as moedas gastas continuam salvas (save) e o saldo mostrado no topo acompanha",()=>{mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);U("#bt-dica").click();return JSON.parse(sb.w.localStorage.getItem("tabuada-pokemon-v1")).coins===7});
 sb.w.close();
 t("sw.js: pokemath-v18",/const V="pokemath-v18"/.test(lerArq("sw.js")));
+}
+
+
+// ===== Entrega 3 — Figuras: sem cubo; quadrilátero, pentágono ao decágono; explicação completa com lados em vermelho =====
+{
+const sb=await sessao(null,{animate:true}),ev3=x=>{try{return sb.ev(x)}catch(e){return undefined}};
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+const NF=["triângulo","quadrado","retângulo","quadrilátero","pentágono","hexágono","heptágono","octógono","eneágono","decágono"],LF=[3,4,4,4,5,6,7,8,9,10];
+T("Figuras: o cubo saiu das questões (nenhum enunciado, explicação ou desenho cita cubo, faces ou arestas)",()=>{
+  for(const d of[1,3])for(const tp of["digitar","escolha","lacuna","relacionar"])for(let i=0;i<150;i++){const ex=ev3(`JSON.stringify(GER.figuras(${d},'${tp}'))`);if(/cubo|faces|arestas/i.test(ex))return "apareceu cubo: "+ex.slice(0,160)}return true});
+T("Figuras: as figuras do jogo são triângulo, quadrado, retângulo, quadrilátero, pentágono, hexágono, heptágono, octógono, eneágono e decágono",()=>JSON.stringify(Array.from(ev3("FIGURAS.map(f=>f.nome)")))===JSON.stringify(NF)&&JSON.stringify(Array.from(ev3("FIGURAS.map(f=>f.lados)")))===JSON.stringify(LF));
+T("Figuras: o Bronze e a Prata vão até o hexágono; o Ouro traz também heptágono, octógono, eneágono e decágono",()=>{
+  const vistos={1:new Set(),3:new Set()};
+  for(const d of[1,3])for(const tp of["digitar","escolha","lacuna"])for(let i=0;i<260;i++){const ex=ev3(`GER.figuras(${d},'${tp}')`),m=(ex.enunciado||"").match(/(?:tem o|tem ___)? ?\b(triângulo|quadrado|retângulo|quadrilátero|pentágono|hexágono|heptágono|octógono|eneágono|decágono)\b/);if(m)vistos[d].add(m[1])}
+  const b=[...vistos[1]],o=[...vistos[3]];
+  if(b.some(n=>LF[NF.indexOf(n)]>6))return {ok:false,m:"Bronze/Prata passou do hexágono: "+b};
+  if(!["quadrilátero","pentágono","hexágono"].every(n=>b.includes(n)))return {ok:false,m:"Bronze/Prata sem "+b};
+  return NF.every(n=>o.includes(n))||{ok:false,m:"Ouro viu só "+o}});
+T("Figuras: o número de lados e vértices de cada figura está certo nas questões",()=>{
+  for(const d of[1,3])for(let i=0;i<300;i++){const ex=ev3(`GER.figuras(${d},'digitar')`),m=ex.enunciado.match(/^Quantos (lados|vértices) tem o (\S+)\?$/);
+    if(!m)return "enunciado: "+ex.enunciado;const k=NF.indexOf(m[2]);if(k<0||LF[k]!==ex.resposta)return m[2]+" -> "+ex.resposta}return true});
+T("Figuras: o desenho do quadrilátero é uma figura de 4 lados desiguais (não um quadrado)",()=>{
+  const v=Array.from(ev3("vertsFig('quadrilatero',100,78,64)")).map(p=>Array.from(p)),L=v.map((p,i)=>Math.hypot(p[0]-v[(i+1)%4][0],p[1]-v[(i+1)%4][1]));
+  return v.length===4&&Math.max(...L)-Math.min(...L)>10});
+T("Figuras: a fase de Figuras usa a explicação completa (sem figura única) e não cita cubo nos tópicos",()=>{
+  const f=JSON.parse(ev3("JSON.stringify(FASES.find(x=>x.id==='a3-figuras'))"));return f.roteiro.length===1&&f.roteiro[0]==="figuras"&&!/cubo|espacial/i.test(JSON.stringify(f.topicos))});
+T("Figuras: o macete traz quadrilátero e os prefixos penta, hexa, hepta, octo, eneá e deca, sem cubo",()=>{
+  const m=ev3("macAch('figuras')"),x=m.explicacao+" "+m.resumo;return !/cubo|faces|arestas/i.test(x)&&["quadri","penta","hexa","hepta","octo","eneá","deca"].every(p=>m.explicacao.includes(p)&&m.resumo.includes(p))&&/quadrilátero/.test(m.explicacao)});
+/* ---- a explicação completa ---- */
+ev3("S.fases={};"+OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao","a3-comparar","a3-paresimpares","a3-sequencias"])+";save()");
+ev3("ir('fases');abrirExplicacao('a3-figuras')");ev3("FS.auto=false;pararAnimacoes()");ev3("FS.vel=0.001");ev3("S.cfg.reduzir=false");
+const lv=[],resAll=[];
+ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.figuras();const R=rot.montar(ctx);const g=[],lv=[],res=[];
+  for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length]);lv.push(ctx.stage.querySelectorAll('.ladoV').length);ctx.stage.querySelectorAll('.pm-res').forEach(e=>{res.push(e.textContent)})}
+  window.__g=g;window.__lv=lv;window.__res=res;return true})().catch(e=>{window.__err=String(e&&e.stack||e)})`);
+await sleep(2500);if(ev3("window.__err"))console.log("ERRO RODANDO:",ev3("window.__err"));
+const g=Array.from(ev3("window.__g")||[]),LV=Array.from(ev3("window.__lv")||[]),RS=Array.from(ev3("window.__res")||[]),fala=ev3("ROT.figuras().passos.map(p=>p.fala)")||[],txt=Array.from(fala).join(" ");
+t("roteiro figuras completo: 10 a 12 passos de 3 a 5 s, falas curtas e itens que viajam",g.length>=10&&g.length<=12&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sb.w.__anims.length>0,JSON.stringify(g.map(x=>x[0])));
+const ord=["quadrado","retângulo","triângulo","quadrilátero","diagonal","pentágono","hexágono","heptágono","octógono","eneágono","decágono"].map(w=>txt.indexOf(w));
+t("roteiro figuras: a fala segue a ordem quadrado, retângulo, triângulo, quadrilátero, diagonal, pentágono ... decágono",ord.every((x,i)=>x>=0&&(i===0||x>ord[i-1])),JSON.stringify(ord));
+t("roteiro figuras: explica vértice, lado e que os lados ficam vermelhos ao contar",/vértice/.test(txt)&&/lado/.test(txt)&&/vermelh/.test(txt));
+t("roteiro figuras: sem cubo, sem faces e sem arestas em nenhuma fala",!/cubo|faces|arestas/i.test(txt));
+t("roteiro figuras: ao contar, cada lado fica vermelho (quadrado 4, retângulo 4, triângulo 3 lados vermelhos na tela)",(()=>{const i1=LV.indexOf(4),i2=LV.indexOf(4,i1+1),i3=LV.indexOf(3);return i1>=0&&i2>i1&&i3>i2})(),JSON.stringify(LV));
+t("roteiro figuras: mostra 4 lados (quadrado), 3 lados (triângulo), o corte do quadrilátero em 2 triângulos e termina com 3 a 10 lados",RS.join("|").includes("4 lados")&&RS.join("|").includes("3 lados")&&/2 triângulos/.test(RS.join("|"))&&/8 · 9 · 10 lados/.test(RS.join("|")),RS.join("|"));
+sb.w.close();
+}
+
+
+// ===== Entrega 3 — Comprimento: quadro de ordem (km hm dam m dm cm mm), frase da Katia, ×10 para a direita, ÷10 para a esquerda, Pyri andando pelas casas =====
+{
+const sb=await sessao(null,{animate:true}),ev3=x=>{try{return sb.ev(x)}catch(e){return undefined}};
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+T("Comprimento: o macete (💡) traz o quadro de ordem, a frase da Katia e as regras ×10 para a direita e ÷10 para a esquerda",()=>{
+  const m=ev3("macAch('medidas-comprimento')"),x=m.explicacao;
+  return /quadro de ordem/i.test(x)&&/Katia/.test(m.partes.map(p=>p.p).join(" "))&&/direita/.test(x)&&/esquerda/.test(x)&&/divid/i.test(x)&&/multipli/i.test(x)&&["km","hm","dam","dm","mm"].every(u=>x.includes(u))});
+ev3("S.fases={};"+OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao","a3-comparar","a3-paresimpares","a3-sequencias","a3-figuras"])+";save()");
+ev3("ir('fases');abrirExplicacao('a3-comprimento')");ev3("FS.auto=false;pararAnimacoes()");ev3("FS.vel=0.001");ev3("S.cfg.reduzir=false");
+ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.comprimento(3);const R=rot.montar(ctx);const g=[],casa=[],mult=[],res=[],cel=[];
+  for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length]);const py=ctx.stage.querySelector('.pm-pyri-anda');casa.push(py?py.dataset.casa:"");
+    mult.push([...ctx.stage.querySelectorAll('.pm-mult')].map(e=>e.textContent).join(","));cel.push(ctx.stage.querySelectorAll('.pm-quadro').length);
+    ctx.stage.querySelectorAll('.pm-res').forEach(e=>res.push(e.textContent))}
+  window.__g=g;window.__casa=casa;window.__mult=mult;window.__res=res;window.__cel=cel;return true})().catch(e=>{window.__err=String(e&&e.stack||e)})`);
+await sleep(2500);if(ev3("window.__err"))console.log("ERRO RODANDO:",ev3("window.__err"));
+const g=Array.from(ev3("window.__g")||[]),CA=Array.from(ev3("window.__casa")||[]),MU=Array.from(ev3("window.__mult")||[]),RS=Array.from(ev3("window.__res")||[]).join("|"),CEL=Array.from(ev3("window.__cel")||[]),txt=Array.from(ev3("ROT.comprimento(3).passos.map(p=>p.fala)")||[]).join(" ");
+t("roteiro comprimento completo: 7 passos de 3 a 5 s, falas curtas e itens que viajam",g.length===7&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sb.w.__anims.length>0,JSON.stringify(g.map(x=>x[0])));
+t("roteiro comprimento: o quadro de ordem tem as 7 casas (km, hm, dam, m, dm, cm, mm) na tela",CEL[0]===7&&/quadro de ordem/.test(txt)&&["km","hm","dam","dm","mm"].every(u=>txt.includes(u)),JSON.stringify(CEL));
+t("roteiro comprimento: a fala traz a frase da Katia e explica multiplicar por 10 (direita) e dividir por 10 (esquerda)",/Katia/.test(txt)&&/direita/.test(txt)&&/esquerda/.test(txt)&&/multiplica/.test(txt)&&/divide/.test(txt),txt.slice(0,200));
+t("roteiro comprimento: o Pyri anda pelas casas — 3 m → cm (para a direita), 300 cm → m (para a esquerda) e 1 km → m (3 casas)",CA.slice(4).join()==="cm,m,m"||CA.filter(Boolean).join()==="cm,m,m",JSON.stringify(CA));
+t("roteiro comprimento: cada casa andada mostra ×10 (direita) ou ÷10 (esquerda): 2 × ×10, 2 × ÷10 e 3 × ×10",MU.filter(Boolean).join("|")==="×10,×10|÷10,÷10|×10,×10,×10",JSON.stringify(MU));
+t("roteiro comprimento: os resultados são 3 m = 300 cm, 300 cm = 3 m e 1 km = 1000 m",/3 m = 300 cm.*300 cm = 3 m.*1 km = 1000 m/.test(RS),RS);
+sb.w.close();
+}
+
+
+// ===== Entrega 3 — Tempo: ponteiro grande gira de verdade e não se esconde sob o pequeno, legenda clara, horas quebradas na Prata e no Ouro =====
+{
+const sb=await sessao(null,{animate:true}),ev3=x=>{try{return sb.ev(x)}catch(e){return undefined}};
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+T("Tempo: só existe UMA função 'girar' no código (a segunda escondia a primeira e o ponteiro grande não se mexia); o ponteiro usa girarMao",()=>{
+  const f=lerArq("js/motor/explicacao.js");return (f.match(/function girar\(/g)||[]).length===1&&/function girarMao\(/.test(f)&&/girarMao\(c(?:tx)?,R\.pmin,360/.test(f)});
+T("Tempo: Bronze só tem :00, :15, :30 e :45; Prata e Ouro também têm horas quebradas (5, 10, 20, 25, 35, 40, 50 e 55 minutos)",()=>{
+  const ms=(n,d)=>{const r=new Set();for(let i=0;i<500;i++)for(const tp of["digitar","escolha","lacuna"]){const ex=ev3(`GER.tempo(${d},'${tp}','${n}')`);if(ex.visual&&ex.visual.tipo==="relogio")r.add(ex.visual.m)}return[...r]};
+  const b=ms("bronze",1),p=ms("prata",1),o=ms("ouro",3),QUE=[5,10,20,25,35,40,50,55];
+  if(b.some(m=>![0,15,30,45].includes(m)))return {ok:false,m:"Bronze com minutos "+b};
+  if(!QUE.some(m=>p.includes(m))||!(p.includes(20)||p.includes(55)))return {ok:false,m:"Prata sem horas quebradas: "+p};
+  return QUE.every(m=>o.includes(m))||{ok:false,m:"Ouro viu "+o}});
+T("Tempo: a sessão usa o nível — Bronze sem quebradas; Prata com",()=>{
+  const vistos=n=>{const r=new Set();for(let i=0;i<40;i++)for(const x of Array.from(ev3(`novaSessao(FASES.find(f=>f.id==='a3-tempo'),'${n}').fila`)))if(x.visual&&x.visual.tipo==="relogio")r.add(x.visual.m);return[...r]};
+  const b=vistos("bronze"),p=vistos("prata");return b.every(m=>[0,15,30,45].includes(m))&&p.some(m=>![0,15,30,45].includes(m))});
+T("Tempo: a explicação da horas quebradas (3:55) existe e a legenda 'ponteiro pequeno = horas / ponteiro grande = minutos' fica na tela",()=>{
+  const x=Array.from(ev3("ROT.tempo(2).passos.map(p=>p.fala)")).join(" ");return /3:55/.test(x)&&/ponteiro pequeno/.test(x)&&/ponteiro grande/.test(x)});
+ev3("S.fases={};"+OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao","a3-comparar","a3-paresimpares","a3-sequencias","a3-figuras","a3-comprimento"])+";save()");
+ev3("ir('fases');abrirExplicacao('a3-tempo')");ev3("FS.auto=false;pararAnimacoes()");ev3("FS.vel=0.001");ev3("S.cfg.reduzir=false");
+ev3(`(async()=>{window.__gm=[];const o=girarMao;window.girarMao=function(c,e,d,m){window.__gm.push([e.dataset.mao,d]);return o(c,e,d,m)};
+  const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.tempo(2);const R=rot.montar(ctx);const g=[],leg=[],ang=[],res=[];
+  for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length]);
+    leg.push([...ctx.stage.querySelectorAll('.pm-legenda-rel')].map(e=>e.textContent).join("|"));
+    const a=ctx.stage.querySelector('[data-mao=pequeno]'),b=ctx.stage.querySelector('[data-mao=grande]');ang.push(a&&b?[+a.dataset.deg,+b.dataset.deg]:null);
+    ctx.stage.querySelectorAll('.pm-res').forEach(e=>res.push(e.textContent))}
+  window.girarMao=o;window.__g=g;window.__leg=leg;window.__ang=ang;window.__res=res;return true})().catch(e=>{window.__err=String(e&&e.stack||e)})`);
+await sleep(3000);if(ev3("window.__err"))console.log("ERRO RODANDO:",ev3("window.__err"));
+const g=Array.from(ev3("window.__g")||[]),LG=Array.from(ev3("window.__leg")||[]),AN=Array.from(ev3("window.__ang")||[]).map(a=>a&&Array.from(a)),GM=Array.from(ev3("window.__gm")||[]).map(a=>Array.from(a)),RS=Array.from(ev3("window.__res")||[]).join("|");
+t("roteiro tempo: 7 passos de 3 a 5 s, falas curtas",g.length===7&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140),JSON.stringify(g.map(x=>x[0])));
+t("roteiro tempo: a legenda 'ponteiro pequeno = horas' e 'ponteiro grande = minutos' aparece já no 1º passo",/ponteiro pequeno = horas/.test(LG[0]||"")&&/ponteiro grande = minutos/.test(LG[0]||""),LG[0]);
+t("roteiro tempo: no 1º passo os dois ponteiros apontam para lugares diferentes (o grande não fica escondido sobre o pequeno)",!!AN[0]&&Math.abs(((AN[0][0]-AN[0][1])%360+360)%360)>=30&&Math.abs(((AN[0][0]-AN[0][1])%360+360)%360)<=330,JSON.stringify(AN[0]));
+t("roteiro tempo: o ponteiro grande gira de verdade (uma volta de 360°) e o pequeno avança 1 hora (30°)",GM.some(a=>a[0]==="grande"&&a[1]===360)&&GM.some(a=>a[0]==="pequeno"&&a[1]===AN[0][0]+30)&&GM.some(a=>a[0]==="grande"&&a[1]===180),JSON.stringify(GM));
+t("roteiro tempo: mostra a hora quebrada 3:55 com os ponteiros em lugares diferentes",RS.includes("3:55")&&GM.some(a=>a[0]==="grande"&&a[1]===330),RS+" "+JSON.stringify(GM));
+sb.w.close();
+}
+
+
+// ===== Entrega 3 — Dinheiro mais realista: cédulas coloridas com valor grande e bicho desenhado por mim; moedas com os tons certos =====
+{
+const sb=await sessao(null,{animate:true}),ev3=x=>{try{return sb.ev(x)}catch(e){return undefined}};
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+const dom=h=>{const d=sb.w.document.createElement("div");d.innerHTML=h;return d};
+const NOTAS=[2,5,10,20,50,100],BICHO={2:"tartaruga",5:"garça",10:"arara",20:"mico-leão",50:"onça",100:"garoupa"};
+T("cédulas: cada valor (2, 5, 10, 20, 50, 100) tem cor própria, o valor grande 'R$ n', 'BRASIL' e 'REAL' e um animal desenhado com várias formas",()=>{
+  const cores=new Set();
+  for(const v of NOTAS){const d=dom(ev3(`svgDinheiro([{k:'nota',v:${v}}])`)),n=d.querySelector(".cedula");if(!n)return {ok:false,m:"sem cédula "+v};
+    const bg=n.querySelector("rect").getAttribute("fill");cores.add(bg);
+    const txt=n.textContent;if(!txt.includes("R$ "+v)||!/BRASIL/.test(txt)||!/REAL/.test(txt))return {ok:false,m:v+": texto "+txt};
+    const big=[...n.querySelectorAll("text")].find(x=>x.textContent.includes("R$ "+v));if(!big||+big.getAttribute("font-size")<15)return {ok:false,m:v+": valor pequeno"};
+    const an=n.querySelector("[data-animal]");if(!an||an.getAttribute("data-animal")!==BICHO[v])return {ok:false,m:v+": animal "+(an&&an.getAttribute("data-animal"))};
+    if(an.querySelectorAll("path,ellipse,circle,polygon").length<4)return {ok:false,m:v+": animal simples demais"}}
+  return cores.size===6||{ok:false,m:"cores repetidas "+[...cores]}});
+T("cédulas: o desenho é próprio e estilizado — marca 'ILUSTRAÇÃO' e não copia o texto 'BANCO CENTRAL DO BRASIL'",()=>{
+  const x=ev3("svgDinheiro(["+NOTAS.map(v=>`{k:'nota',v:${v}}`).join(",")+"])");return /ILUSTRAÇÃO/.test(x)&&!/BANCO CENTRAL/i.test(x)});
+T("moedas: R$ 1 é dourada com miolo prateado; 50 centavos prateada; 25 e 5 cobre; 10 dourada; cada uma com valor e 'centavos' (a de 1 real diz REAL)",()=>{
+  const info=v=>{const g=dom(ev3(`svgDinheiro([{k:'moeda',v:${v}}])`)).querySelector(".moedinha");const cs=[...g.querySelectorAll("circle")];return{f:cs.map(c=>c.getAttribute("fill")),txt:g.textContent,n:cs.length}};
+  const m1=info(100),m50=info(50),m25=info(25),m10=info(10),m5=info(5);
+  if(m1.n<3||m1.f[0]===m1.f[1]&&m1.f[1]===m1.f[2])return {ok:false,m:"R$1 sem miolo diferente "+m1.f};
+  if(!/REAL/.test(m1.txt)||!/1/.test(m1.txt))return {ok:false,m:"texto R$1 "+m1.txt};
+  const dourado=m10.f[0],prata=m50.f[0],cobre=m25.f[0];
+  if(m1.f[0]!==dourado)return {ok:false,m:"anel do R$1 deveria ser dourado como a de 10"};
+  if(!m1.f.slice(1).includes(prata))return {ok:false,m:"miolo do R$1 deveria ser prateado como a de 50"};
+  if(m5.f[0]!==cobre||new Set([dourado,prata,cobre]).size!==3)return {ok:false,m:"tons "+[dourado,prata,cobre,m5.f[0]]};
+  return [m50,m25,m10,m5].every((m,i)=>/centavos/.test(m.txt)&&m.txt.includes(["50","25","10","5"][i]))});
+T("desenho: o SVG das cédulas e moedas continua dentro da tela do exercício (class cedula / moedinha) e o aria-label diz 'notas' ou 'moedas'",()=>{
+  const a=ev3("svgDinheiro([{k:'nota',v:5},{k:'nota',v:10}])"),b=ev3("svgDinheiro([{k:'moeda',v:25},{k:'moeda',v:50}])");
+  return /aria-label="notas"/.test(a)&&/aria-label="moedas"/.test(b)&&(a.match(/class="cedula"/g)||[]).length===2&&(b.match(/class="moedinha"/g)||[]).length===2});
+ev3("S.fases={};"+OURO(["a3-posicional","a3-adicao","a3-vai-um","a3-subtracao","a3-multiplicacao","a3-divisao","a3-comparar","a3-paresimpares","a3-sequencias","a3-figuras","a3-comprimento","a3-tempo"])+";save()");
+ev3("ir('fases');abrirExplicacao('a3-dinheiro')");ev3("FS.auto=false;pararAnimacoes()");ev3("FS.vel=0.001");ev3("S.cfg.reduzir=false");
+ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:false,gasto:0};const rot=ROT.dinheiro(10,7);const R=rot.montar(ctx);const g=[],mo=[],no=[],an=[];
+  for(const p of rot.passos){ctx.gasto=0;await p.acao(ctx,R);g.push([p.dur,ctx.gasto,p.fala.length]);mo.push(ctx.stage.querySelectorAll('.moedinha').length);no.push(ctx.stage.querySelectorAll('.cedula').length);an.push(ctx.stage.querySelectorAll('.pm-moeda,.pm-nota').length)}
+  window.__g=g;window.__mo=mo;window.__no=no;window.__an=an;return true})().catch(e=>{window.__err=String(e&&e.stack||e)})`);
+await sleep(2500);if(ev3("window.__err"))console.log("ERRO RODANDO:",ev3("window.__err"));
+const MO=Array.from(ev3("window.__mo")||[]),NO=Array.from(ev3("window.__no")||[]),AN=Array.from(ev3("window.__an")||[]);
+t("roteiro dinheiro: as moedas e as notas da animação usam o desenho novo (1 moeda de R$ 1, 2 de 50, 4 de 25, 2 notas e 1 nota)",JSON.stringify(MO)==="[1,2,4,0,0]"&&JSON.stringify(NO)==="[0,0,0,2,1]",JSON.stringify([MO,NO]));
+t("roteiro dinheiro: não sobrou nenhum desenho antigo (círculo dourado liso / retângulo verde liso)",AN.every(x=>x===0),JSON.stringify(AN));
+sb.w.close();
 }
 
 t("nenhum erro de script durante todos os testes",erros.length===0,erros.join(" | "));
