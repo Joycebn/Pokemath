@@ -255,6 +255,162 @@ function famDinNotas(d){const vs=d>=3?[5,10,20,50,100]:[2,5,10],n=rnd(2,d>=3?4:3
 function montarDinheiro(d,tipo){
   return montarFam([famDinConvR,famDinConvC,famDinSoma,famDinTroco,famDinTrocoC,famDinMoedas,famDinNotas],d,tipo,"R$ 1 = 100 centavos. Para o troco, conte do preço até o valor pago (ou subtraia). Para somar valores, some reais com reais e centavos com centavos.","Ligue cada situação ao valor certo.");
 }
+/* ---------- Lote C: Estatística (tabelas e gráficos) e Probabilidade (acaso). Só números inteiros e palavras. ---------- */
+const PKS=[{nome:"Pikachu",cor:"#f7d02c"},{nome:"Charmander",cor:"#f08030"},{nome:"Squirtle",cor:"#5aa0f0"},{nome:"Bulbasaur",cor:"#5fbf5a"},{nome:"Eevee",cor:"#b0845a"},{nome:"Jigglypuff",cor:"#f49ac2"}];
+const DIAS_EST=["Segunda","Terça","Quarta","Quinta"];
+const somaL=a=>a.reduce((x,y)=>x+y,0);
+/* k Pokémon com valores distintos (de lo a hi, multiplicados por passo) */
+function dadosEst(k,lo,hi,passo){const ns=new Set();while(ns.size<k)ns.add(rnd(lo,hi));return embaralhar(PKS).slice(0,k).map((p,i)=>({nome:p.nome,cor:p.cor,n:[...ns][i]*(passo||1)}))}
+const TIT_EST="Pokémon capturados";
+const visTab2=it=>({tipo:"tabela",titulo:TIT_EST,cols:["Pokémon","Quantidade"],linhas:it.map(x=>[x.nome,x.n])});
+const visPic=(it,vale)=>({tipo:"pictograma",titulo:TIT_EST,vale,itens:it.map(x=>({nome:x.nome,cor:x.cor,n:x.n}))});
+const visGraf=(it,tipo,passo,max)=>({tipo,titulo:TIT_EST,passo,max,itens:it.map(x=>({nome:x.nome,cor:x.cor,n:x.n}))});
+function dadosDupla(nl,nc,lo,hi){const dias=DIAS_EST.slice(0,nc);return{dias,itens:embaralhar(PKS).slice(0,nl).map(p=>({nome:p.nome,v:Array.from({length:nc},()=>rnd(lo,hi))}))}}
+const visDupla=D=>({tipo:"tabela",titulo:"Pokémon capturados em cada dia",cols:["Pokémon",...D.dias],linhas:D.itens.map(i=>[i.nome,...i.v])});
+const parMaior=it=>{const o=[...it].sort((a,b)=>b.n-a.n);return[o[0],o[1]]};
+const pedacoSomar=(L)=>L.map(x=>x.n).join(" + ");
+/* --- Bronze: tabela simples e pictograma (cada ícone vale 1) --- */
+function famTabLer(){const it=dadosEst(4,2,9),x=umDe(it);
+  return{q:`Quantos ${x.nome} aparecem na tabela?`,lac:`Na tabela, ${x.nome} aparece ___ vezes.`,e:x.nome,r:x.n,alt:[x.n+1,x.n-1,x.n+2],erro:`Ache ${x.nome} na coluna dos nomes e leia o número ao lado: ${x.n}.`,visual:visTab2(it)}}
+function famTabExtremo(){const it=dadosEst(4,2,9),mx=Math.random()<.5,r=mx?Math.max(...it.map(x=>x.n)):Math.min(...it.map(x=>x.n)),w=mx?"maior":"menor";
+  return{q:`Qual é a ${w} quantidade da tabela?`,lac:`A ${w} quantidade da tabela é ___.`,r,alt:[r+1,r-1,r+2],erro:`Compare todos os números da tabela: a ${w} quantidade é ${r}.`,visual:visTab2(it)}}
+function famTabTotal(){const it=dadosEst(4,2,6),r=somaL(it.map(x=>x.n));
+  return{q:"Quantos Pokémon foram capturados ao todo?",lac:"Ao todo, foram capturados ___ Pokémon.",r,alt:[r+1,r-1,r+10,r-2],erro:`Some todos os números: ${pedacoSomar(it)} = ${r}.`,visual:visTab2(it)}}
+function famPicLer(){const it=dadosEst(4,1,8),x=umDe(it);
+  return{q:`Quantos ${x.nome} há no gráfico?`,lac:`No gráfico, ${x.nome} tem ___ ícones.`,e:x.nome,r:x.n,alt:[x.n+1,x.n-1,x.n+2],erro:`Conte os ícones de ${x.nome}: são ${x.n}. Cada ícone vale 1.`,visual:visPic(it,1)}}
+function famPicDif(){const it=dadosEst(4,1,8),[a,b]=parMaior(it),r=a.n-b.n;
+  return{q:`Quantos ${a.nome} há a mais do que ${b.nome}?`,lac:`Há ___ ${a.nome} a mais do que ${b.nome}.`,r,alt:[r+1,r+2,a.n,b.n],erro:`${a.nome} tem ${a.n} e ${b.nome} tem ${b.n}. A diferença é ${a.n} − ${b.n} = ${r}.`,visual:visPic(it,1)}}
+function famPicTotal(){const it=dadosEst(4,1,6),r=somaL(it.map(x=>x.n));
+  return{q:"Quantos Pokémon há ao todo no gráfico?",lac:"Ao todo, há ___ Pokémon no gráfico.",r,alt:[r+1,r-1,r+10,r-2],erro:`Conte os ícones de cada linha e some: ${pedacoSomar(it)} = ${r}.`,visual:visPic(it,1)}}
+/* --- Prata: tabela de dupla entrada e gráfico de colunas --- */
+function famDupCel(){const D=dadosDupla(3,3,1,9),i=rnd(0,2),j=rnd(0,2),r=D.itens[i].v[j],nm=D.itens[i].nome,dia=D.dias[j];
+  return{q:`Na coluna ${dia}, quantos ${nm} aparecem?`,lac:`Na coluna ${dia}, ${nm} aparece ___ vezes.`,e:`${nm}, coluna ${dia}`,r,alt:[r+1,r-1,r+2],erro:`Ache a linha de ${nm} e a coluna ${dia}: onde elas se encontram está o ${r}.`,visual:visDupla(D)}}
+function famDupLin(){const D=dadosDupla(3,3,1,9),i=rnd(0,2),it=D.itens[i],r=somaL(it.v);
+  return{q:`Quantos ${it.nome} foram capturados nos 3 dias juntos?`,lac:`Nos 3 dias juntos, foram ___ ${it.nome}.`,r,alt:[r+1,r-1,r+10,it.v[0]],erro:`Some a linha de ${it.nome}: ${it.v.join(" + ")} = ${r}.`,visual:visDupla(D)}}
+function famDupCol(){const D=dadosDupla(3,3,1,9),j=rnd(0,2),vs=D.itens.map(i=>i.v[j]),r=somaL(vs);
+  return{q:`Somando todos os Pokémon, quantos foram capturados na coluna ${D.dias[j]}?`,lac:`Somando todos, na coluna ${D.dias[j]} foram ___ Pokémon.`,r,alt:[r+1,r-1,r+10,vs[0]],erro:`Some a coluna ${D.dias[j]}: ${vs.join(" + ")} = ${r}.`,visual:visDupla(D)}}
+function dadosColunas(){const passo=umDe([1,2]),it=dadosEst(4,1,passo===1?9:6,passo);return{it,passo,max:passo===1?10:12}}
+function famColLer(){const {it,passo,max}=dadosColunas(),x=umDe(it);
+  return{q:`Quantos ${x.nome} o gráfico de colunas mostra?`,lac:`A coluna de ${x.nome} chega até ___.`,e:x.nome,r:x.n,alt:[x.n+passo,x.n-passo,x.n+1],erro:`Suba até o topo da coluna de ${x.nome} e leia o número na régua: ${x.n}.`,visual:visGraf(it,"colunas",passo,max)}}
+function famColDif(){const {it,passo,max}=dadosColunas(),[a,b]=parMaior(it),r=a.n-b.n;
+  return{q:`Quantos ${a.nome} há a mais do que ${b.nome} no gráfico?`,lac:`No gráfico, há ___ ${a.nome} a mais do que ${b.nome}.`,r,alt:[r+passo,r+1,a.n,b.n],erro:`${a.nome} tem ${a.n} e ${b.nome} tem ${b.n}. A diferença é ${a.n} − ${b.n} = ${r}.`,visual:visGraf(it,"colunas",passo,max)}}
+function famColTotal(){const {it,passo,max}=dadosColunas(),r=somaL(it.map(x=>x.n));
+  return{q:"Quantos Pokémon há ao todo no gráfico de colunas?",lac:"Ao todo, as colunas somam ___ Pokémon.",r,alt:[r+passo,r-passo,r+10,r+1],erro:`Leia cada coluna e some: ${pedacoSomar(it)} = ${r}.`,visual:visGraf(it,"colunas",passo,max)}}
+/* --- Ouro: barras, pictograma com valor 2, 5 ou 10 e tabela de dupla entrada --- */
+function dadosBarras(){const passo=umDe([5,10]),it=dadosEst(4,1,passo===5?9:8,passo);return{it,passo,max:passo===5?50:90}}
+function famBarLer(){const {it,passo,max}=dadosBarras(),x=umDe(it);
+  return{q:`Quantos ${x.nome} o gráfico de barras mostra?`,lac:`A barra de ${x.nome} chega até ___.`,e:x.nome,r:x.n,alt:[x.n+passo,x.n-passo,x.n+5],erro:`Siga a barra de ${x.nome} até o fim e leia o número na régua: ${x.n}.`,visual:visGraf(it,"barras",passo,max)}}
+function famBarDif(){const {it,passo,max}=dadosBarras(),[a,b]=parMaior(it),r=a.n-b.n;
+  return{q:`Quantos ${a.nome} há a mais do que ${b.nome} no gráfico?`,lac:`No gráfico, há ___ ${a.nome} a mais do que ${b.nome}.`,r,alt:[r+passo,r+5,a.n,b.n],erro:`${a.nome} tem ${a.n} e ${b.nome} tem ${b.n}. A diferença é ${a.n} − ${b.n} = ${r}.`,visual:visGraf(it,"barras",passo,max)}}
+function famBarTotal(){const {it,passo,max}=dadosBarras(),r=somaL(it.map(x=>x.n));
+  return{q:"Quantos Pokémon há ao todo no gráfico de barras?",lac:"Ao todo, as barras somam ___ Pokémon.",r,alt:[r+passo,r-passo,r+10,r+5],erro:`Leia cada barra e some: ${pedacoSomar(it)} = ${r}.`,visual:visGraf(it,"barras",passo,max)}}
+function famBarDuas(){const {it,passo,max}=dadosBarras(),[a,b]=parMaior(it),r=a.n+b.n;
+  return{q:"Qual é a soma das duas maiores barras?",lac:"A soma das duas maiores barras é ___.",r,alt:[r+passo,r-passo,a.n,r+10],erro:`As duas maiores barras são ${a.nome} (${a.n}) e ${b.nome} (${b.n}). A soma é ${a.n} + ${b.n} = ${r}.`,visual:visGraf(it,"barras",passo,max)}}
+function famPicVLer(){const it=dadosEst(4,1,8),vale=umDe([2,5,10]),x=umDe(it),r=x.n*vale;
+  return{q:`Cada ícone vale ${vale}. Quantos ${x.nome} há no gráfico?`,lac:`Cada ícone vale ${vale}: ${x.nome} tem ___ no gráfico.`,e:x.nome,r,alt:[x.n,r+vale,r-vale,r+1],erro:`${x.nome} tem ${x.n} ícones e cada ícone vale ${vale}: ${x.n} × ${vale} = ${r}.`,visual:visPic(it,vale)}}
+function famPicVTotal(){const it=dadosEst(4,1,6),vale=umDe([2,5,10]),ns=it.map(x=>x.n),r=somaL(ns)*vale;
+  return{q:`Cada ícone vale ${vale}. Quantos Pokémon há ao todo no gráfico?`,lac:`Cada ícone vale ${vale}: ao todo há ___ Pokémon no gráfico.`,r,alt:[somaL(ns),r+vale,r-vale,r+1],erro:`Há ${ns.join(" + ")} = ${somaL(ns)} ícones e cada um vale ${vale}: ${somaL(ns)} × ${vale} = ${r}.`,visual:visPic(it,vale)}}
+function famDupTotal(){const D=dadosDupla(3,3,2,9),tot=D.itens.map(i=>somaL(i.v)),r=somaL(tot);
+  return{q:"Quantos Pokémon foram capturados ao todo nos 3 dias?",lac:"Ao todo, nos 3 dias, foram capturados ___ Pokémon.",r,alt:[r+1,r-1,r+10,tot[0]],erro:`Some cada linha (${tot.join(", ")}) e depois some os resultados: ${tot.join(" + ")} = ${r}.`,visual:visDupla(D)}}
+const FAMS_TAB={bronze:[famTabLer,famTabExtremo,famTabTotal,famPicLer,famPicDif,famPicTotal],prata:[famDupCel,famDupLin,famDupCol,famColLer,famColDif,famColTotal],
+  ouro:[famBarLer,famBarDif,famBarTotal,famBarDuas,famPicVLer,famPicVTotal,famDupTotal]};
+const DICA_TAB={bronze:"Leia o título, ache o nome na linha e olhe o número ao lado. No pictograma, conte os ícones.",prata:"Leia o título. Na tabela de dupla entrada, ache a linha e a coluna: o número fica onde elas se encontram. Nas colunas, suba até o topo e leia a régua.",
+  ouro:"Nas barras, siga a barra até a régua. No pictograma, conte os ícones e multiplique pelo valor de cada um. Nas somas, leia tudo antes de somar."};
+/* ligar: um só desenho, três perguntas (cada uma com um valor diferente) */
+function montarRelEst(nivel){
+  const dica=DICA_TAB[nivel];let vis,cand,g=0;
+  do{
+    const k=umDe(nivel==="bronze"?["tab","pic"]:nivel==="prata"?["dup","col"]:["bar","picv","dup"]);
+    if(k==="tab"){const it=dadosEst(4,2,9);vis=visTab2(it);cand=it.map(x=>({e:x.nome,r:x.n}))}
+    else if(k==="pic"){const it=dadosEst(4,1,8);vis=visPic(it,1);cand=it.map(x=>({e:x.nome,r:x.n}))}
+    else if(k==="col"){const {it,passo,max}=dadosColunas();vis=visGraf(it,"colunas",passo,max);cand=it.map(x=>({e:x.nome,r:x.n}))}
+    else if(k==="bar"){const {it,passo,max}=dadosBarras();vis=visGraf(it,"barras",passo,max);cand=it.map(x=>({e:x.nome,r:x.n}))}
+    else if(k==="picv"){const it=dadosEst(4,1,8),vale=umDe([2,5,10]);vis=visPic(it,vale);cand=it.map(x=>({e:x.nome,r:x.n*vale}))}
+    else{const D=dadosDupla(3,3,1,9);vis=visDupla(D);cand=[];D.itens.forEach(i=>i.v.forEach((v,j)=>cand.push({e:`${i.nome}, coluna ${D.dias[j]}`,r:v})))}
+    const pool=embaralhar(cand),L=[],rs=new Set();for(const c of pool){if(rs.has(c.r))continue;rs.add(c.r);L.push(c);if(L.length===3)break}
+    cand=L.length===3?L:null;
+  }while(!cand&&g++<200);
+  const pares=cand.map(c=>({e:c.e,d:String(c.r)})),respTxt=pares.map(p=>`${p.e} = ${p.d}`).join("; ");
+  const ex=vis.tipo==="pictograma"&&vis.vale>1?` Cada ícone vale ${vis.vale}.`:"";
+  return{tipo:"relacionar",relDica:"Toque num item e depois no número dele.",enunciado:`Olhe o desenho e ligue cada item à sua quantidade.${ex}`,pares,direita:embaralhar(pares.map(p=>p.d)),resposta:1,respTxt,chave:respTxt+JSON.stringify(vis),dica,erro:`As ligações certas são: ${respTxt}.`,visual:vis};
+}
+function montarTabelas(d,tipo,nivel){
+  nivel=nivel||(d>=3?"ouro":"bronze");
+  if(tipo==="relacionar")return montarRelEst(nivel);
+  return montarFam(FAMS_TAB[nivel],d,tipo,DICA_TAB[nivel],"");
+}
+/* ---- Acaso e probabilidade: urna, dado, moeda e roleta ---- */
+const PLU_COR={azul:"azuis",vermelha:"vermelhas",verde:"verdes",amarela:"amarelas"},NOMES_COR=Object.keys(PLU_COR);
+const COD_CLASSE={1:"certo",2:"possível",3:"impossível"};
+const DICA_ACASO={bronze:"Certo: só pode sair aquilo. Impossível: não existe na urna. Possível: existe, mas não é a única. Olhe as cores da urna.",
+  prata:"Quanto mais bolinhas de uma cor, maior a chance de ela sair. Conte as bolinhas de cada cor e compare.",
+  ouro:"Liste todos os resultados que podem acontecer. Cada parte da roleta ou cada bolinha é uma chance."};
+const urna=(...b)=>({tipo:"urna",bolas:b.filter(x=>x.n>0)});
+function urnaTres(){const cs=embaralhar(NOMES_COR).slice(0,3),ns=new Set();while(ns.size<3)ns.add(rnd(1,8));return urna(...cs.map((c,i)=>({cor:c,n:[...ns][i]})))}
+function urnaLivre(){const k=rnd(1,3),cs=embaralhar(NOMES_COR).slice(0,k);return urna(...cs.map(c=>({cor:c,n:rnd(1,8)})))}
+/* certo / possível / impossível */
+function escClasse(d,dica){
+  const k=umDe([1,2,3]),cs=embaralhar(NOMES_COR);let v,c;
+  if(k===1){c=cs[0];v=urna({cor:c,n:rnd(3,8)})}
+  else if(k===3){c=cs[2];v=urna(...cs.slice(0,rnd(1,2)).map(x=>({cor:x,n:rnd(2,6)})))}
+  else{c=cs[0];v=urna({cor:cs[0],n:rnd(2,6)},{cor:cs[1],n:rnd(1,5)})}
+  const erro=k===1?`A urna só tem bolinhas ${PLU_COR[c]}. Sempre sai ${c}: é certo.`:k===3?`Não há nenhuma bolinha ${c} na urna. Não tem como sair: é impossível.`:`Há bolinhas ${PLU_COR[c]} e de outra cor. Pode sair ${c}, mas não é a única: é possível.`;
+  return{tipo:"escolha",enunciado:`Tirar uma bolinha ${c} desta urna é certo, possível ou impossível?`,opcoes:[1,2,3],rotulos:COD_CLASSE,resposta:k,respTxt:COD_CLASSE[k],dica,erro,visual:v,chave:"ac"+JSON.stringify(v)+c};
+}
+function escMaisMenos(d,dica){
+  const v=urnaTres(),mais=Math.random()<.5,ns=v.bolas.map(b=>b.n),alvo=v.bolas.find(b=>b.n===(mais?Math.max(...ns):Math.min(...ns))),cs=embaralhar(v.bolas.map(b=>b.cor)),rot={};cs.forEach((c,i)=>rot[i+1]=c);
+  const r=cs.indexOf(alvo.cor)+1;
+  return{tipo:"escolha",enunciado:`Qual cor tem a ${mais?"maior":"menor"} chance de ser tirada?`,opcoes:[1,2,3],rotulos:rot,resposta:r,respTxt:alvo.cor,dica,visual:v,chave:"mm"+JSON.stringify(v)+mais,
+    erro:`Conte as bolinhas: ${v.bolas.map(b=>`${b.cor} ${b.n}`).join(", ")}. A cor com ${mais?"mais":"menos"} bolinhas tem a ${mais?"maior":"menor"} chance: ${alvo.cor}.`};
+}
+function famNCor(d,v){v=v||umDe([urnaLivre,urnaTres])();const b=umDe(v.bolas);
+  return{q:`Quantas bolinhas ${b.cor} há na urna?`,lac:`Na urna há ___ bolinhas ${PLU_COR[b.cor]}.`,r:b.n,alt:[b.n+1,b.n-1,b.n+2],erro:`Conte só as bolinhas ${PLU_COR[b.cor]}: são ${b.n}.`,visual:v}}
+function famTotalUrna(d,v){v=v||umDe([urnaLivre,urnaTres])();const r=somaL(v.bolas.map(b=>b.n));
+  return{q:"Quantas bolinhas há na urna ao todo?",lac:"Há ___ bolinhas na urna ao todo.",r,alt:[r+1,r-1,r+2,r+10],erro:`Some as bolinhas de cada cor: ${v.bolas.map(b=>b.n).join(" + ")} = ${r}.`,visual:v}}
+function famDifProv(){const v=urnaTres(),ns=v.bolas.map(b=>b.n),a=Math.max(...ns),b=Math.min(...ns),r=a-b;
+  return{q:"Quantas bolinhas a mais tem a cor mais provável do que a menos provável?",lac:"A cor mais provável tem ___ bolinhas a mais que a menos provável.",r,alt:[r+1,r-1,a,b],erro:`A mais provável tem ${a} e a menos provável tem ${b}. A diferença é ${a} − ${b} = ${r}.`,visual:v}}
+/* Ouro */
+function famDadoDif(){return{q:"Quantos resultados diferentes podem sair ao jogar um dado?",lac:"Um dado pode dar ___ resultados diferentes.",r:6,alt:[4,5,7,12],erro:"O dado tem 6 faces: 1, 2, 3, 4, 5 e 6. São 6 resultados diferentes.",visual:{tipo:"dado",face:rnd(1,6)}}}
+function famDadoPar(){const par=Math.random()<.5;return{q:`Ao jogar um dado, quantos resultados são ${par?"pares":"ímpares"}?`,lac:`No dado, ___ resultados são ${par?"pares":"ímpares"}.`,r:3,alt:[2,4,6,5],erro:par?"Os pares do dado são 2, 4 e 6: são 3 resultados.":"Os ímpares do dado são 1, 3 e 5: são 3 resultados.",visual:{tipo:"dado",face:rnd(1,6)}}}
+function famDadoCmp(){const mai=Math.random()<.5,k=mai?umDe([2,3,4]):umDe([3,4,5]),r=mai?6-k:k-1,lista=mai?[1,2,3,4,5,6].filter(x=>x>k):[1,2,3,4,5,6].filter(x=>x<k);
+  return{q:`Ao jogar um dado, quantos resultados são ${mai?"maiores":"menores"} que ${k}?`,lac:`No dado, ___ resultados são ${mai?"maiores":"menores"} que ${k}.`,r,alt:[r+1,r-1,6,k],erro:`${mai?"Maiores":"Menores"} que ${k}: ${lista.join(", ")}. São ${r} resultados.`,visual:{tipo:"dado",face:rnd(1,6)}}}
+function famMoeda(){return{q:"Quantos resultados diferentes podem sair ao jogar uma moeda?",lac:"Uma moeda pode dar ___ resultados diferentes.",r:2,alt:[1,3,4,6],erro:"A moeda tem cara e coroa. São 2 resultados diferentes.",visual:{tipo:"moeda"}}}
+function roletaLivre(){const n=rnd(4,8),cs=embaralhar(NOMES_COR).slice(0,3),cores=[cs[0],cs[1],cs[2]];while(cores.length<n)cores.push(umDe(cs));return{tipo:"roleta",cores:embaralhar(cores)}}
+function famRoletaCor(){const v=roletaLivre(),c=umDe(v.cores),r=v.cores.filter(x=>x===c).length;
+  return{q:`Quantas partes da roleta são ${PLU_COR[c]}?`,lac:`Na roleta, ___ partes são ${PLU_COR[c]}.`,r,alt:[r+1,r-1,v.cores.length,r+2],erro:`Conte as partes ${PLU_COR[c]} da roleta: são ${r}. Cada parte é uma chance.`,visual:v}}
+function famRoletaTot(){const v=roletaLivre(),r=v.cores.length;
+  return{q:"Quantos resultados possíveis tem esta roleta?",lac:"Esta roleta tem ___ resultados possíveis.",r,alt:[r+1,r-1,r+2,3],erro:`Cada parte é um resultado. Contando todas, são ${r}.`,visual:v}}
+function famChancesUrna(){const v=urnaTres(),b=umDe(v.bolas);
+  return{q:`Quantas chances tem a cor ${b.cor} de ser tirada?`,lac:`A cor ${b.cor} tem ___ chances de ser tirada.`,r:b.n,alt:[b.n+1,b.n-1,b.n+2],erro:`Cada bolinha ${b.cor} é uma chance. Há ${b.n} bolinhas ${PLU_COR[b.cor]}: são ${b.n} chances.`,visual:v}}
+const FAMS_ACASO_NUM={bronze:[famNCor,famTotalUrna],prata:[famDifProv,()=>famNCor(0,urnaTres()),()=>famTotalUrna(0,urnaTres())],ouro:[famDadoDif,famDadoPar,famDadoCmp,famMoeda,famRoletaCor,famRoletaTot,famChancesUrna]};
+function relAcaso(nivel,dica){
+  let pares,vis,tit;
+  if(nivel==="bronze"){
+    const cs=embaralhar(NOMES_COR),[a,b,c]=cs,pl=PLU_COR;
+    pares=[{e:`Tirar uma bolinha ${a} de uma urna só com bolinhas ${pl[a]}.`,d:"certo"},{e:`Tirar uma bolinha ${c} de uma urna só com bolinhas ${pl[a]} e ${pl[b]}.`,d:"impossível"},{e:`Tirar uma bolinha ${b} de uma urna com bolinhas ${pl[a]} e ${pl[b]}.`,d:"possível"}];
+    tit="Ligue cada situação a certo, possível ou impossível.";
+  }else if(nivel==="prata"){
+    vis=urnaTres();const ord=[...vis.bolas].sort((x,y)=>y.n-x.n),dd=["a maior chance","a chance do meio","a menor chance"];
+    pares=embaralhar(ord.map((b,i)=>({e:`Tirar uma bolinha ${b.cor}`,d:dd[i]})));tit="Olhe a urna e ligue cada cor à sua chance.";
+  }else{
+    const ns=embaralhar([3,4,5,8]).slice(0,2);
+    pares=embaralhar([{e:"Quantos resultados tem um dado comum?",d:"6"},{e:"Quantos resultados tem uma moeda?",d:"2"},{e:`Quantos resultados tem uma roleta de ${ns[0]} partes iguais?`,d:String(ns[0])},{e:`Quantos resultados tem uma roleta de ${ns[1]} partes iguais?`,d:String(ns[1])}]).slice(0,3);tit="Ligue cada situação ao número de resultados possíveis.";
+  }
+  const respTxt=pares.map(p=>`${p.e} = ${p.d}`).join("; "),ex={tipo:"relacionar",relDica:nivel==="ouro"?"Toque numa situação e depois no número dela.":"Toque numa situação e depois na resposta dela.",enunciado:tit,pares,direita:embaralhar(pares.map(p=>p.d)),resposta:1,respTxt,chave:respTxt+(vis?JSON.stringify(vis):""),dica,erro:`As ligações certas são: ${respTxt}.`};
+  if(vis)ex.visual=vis;return ex;
+}
+function montarAcaso(d,tipo,nivel){
+  nivel=nivel||(d>=3?"ouro":"bronze");const dica=DICA_ACASO[nivel];
+  if(tipo==="relacionar")return relAcaso(nivel,dica);
+  const nums=FAMS_ACASO_NUM[nivel];
+  if(tipo==="escolha"){
+    const palavra=Math.random()<(nivel==="ouro"?.35:.6);
+    if(palavra)return nivel==="bronze"?escClasse(d,dica):escMaisMenos(d,dica);
+    const it=umDe(nums)(d);return{tipo:"escolha",enunciado:it.q,opcoes:opcoesPos(it.r,it.alt),resposta:it.r,dica,erro:it.erro,visual:it.visual,chave:"e"+it.q+JSON.stringify(it.visual)};
+  }
+  const it=umDe(nums)(d),base={tipo,resposta:it.r,dica,erro:it.erro,visual:it.visual},vis=JSON.stringify(it.visual);
+  return tipo==="digitar"?{...base,enunciado:it.q,chave:it.q+vis}:{...base,enunciado:it.lac,chave:"l"+it.lac+vis};
+}
 const GER={
   valorPosicional:(d,tipo)=>montarPosicional(d,tipo||tipoAleatorio()),
   adicao:(d,tipo)=>montarOp("adicao",d,tipo||tipoAleatorio()),
@@ -268,7 +424,9 @@ const GER={
   figuras:(d,tipo)=>montarFiguras(d,tipo||tipoAleatorio()),
   comprimento:(d,tipo)=>montarComprimento(d,tipo||tipoAleatorio()),
   tempo:(d,tipo,nivel)=>montarTempo(d,tipo||tipoAleatorio(),nivel),
-  dinheiro:(d,tipo)=>montarDinheiro(d,tipo||tipoAleatorio())
+  dinheiro:(d,tipo)=>montarDinheiro(d,tipo||tipoAleatorio()),
+  tabelas:(d,tipo,nivel)=>montarTabelas(d,tipo||tipoAleatorio(),nivel),
+  acaso:(d,tipo,nivel)=>montarAcaso(d,tipo||tipoAleatorio(),nivel)
 };
 /* os tipos se alternam (sem repetir o mesmo seguido) e todos aparecem em cada nível */
 function sequenciaTipos(n){let seq=[];while(seq.length<n){const b=embaralhar(TIPOS_Q);if(seq.length&&b[0]===seq[seq.length-1])b.push(b.shift());seq=seq.concat(b)}return seq.slice(0,n)}

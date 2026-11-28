@@ -28,5 +28,9 @@ FASES.push(
 {id:"a3-tempo",macete:"tempo",ano:3,ordem:12,area:"Grandezas e Medidas",icone:"🕒",titulo:"Medidas de tempo",curto:"Tempo",resumo:"Relógio, horas, dias e meses",gerador:"tempo",
  topicos:["Leitura de horas em relógios analógicos","Horas, minutos, dias, semanas e meses","Resolução de problemas com medidas de tempo"],roteiro:["tempo",2]},
 {id:"a3-dinheiro",macete:"dinheiro",ano:3,ordem:13,area:"Grandezas e Medidas",icone:"💰",titulo:"Dinheiro",curto:"Dinheiro",resumo:"Moedas, notas e troco",gerador:"dinheiro",
- topicos:["Sistema monetário brasileiro: reais e centavos","Valores de moedas e cédulas","Troco em situações de compra"],roteiro:["dinheiro",10,7]}
+ topicos:["Sistema monetário brasileiro: reais e centavos","Valores de moedas e cédulas","Troco em situações de compra"],roteiro:["dinheiro",10,7]},
+{id:"a3-tabelas",macete:"tabelas",ano:3,ordem:14,area:"Estatística",icone:"📊",titulo:"Tabelas e gráficos",curto:"Tabelas",resumo:"Ler tabelas, pictogramas e gráficos",gerador:"tabelas",
+ topicos:["Ler dados em tabelas simples e de dupla entrada","Ler pictogramas, gráficos de colunas e de barras","Comparar quantidades e somar os dados"],roteiro:["tabelas"]},
+{id:"a3-acaso",macete:"acaso",ano:3,ordem:15,area:"Probabilidade",icone:"🎲",titulo:"Acaso e probabilidade",curto:"Acaso",resumo:"Certo, possível, impossível e mais provável",gerador:"acaso",
+ topicos:["Eventos certos, possíveis e impossíveis","Mais provável e menos provável (contando as chances)","Resultados possíveis de dado, moeda, roleta e urna"],roteiro:["acaso"]}
 );

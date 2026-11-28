@@ -151,3 +151,11 @@ nav button{padding:10px 1px;font-size:.7rem}
 /* moedas e cédulas desenhadas dentro da animação de Dinheiro */
 .pm-dinSvg{background:none;border:0;box-shadow:none;padding:0;line-height:0}
 .pm-dinSvg svg{width:100%;height:100%;display:block}
+
+/* Lote C: tabelas, gráficos, urna, dado, moeda e roleta */
+.visSvg.graf svg{max-width:360px}
+.visSvg.urna svg{max-width:220px}.visSvg.dado svg{max-width:120px}.visSvg.moeda svg{max-width:270px}.visSvg.roleta svg{max-width:210px}
+.pm-bola{border-radius:50%;border:2px solid #16224a;box-shadow:inset -3px -3px 0 rgba(0,0,0,.12)}
+.pm-svgbox{background:none;border:0;box-shadow:none;padding:0;line-height:0}.pm-svgbox svg{width:100%;height:100%;display:block}
+.pm-linhaG{position:absolute;border-top:3px dashed #d62839;height:0;z-index:3}
+.pm-ic{background:none;border:0;box-shadow:none;padding:0;line-height:0}.pm-ic svg{width:100%;height:100%;display:block}

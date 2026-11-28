@@ -3,7 +3,7 @@
 const AREAS=["Aritmética","Teoria dos Números","Álgebra","Geometria","Grandezas e Medidas","Estatística","Probabilidade","Lógica Matemática"];
 const ANOS={};[3,4,5,6,7,8,9].forEach(a=>ANOS[a]={nome:a+"º ano",areas:AREAS});
 const FASES=[];                                  // preenchida pelos arquivos anoN.js
-const EM_BREVE={3:["Tabelas e gráficos","Acaso e probabilidade"]};
+const EM_BREVE={3:[]};
 /* tentativasFaseDia = tentativas por dia PARA CADA NÍVEL (Bronze, Prata e Ouro contam separadamente).
    questoesPorFase = questões do nível Prata; o Bronze tem 2 a menos e o Ouro 2 a mais. */
 /* TEMPORÁRIO (Joyce, enquanto programa): true = sem limite diário de tentativas por nível. Voltar para false antes de entregar às crianças. */

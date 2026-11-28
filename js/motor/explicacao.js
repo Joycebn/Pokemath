@@ -57,7 +57,7 @@ const PM_CSS=`.pm-cena{position:relative;margin:0 auto}
 .pm-placa{border:2px solid #c46a00;border-radius:4px;background:linear-gradient(90deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/10% 100%,linear-gradient(0deg,rgba(255,255,255,.55) 1px,transparent 1px) 0 0/100% 10%,#f28c1b}
 .pm-milhar{border:2px solid #5e2a7e;border-radius:6px;background:#8e44ad;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3)}
 .pm-txt{font-size:.95rem;font-weight:800;color:#16224a;text-align:center}
-.pm-dinSvg{background:none;border:0;box-shadow:none;padding:0;line-height:0}.pm-dinSvg svg{width:100%;height:100%;display:block}
+.pm-dinSvg,.pm-svgbox,.pm-ic{background:none;border:0;box-shadow:none;padding:0;line-height:0}.pm-dinSvg svg,.pm-svgbox svg,.pm-ic svg{width:100%;height:100%;display:block}.pm-bola{border-radius:50%;border:2px solid #16224a;box-shadow:inset -3px -3px 0 rgba(0,0,0,.12)}.pm-linhaG{position:absolute;border-top:3px dashed #d62839;height:0;z-index:3}
 .pm-moeda{border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#d9a21b);border:4px solid #a8730a;color:#5a3b00;font-size:1rem;box-shadow:0 3px 0 rgba(0,0,0,.25)}
 .pm-nota{border-radius:8px;border:3px solid #14702f;background:#9bd7a8;color:#0b3d1c;font-size:1.05rem;box-shadow:0 3px 0 rgba(0,0,0,.25)}`;
 let estilosOk=false;
@@ -164,6 +164,21 @@ async function junto(ctx,...fns){
   const g0=ctx.gasto;let mx=0;
   await Promise.all(fns.map(async f=>{const c=Object.create(ctx);c.gasto=0;await f(c);mx=Math.max(mx,c.gasto)}));
   ctx.gasto=g0+mx;
+}
+/* ---- Lote C: caixinhas com desenhos SVG (tabelas, gráficos, urna…) ---- */
+function svgBox(R,html,x,y,w,cls){
+  const m=html.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/),h=m?Math.round(w*(+m[2])/(+m[1])):w;
+  const e=criar(R.box,"","pm-svgbox "+(cls||""),x,y,w,h);e.innerHTML=html;return e;
+}
+const semLegenda=ctx=>{const l=ctx.stage.querySelector(".pm-legenda");if(l)l.remove()};
+const caixaG=(R,x,y,w,h)=>{const c=document.createElement("i");c.className="pm-caixa pm-pop";c.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px;z-index:5`;R.box.append(c);return c};
+const bolaG=(R,cor,x,y)=>{const e=criar(R.box,"","pm-bola",x,y,21,21);e.style.background=CORB[cor];return e};
+/* colunas/barras crescendo do zero (sem Web Animations ou com “reduzir movimento”, só esperam) */
+async function crescer(ctx,els,eixo,ms){
+  if(ctx.instant)return;
+  if(semMov()||!els.length||typeof els[0].animate!=="function"){await esperar(ctx,Math.min(ms,700));return}
+  els.forEach((e,i)=>{const a=e.animate([{transform:eixo==="x"?"scaleX(0)":"scaleY(0)"},{transform:"scale(1)"}],{duration:Math.max(1,ms*FS.vel),delay:i*150*FS.vel,easing:"ease-out",fill:"backwards"});FS.anims.push(a);if(FS.pausado)a.pause()});
+  await esperar(ctx,ms+150*(els.length-1));
 }
 /* Representações das casas. Material dourado: unidade = cubinho (azul), dezena = barra de 10 cubinhos (verde),
    centena = placa de 100 (laranja), milhar = cubo (roxo). “maçãs” é a forma anterior (maçãs e pacotes), mantida como alternativa. */
@@ -643,6 +658,77 @@ const ROT={
       criar(R.box,`R$ ${custo} + R$ ${t} = R$ ${pago}`,"pm-txt pm-res pm-pop",20,128,260,40);
       criar(R.box,`troco = R$ ${t}`,"pm-txt pm-res pm-pop",60,184,180,44);glowRes(R);dizer(ctx,`troco = R$ ${t}`);await esperar(ctx,900)}));
     return{montar:ctx=>({box:novaCena(ctx,W,H)}),passos};
+  },
+  /* ---------- Lote C: tabelas e gráficos ---------- */
+  tabelas(){
+    const W=300,H=300,k=300/320,passos=[];
+    const T1={tipo:"tabela",titulo:"Pokémon capturados",cols:["Pokémon","Quantidade"],linhas:[["Pikachu",4],["Eevee",6],["Squirtle",3]]};
+    const T2={tipo:"tabela",titulo:"Capturas em cada dia",cols:["Pokémon","Segunda","Terça","Quarta"],linhas:[["Pikachu",3,5,2],["Eevee",4,1,6]]};
+    const C={tipo:"colunas",titulo:"Pokémon capturados",passo:2,max:10,itens:[{nome:"Pikachu",cor:"#f7d02c",n:8},{nome:"Eevee",cor:"#b0845a",n:5},{nome:"Squirtle",cor:"#5aa0f0",n:6}]};
+    const limpaRes=R=>R.box.querySelectorAll(".pm-res").forEach(e=>e.remove());
+    passos.push(P("Uma tabela guarda informações em linhas e colunas. Esta mostra quantos Pokémon foram capturados.",4500,async(ctx,R)=>{
+      const t=svgBox(R,svgTabela(T1),0,-190,300);await voarVarios(ctx,[[t,0,12]],1500);
+      resSub(R,"tabela = linhas e colunas",40,176,220);glowRes(R);dizer(ctx,"linhas ↔ e colunas ↕");await esperar(ctx,900)},
+      {tabela:"organiza informações em linhas e colunas",linha:"fica deitada ↔",coluna:"fica em pé ↕"}));
+    passos.push(P("Para ler um valor, ache o nome na linha e olhe o número ao lado: Eevee tem 6.",4000,async(ctx,R)=>{
+      const g=geoTabela(T1);caixaG(R,4,12+g.y(1)*k,292,g.rH*k);
+      await esperar(ctx,900);resSub(R,"Eevee = 6",70,176,160);glowRes(R);dizer(ctx,"Eevee = 6");await esperar(ctx,900)}));
+    passos.push(P("Na tabela de dupla entrada, o número fica onde a linha e a coluna se encontram: Pikachu na terça.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";const g=geoTabela(T2);svgBox(R,svgTabela(T2),0,12,300,"pm-pop");
+      await junto(ctx,async c=>{caixaG(R,4,12+g.y(0)*k,292,g.rH*k);await esperar(c,1000)},async c=>{caixaG(R,g.xs[2]*k,12+g.tH*k,g.ws[2]*k,(g.hH+2*g.rH)*k);await esperar(c,1000)});
+      resSub(R,"Pikachu na terça = 5",40,150,220);glowRes(R);dizer(ctx,"linha + coluna = 5");await esperar(ctx,800)},{"dupla entrada":"tabela com linhas e colunas que se cruzam"}));
+    passos.push(P("No pictograma, cada ícone vale um tanto. Aqui cada ícone vale 2: 3 ícones valem 3 × 2 = 6.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";criar(R.box,"Pikachu","pm-txt pm-pop",6,30,90,40);
+      const ic=[0,1,2].map(()=>{const e=criar(R.box,"","pm-ic",100,-70,40,40);e.innerHTML=svgIconeSolo("#f7d02c");e.setAttribute("data-icone","1");return e});
+      await voarVarios(ctx,ic.map((e,i)=>[e,100+i*48,30]),1200,300);
+      criar(R.box,"cada ícone vale 2","pm-txt pm-pop",50,90,200,40);
+      resSub(R,"3 × 2 = 6",70,150,160);glowRes(R);dizer(ctx,"3 × 2 = 6");await esperar(ctx,800)},{pictograma:"gráfico feito de ícones; cada um vale um número"}));
+    passos.push(P("No gráfico de colunas, quanto mais alta a coluna, maior a quantidade.",4000,async(ctx,R)=>{
+      R.box.innerHTML="";const b=svgBox(R,svgColunas(C),0,0,300);
+      await crescer(ctx,[...b.querySelectorAll("[data-barra]")],"y",1800);
+      resSub(R,"coluna mais alta = mais Pokémon",20,208,260);glowRes(R);dizer(ctx,"coluna alta = quantidade maior");await esperar(ctx,700)}));
+    passos.push(P("Para ler uma coluna, siga a altura dela até a régua: a coluna do Pikachu chega ao 8.",4500,async(ctx,R)=>{
+      const g=geoColunas(C),l=document.createElement("i");l.className="pm-linhaG";l.style.cssText=`left:${g.left*k}px;top:${g.y(8)*k}px;width:${(g.x(0)+g.bw-g.left)*k}px`;R.box.append(l);
+      await esperar(ctx,1200);resSub(R,"Pikachu = 8",70,208,160);glowRes(R);dizer(ctx,"Pikachu = 8");await esperar(ctx,900)}));
+    passos.push(P("Para comparar, subtraia: 8 − 5 = 3. Para o total, some tudo: 8 + 5 + 6 = 19.",5000,async(ctx,R)=>{
+      limpaRes(R);criar(R.box,"8 − 5 = 3 a mais","pm-txt pm-res pm-pop",40,206,220,40);await esperar(ctx,1400);
+      criar(R.box,"8 + 5 + 6 = 19","pm-txt pm-res pm-pop",40,250,220,40);glowRes(R);dizer(ctx,"comparar: subtrair · total: somar");await esperar(ctx,1200)}));
+    return{montar:ctx=>{const box=novaCena(ctx,W,H);semLegenda(ctx);return{box}},passos};
+  },
+  /* ---------- Lote C: acaso e probabilidade ---------- */
+  acaso(){
+    const W=300,H=310,passos=[],pos=geoUrna(8).map(p=>({x:40+p.x-10.5,y:50+p.y-10.5}));
+    const limpaQ=R=>R.box.querySelectorAll(".pm-quest").forEach(e=>e.remove());
+    const urna=R=>svgBox(R,svgUrna([]),40,50,220,"pm-pop");
+    const encher=async(ctx,R,cor,idx,dur)=>{const bs=idx.map(()=>bolaG(R,cor,130,-40));await voarVarios(ctx,bs.map((e,i)=>[e,pos[idx[i]].x,pos[idx[i]].y]),dur||1300,250);return bs};
+    passos.push(P("Vamos encher a urna com 5 bolinhas azuis. Se tirarmos uma, só pode sair azul: isso é certo!",4500,async(ctx,R)=>{
+      urna(R);await encher(ctx,R,"azul",[0,1,2,3,4],1200);
+      resSub(R,"certo: só tem azul",40,234,220);glowRes(R);dizer(ctx,"só azul = certo");await esperar(ctx,500)},{certo:"vai acontecer com certeza"}));
+    passos.push(P("E tirar uma bolinha vermelha? Não há nenhuma vermelha na urna: isso é impossível!",4000,async(ctx,R)=>{
+      const q=criar(R.box,"🔴 ✖","pm-txt pm-mini pm-pop pm-quest",220,8,70,40);await esperar(ctx,1200);
+      resSub(R,"impossível: nenhuma vermelha",20,234,260);glowRes(R);dizer(ctx,"sem vermelha = impossível");await esperar(ctx,900)},{"impossível":"não tem como acontecer"}));
+    passos.push(P("Pomos 2 bolinhas vermelhas. Agora sair azul é possível: pode sair azul ou vermelha.",4500,async(ctx,R)=>{
+      limpaQ(R);await encher(ctx,R,"vermelha",[5,6],1200);
+      resSub(R,"possível: pode sair azul ou vermelha",10,234,280);glowRes(R);dizer(ctx,"azul ou vermelha = possível");await esperar(ctx,700)},{"possível":"pode acontecer ou não"}));
+    passos.push(P("Mais uma azul: 6 azuis e 2 vermelhas. Quanto mais bolinhas da cor, mais chance de sair.",5000,async(ctx,R)=>{
+      await encher(ctx,R,"azul",[7],1000);R.box.querySelectorAll(".pm-res").forEach(e=>e.remove());
+      criar(R.box,"azul = 6: mais provável","pm-txt pm-res pm-pop",20,230,260,36);await esperar(ctx,1400);
+      criar(R.box,"vermelha = 2: menos provável","pm-txt pm-res pm-pop",20,268,260,36);glowRes(R);dizer(ctx,"mais bolinhas = mais chance");await esperar(ctx,700)},{provável:"que tem mais chance de acontecer"}));
+    passos.push(P("Um dado tem 6 faces: pode sair 1, 2, 3, 4, 5 ou 6. São 6 resultados possíveis.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";svgBox(R,svgDado(5),100,10,100,"pm-pop");
+      const ch=[1,2,3,4,5,6].map(n=>criar(R.box,String(n),"pm-d cn pm-mini",20+(n-1)*44,-60,40,40));
+      await voarVarios(ctx,ch.map((e,i)=>[e,20+i*44,150]),1200,250);
+      resSub(R,"6 resultados possíveis",30,210,240);glowRes(R);dizer(ctx,"dado: 6 resultados");await esperar(ctx,500)},{"resultados possíveis":"tudo o que pode sair"}));
+    passos.push(P("Uma moeda tem cara e coroa. São 2 resultados possíveis.",4000,async(ctx,R)=>{
+      R.box.innerHTML="";svgBox(R,svgMoedaSorte(),20,10,260,"pm-pop");
+      const ch=["cara","coroa"].map(n=>criar(R.box,n,"pm-pacote bgn",20,-60,90,40));
+      await voarVarios(ctx,ch.map((e,i)=>[e,45+i*120,150]),1200,300);
+      resSub(R,"2 resultados possíveis",30,210,240);glowRes(R);dizer(ctx,"moeda: 2 resultados");await esperar(ctx,500)}));
+    passos.push(P("Na roleta, cada parte é uma chance. A cor azul ocupa 2 partes: tem 2 chances de sair.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";const r=svgBox(R,svgRoleta(["azul","vermelha","azul","verde"]),50,0,200,"pm-pop");
+      await esperar(ctx,900);[0,2].forEach(i=>{const e=r.querySelector(`[data-setor="${i}"]`);if(e){e.setAttribute("stroke","#16224a");e.setAttribute("stroke-width","6")}});
+      resSub(R,"azul: 2 chances",50,210,200);glowRes(R);dizer(ctx,"azul = 2 chances");await esperar(ctx,900)}));
+    return{montar:ctx=>{const box=novaCena(ctx,W,H);semLegenda(ctx);return{box}},passos};
   },
   /* ---------- 12 ÷ 3: frutas nos pratos ---------- */
   divide(t,p){

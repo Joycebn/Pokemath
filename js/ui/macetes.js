@@ -26,6 +26,14 @@ function macPerguntas(id){
      {tipo:"lacuna",texto:`Qual unidade vem logo depois de ${us[i]}?`,opcoes:o1,resp:us[i+1],expl:`Depois de ${us[i]} vem ${us[i+1]}: ${m.partes.map(p=>p.u).join(" → ")}.`},
      {tipo:"escolha",texto:"Quantos passos de km até m? (km → hm → dam → m)",opcoes:o3,resp:resp3,expl:"km → hm (1), hm → dam (2), dam → m (3): são 3 passos."}];
   }
+  if(id==="acaso"){
+    const P3=["certo","possível","impossível"];
+    return[
+     {tipo:"escolha",texto:"Uma urna só com bolinhas azuis. Tirar uma bolinha azul é...",opcoes:P3,resp:"certo",expl:"Só tem azul na urna: sempre sai azul. É certo."},
+     {tipo:"escolha",texto:"Uma urna só com bolinhas azuis. Tirar uma bolinha vermelha é...",opcoes:P3,resp:"impossível",expl:"Não há nenhuma vermelha na urna. Não tem como sair: é impossível."},
+     {tipo:"escolha",texto:"Uma urna com bolinhas azuis e vermelhas. Tirar uma bolinha azul é...",opcoes:P3,resp:"possível",expl:"Há azuis, mas também há vermelhas. Pode sair azul, mas não é a única: é possível."},
+     {tipo:"escolha",texto:"A urna tem 6 bolinhas azuis e 2 vermelhas. Qual cor é a mais provável?",opcoes:["azul","vermelha"],resp:"azul",expl:"Quanto mais bolinhas, mais chance: 6 é maior que 2, então azul é a mais provável."}];
+  }
   if(m.gerador){const qs=[],vis=new Set();let g=0;
     while(qs.length<4&&g++<80){const ex=GER[m.gerador](1,"escolha"),k=ex.chave||ex.enunciado;if(vis.has(k))continue;vis.add(k);
       qs.push({tipo:"escolha",texto:ex.enunciado,opcoes:Array.from(ex.opcoes),resp:ex.resposta,expl:ex.erro,visual:ex.visual})}
