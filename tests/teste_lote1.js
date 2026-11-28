@@ -346,7 +346,7 @@ try{t("círculos: cada um é um botão com rótulo (título + situação) e alvo
 try{t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha",/body\.reduzir[^{]*\{[^}]*animation:none/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/prefers-reduced-motion/.test(lerArq("css/trilha.css")));}catch(e){t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* arquivos */
 try{t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)",/css\/trilha\.css/.test(lerArq("index.html"))&&lerArq("index.html").indexOf("js/conteudo/zonas.js")>0&&lerArq("index.html").indexOf("js/conteudo/zonas.js")<lerArq("index.html").indexOf("js/ui/trilha_visual.js")&&lerArq("index.html").indexOf("js/ui/trilha_visual.js")<lerArq("index.html").indexOf("js/legado/jogo.js"));}catch(e){t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v17 e os 3 arquivos novos na lista",/const V="pokemath-v17"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v18 e os 3 arquivos novos na lista",/const V="pokemath-v18"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)",/function estadoNivel/.test(lerArq("js/motor/trilha.js"))&&/function abrirNivel/.test(lerArq("js/motor/trilha.js"))&&/restantesNivel/.test(lerArq("js/motor/trilha.js")));}catch(e){t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
@@ -377,7 +377,7 @@ const vistos=[];z.w.Element.prototype.scrollIntoView=function(){vistos.push(this
 zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");
 try{t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)",typeof zv("rolarTrilha")==="string"||zv("typeof rolarTrilha")==="function"?(zv("rolarTrilha()"),vistos.length>0&&vistos[vistos.length-1].dataset&&vistos[vistos.length-1].dataset.fase===zv("fasesDoAno(3)[1].id")):false,vistos.length);}catch(e){t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px",/\.zona\.ilus\{[^}]*aspect-ratio:800\/1732/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/\.ilus\.circulo\{[^}]*width:(4[4-9]|[5-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"").replace(/\.zona\.ilus\.circulo/g,".ilus.circulo")));}catch(e){t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v17 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v17"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v18 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v18"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -402,7 +402,7 @@ try{zv("fecharFolha()");}catch(e){}
 try{t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo",/\.folhaFundo\{[^}]*align-items:center/.test(css)&&!/\.folhaFundo\{[^}]*flex-end/.test(css)&&!/\.folha\{[^}]*border-radius:20px20px00/.test(css));}catch(e){t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)",/\.laje\.nv(\.refazer)?\{[^}]*width:(7[2-9]|[89]\d|1\d\d)px/.test(css.replace(/\.folha\.laje/g,".laje")));}catch(e){t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("movimento: 'reduzir movimento' desliga o brilho das medalhas",/body\.reduzir[^{]*\.nv[^{]*\{[^}]*animation:none/.test(css));}catch(e){t("movimento: 'reduzir movimento' desliga o brilho das medalhas  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v17",/const V="pokemath-v17"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v17  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v18",/const V="pokemath-v18"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v18  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -415,7 +415,7 @@ try{const b=fs.readFileSync(path.join(DIR,"img/pokemon/pyri.webp"));t("Pyri: img
 try{t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI",zv("IMG(PYRI_ID)")==="img/pokemon/pyri.webp"&&zv("IMG(PYRELIS_ID)===PYRI_IMG&&IMG(PYRON_ID)===PYRI_IMG")===true&&/PokeAPI\/sprites/.test(zv("IMG(25)")));}catch(e){t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("S.comp=PYRI_ID;ir('cuidar')");}catch(e){}
 try{t("Pyri: aparece na tela do Cuidar quando é o companheiro",/img\/pokemon\/pyri\.webp/.test(U("#app").innerHTML));}catch(e){t("Pyri: aparece na tela do Cuidar quando é o companheiro  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v17 e a figura do Pyri na lista (offline)",/const V="pokemath-v17"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v17 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v18 e a figura do Pyri na lista (offline)",/const V="pokemath-v18"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v18 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* ---------- Macetes: dados e funções ---------- */
 const IDM=zv("MACETES.map(m=>m.id).join()");
 try{t("macetes: a lista tem as medidas, as casas, somar, vai um, empréstimo, as tabuadas 2 a 11, dividir, comparar, pares/ímpares, sequências e (Lote B) figuras, tempo e dinheiro",IDM==="medidas-comprimento,casas,somar,vaium,emprestimo,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9,tab10,tab11,dividir,comparar,parimpar,sequencia,figuras,tempo,dinheiro",IDM);}catch(e){t("macetes: a lista tem comprimento, ×5, ×4, ×9, ×10 e ×11  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -875,12 +875,72 @@ sb.w.close();
  try{await jogarNivel(s,"a3-paresimpares","bronze");await jogarNivel(s,"a3-paresimpares","prata");now+=DIA;await jogarNivel(s,"a3-paresimpares","ouro");
   t("jogar Pares e ímpares: os 3 níveis (com ligar muitos-para-um) terminam",st(ev,"a3-paresimpares")==="concluido,concluido,concluido",st(ev,"a3-paresimpares"))}catch(e){t("jogar Pares  [erro: "+String(e.message).slice(0,60)+"]",false)}
  s.w.close()}
-t("sw.js: pokemath-v17 (arquivos mudaram)",/const V="pokemath-v17"/.test(lerArq("sw.js")));
+t("sw.js: pokemath-v18 (arquivos mudaram)",/const V="pokemath-v18"/.test(lerArq("sw.js")));
 }
 
 t("limite diário: a chave temporária SEM_LIMITE_TENTATIVAS está ligada no app (os testes rodam com ela desligada, para provar a regra)",/const SEM_LIMITE_TENTATIVAS=true;/.test(lerArq("js/conteudo/matriz.js"))&&/SEM_LIMITE_TENTATIVAS\?cfgF/.test(lerArq("js/motor/trilha.js")));
 {const s2=await sessao(null,{});const e=x=>s2.ev(x);e("S.fases={};save()");
  e("window.eval('0')");const r=e("(()=>{const f=SEM_LIMITE_TENTATIVAS;return f})()");t("nos testes a chave vem desligada, então o limite de 3 por dia continua valendo",r===false);s2.w.close()}
+
+// ===== Entrega 2: 🪙 Dica da resposta (3 moedas, todas as fases; o macete 💡 continua de graça) =====
+{
+const sb=await sessao(null,{}),ev3=x=>{try{return sb.ev(x)}catch(e){return undefined}},U=x=>sb.w.document.querySelector(x),Q=x=>[...sb.w.document.querySelectorAll(x)];
+const T=(n,f)=>{try{const r=f();t(n,r===true||(r&&r.ok===true),r&&r.m)}catch(e){t(n+"  [erro: "+String(e.message).slice(0,70)+"]",false)}};
+ev3("S.fases={};S.tentNivel=null;ir('fases')");ev3("abrirNivel('a3-posicional','bronze')");
+const mostra=(ex,fid,moedas)=>{ev3(`(()=>{S.coins=${moedas};const ex=${JSON.stringify(ex)};FS.ses=novaSessao(FASES.find(f=>f.id==='${fid||"a3-posicional"}'),'bronze');FS.ses.fila[0]=ex;FS.fase=FS.ses.fase;FS.vista='exerc';render()})()`)};
+const gerar=(g,d,tp)=>ev3(`JSON.parse(JSON.stringify(GER.${g}(${d},'${tp}')))`);
+T("botão 🪙 'Dica da resposta' com o preço (3) aparece em todos os tipos de questão, ao lado da 💡",()=>{
+  for(const tp of["digitar","escolha","lacuna","relacionar"]){mostra(gerar("adicao",1,tp),"a3-adicao",10);const b=U("#bt-dica");if(!b||!/Dica da resposta/.test(b.textContent)||!/3/.test(b.textContent)||!U("#bt-lamp"))return "falta botão em "+tp}
+  mostra(gerar("comparar",3,"lacuna"),"a3-comparar",10);return !!U("#bt-dica")&&!!U("#bt-lamp")});
+T("sem moedas suficientes o botão fica apagado (mostrando o preço) e clicar não gasta nem mostra dica",()=>{
+  mostra(gerar("adicao",1,"digitar"),"a3-adicao",2);const b=U("#bt-dica");if(!b||!b.disabled||!/3/.test(b.textContent))return "deveria estar apagado";
+  b.click();ev3("comprarDica()");return ev3("S.coins")===2&&!U("#dica-paga")});
+T("com 3 moedas ou mais: clicar gasta exatamente 3, mostra a dica e o botão apaga (uma compra por questão)",()=>{
+  mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);U("#bt-dica").click();
+  const d=U("#dica-paga");return ev3("S.coins")===7&&!!d&&d.textContent.length>25&&U("#bt-dica").disabled&&(ev3("comprarDica()"),ev3("S.coins")===7)});
+T("a dica fica depois de errar? Não: a dica paga aparece só enquanto a questão está aberta (some no feedback)",()=>{
+  mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);U("#bt-dica").click();ev3("responderFase(-7)");return !U("#dica-paga")&&!U("#bt-dica")});
+T("com exatamente 3 moedas dá para comprar e fica com 0",()=>{mostra(gerar("adicao",1,"digitar"),"a3-adicao",3);U("#bt-dica").click();return ev3("S.coins")===0&&!!U("#dica-paga")});
+T("💡 continua de graça: abrir o macete não gasta moedas nem desliga o botão da dica",()=>{
+  mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);U("#bt-lamp").click();const ok=!!U("#lampada")&&ev3("S.coins")===10&&!U("#bt-dica").disabled;U("#lamp-ok").click();return ok});
+T("escolha: a dica tira 2 opções erradas (nunca a certa) e elas ficam apagadas",()=>{
+  for(let i=0;i<20;i++){const ex=gerar("adicao",1,"escolha");mostra(ex,"a3-adicao",10);U("#bt-dica").click();
+    const ap=Q("#app .op").filter(b=>b.disabled).map(b=>+b.textContent);if(ap.length!==2||ap.includes(ex.resposta))return "apagadas "+ap+" certa "+ex.resposta;
+    const livre=Q("#app .op").find(b=>!b.disabled&&+b.textContent===ex.resposta);if(!livre)return "a certa sumiu"}return true});
+T("ligar: a dica liga sozinha um par certo e a criança liga o resto (Verificar ainda precisa de todas as ligações)",()=>{
+  for(const [g,tp,f] of[["adicao","relacionar","a3-adicao"],["comparar","relacionar","a3-comparar"],["parImpar","relacionar","a3-paresimpares"]]){
+    const ex=gerar(g,1,tp);mostra(ex,f,10);U("#bt-dica").click();const L=ev3("FS.ses.fila[0].lig"),ch=Object.keys(L.map);
+    if(ch.length!==1)return g+": ligações "+ch.length;const i=+ch[0];if(ex.direita[L.map[i]]!==ex.pares[i].d)return g+": ligou o par errado";
+    if(!U("#app button.grande").disabled)return g+": Verificar devia continuar apagado"}return true});
+T("ordenar: a dica põe na fila os números certos do começo da ordem (o próximo), sem completar tudo",()=>{
+  for(let i=0;i<10;i++){const ex=gerar("comparar",3,"lacuna");mostra(ex,"a3-comparar",10);ev3("(()=>{const ex=FS.ses.fila[0];ordenarNum(ex.nums.indexOf(ex.ordemCerta[ex.ordemCerta.length-1]))})()");
+    U("#bt-dica").click();const f=Array.from(ev3("FS.ses.fila[0].ord.fila.map(i=>FS.ses.fila[0].nums[i])")),oc=ex.ordemCerta;
+    if(f.length<1||f.length>=oc.length||f.join()!==oc.slice(0,f.length).join())return "fila "+f+" certa "+oc}return true});
+T("digitar e completar: a dica diz quantos algarismos tem a resposta e repete o conselho da fase, sem mostrar a resposta",()=>{
+  for(const [g,tp,f,d] of[["adicao","digitar","a3-adicao",1],["adicao","lacuna","a3-adicao",1],["multiplicacao","digitar","a3-multiplicacao",3]]){
+    const ex=gerar(g,d,tp);mostra(ex,f,10);U("#bt-dica").click();const x=U("#dica-paga").textContent;
+    if(!new RegExp(String(String(ex.resposta).length)+" algarismo").test(x))return g+": sem quantidade de algarismos: "+x;
+    if(new RegExp("(^|\\D)"+ex.resposta+"(\\D|$)").test(x.replace(/\d+ algarismos?/,"")))return g+": mostrou a resposta: "+x}return true});
+T("a dica nunca entrega a resposta: em todas as fases, tipos e dificuldades (digitar/completar/escolha) o texto não traz o número certo",()=>{
+  for(const g of ev3("[...new Set(FASES.map(f=>f.gerador))]"))for(const d of[1,3])for(const tp of["digitar","lacuna"])for(let i=0;i<15;i++){
+    const ex=gerar(g,d,tp);const x=ev3(`dicaTextoResp(${JSON.stringify(ex)})`);if(!x)return g+": sem texto";
+    const lim=x.replace(/\d+ algarismos?/,"").replace(ex.dica,"");   /* o conselho geral da fase (ex.dica) já existia e não é da questão */if(ex.resposta!=null&&new RegExp("(^|\\D)"+ex.resposta+"(\\D|$)").test(lim)&&String(ex.resposta).length>1)return {ok:false,m:g+" "+tp+" d"+d+": resposta "+ex.resposta+" -> "+x}}return true});
+T("não mexe em medalha: usar a dica não conta como erro (sessão sem erros continua perfeita, acertos de primeira intactos)",()=>{
+  mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);ev3("S.coins=10");ev3("window.__e0=FS.ses.erros;window.__v0=FS.ses.vidas");U("#bt-dica").click();
+  if(ev3("FS.ses.erros")!==ev3("window.__e0")||ev3("FS.ses.vidas")!==ev3("window.__v0"))return "a compra da dica mexeu em erros/vidas";
+  const r=ev3(`(()=>{const s=FS.ses;const e0=s.erros,a0=s.acertosPrimeira,v0=s.vidas;responderFase(FS.ses.fila[0].resposta);return [s.erros-e0,s.acertosPrimeira-a0,s.vidas-v0,s.perfeita]})()`);
+  return r[0]===0&&r[1]===1&&r[2]===0});
+T("Ouro perfeito com dicas ainda ganha o Pokémon (perfeita = nenhum erro; dicas pagas não contam)",()=>{
+  const src=lerArq("js/motor/trilha.js");const a=src.indexOf("async function concluirSessao"),b=src.indexOf("function falharSessao");
+  return !/dica/i.test(src.slice(a,a>=0?a+900:0))&&/perfeita=s\.erros===0/.test(src)});
+T("a dica paga também vale na repetição da questão errada e não cobra de novo",()=>{
+  mostra(gerar("adicao",1,"escolha"),"a3-adicao",10);U("#bt-dica").click();const c=ev3("S.coins");ev3("responderFase(-7)");ev3("continuarSessao()");
+  const rep=ev3("FS.ses.fila[FS.ses.fila.length-1]");return {ok:c===7&&rep.rep===true&&!!rep.dicaPaga&&ev3("S.coins")===7,m:JSON.stringify([c,rep.rep,ev3("S.coins"),!!U("#bt-dica")&&U("#bt-dica").disabled,ev3("FS.ses.estado"),ev3("FS.ses.fila.length")])}});
+T("as moedas gastas continuam salvas (save) e o saldo mostrado no topo acompanha",()=>{mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);U("#bt-dica").click();return JSON.parse(sb.w.localStorage.getItem("tabuada-pokemon-v1")).coins===7});
+sb.w.close();
+t("sw.js: pokemath-v18",/const V="pokemath-v18"/.test(lerArq("sw.js")));
+}
+
 t("nenhum erro de script durante todos os testes",erros.length===0,erros.join(" | "));
 console.log(`\nPASSARAM: ${ok}   FALHARAM: ${bad.length}`);bad.forEach(b=>console.log(" ✗ "+b));process.exit(0);
 })().catch(e=>{console.error("ERRO NO TESTE:",e);process.exit(1)});

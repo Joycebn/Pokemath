@@ -95,3 +95,10 @@ Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 
 - **Explicação de Comparar** (`ROT.comparar`): três passos novos — maior que / menor que / igual, crescente e decrescente. **Macete de Comparar** também completo.
 - **Sequências**: macete e explicação (`ROT.sequencia`, 2 passos novos) com a regra: aumentando = soma, quanto = segundo − primeiro; diminuindo = subtrai, quanto = primeiro − segundo.
 - `sw.js`: `pokemath-v17`. Arquivos alterados: js/motor/geradores.js, js/motor/trilha.js, js/motor/explicacao.js, js/conteudo/macetes.js, css/novo.css, sw.js, tests/teste_lote1.js, tests/teste_nuvem.js, docs/LEIA-ME_LOTE1.md.
+
+## Ajustes das fases — Entrega 2 (🪙 Dica da resposta)
+- Em todas as fases, ao lado da 💡 (macete, que continua **de graça**), há o botão **🪙 Dica da resposta · 3**. Gasta **3 moedas** (`PRECO_DICA` em `js/motor/trilha.js`), uma compra por questão; sem moedas suficientes o botão fica apagado mostrando o preço.
+- A dica **não conta como erro**: medalha, "perfeito" e o Pokémon do Ouro não mudam.
+- O que cada tipo de questão recebe: escolher → 2 opções erradas ficam apagadas; ligar → 1 par certo já vem ligado; ordenar → o próximo número certo entra na fila; escrever/completar → o texto diz quantos algarismos tem a resposta. Em todos aparece o conselho da fase (`ex.dica`), numa caixa amarela.
+- Funções: `dicaTextoResp`, `aplicarDicaResp`, `comprarDica`, `htmlDicaMoeda` (`js/motor/trilha.js`). A questão repetida depois de um erro mantém a dica já paga (não cobra de novo). Estilos em `css/novo.css`. `sw.js`: `pokemath-v18`.
+- Limite diário de tentativas: está **desligado** por enquanto (`SEM_LIMITE_TENTATIVAS=true` em `js/conteudo/matriz.js`); voltar para `false` antes de entregar às crianças.

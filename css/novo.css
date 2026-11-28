@@ -126,3 +126,21 @@ nav button{padding:10px 1px;font-size:.7rem}
 .visSvg svg{display:block;margin:0 auto;width:100%;max-width:230px;height:auto}
 .visSvg.relogio svg{max-width:190px}
 .visSvg.dinheiro svg{max-width:340px}
+
+/* ordenar números (Comparar, Ouro) */
+.ordGrade{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0}
+.ordNum{font:inherit;font-size:1.25rem;font-weight:800;min-width:84px;min-height:52px;padding:8px 14px;border-radius:14px;border:2px solid var(--borda,#c9d3e6);background:#fff;cursor:pointer}
+.ordNum:disabled{opacity:.35;cursor:default}
+.ordFila{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;min-height:52px;padding:8px;border-radius:14px;background:#eef3ff;border:2px dashed #9db4e8;margin:8px 0}
+.ordPick{font-weight:800;font-size:1.15rem;padding:6px 10px;border-radius:10px;background:#fff;border:2px solid #4a7bd8}
+.ordSep{opacity:.5;font-weight:800}
+.ordVazio{opacity:.55;font-size:.95rem}
+.ordAcoes{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+.rel.d{text-transform:none}
+
+/* 🪙 Dica da resposta */
+.dicaLinha{display:flex;justify-content:center;margin:8px 0}
+.dicaMoeda{font:inherit;font-weight:800;font-size:.95rem;padding:8px 14px;border-radius:999px;border:2px solid #d9a400;background:#fff6d6;color:#6b4e00;cursor:pointer}
+.dicaMoeda:disabled{opacity:.45;cursor:default}
+.dicaPaga{margin:6px 0 10px;padding:10px 12px;border-radius:12px;background:#fff6d6;border:2px solid #d9a400;font-size:.95rem;text-align:left}
+.op:disabled{opacity:.3;text-decoration:line-through}

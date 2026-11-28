@@ -172,16 +172,44 @@ function verificarOrd(){
   if(O.fila.length!==ex.nums.length)return;
   responderFase(O.fila.every((i,k)=>ex.nums[i]===ex.ordemCerta[k])?1:0);
 }
+/* ---- 🪙 Dica da resposta: custa PRECO_DICA moedas, uma compra por questão; não conta como erro (medalha e Pokémon não mudam) ---- */
+const PRECO_DICA=3;
+function dicaTextoResp(ex){
+  const base=ex.dica||"Pense com calma, passo a passo.";
+  const n=ex.resposta!=null?String(ex.resposta).length:0;
+  const ini=ex.tipo==="escolha"?"Tirei 2 opções que não são a resposta. ":ex.tipo==="relacionar"?"Já liguei um par certo para você. ":ex.tipo==="ordenar"?"Já coloquei o próximo número da ordem certa na fila. ":`A resposta tem ${n} ${n===1?"algarismo":"algarismos"}. `;
+  return ini+base;
+}
+function aplicarDicaResp(ex){
+  if(ex.tipo==="escolha"){const erradas=ex.opcoes.filter(o=>o!==ex.resposta);ex.elim=embaralhar(erradas).slice(0,2)}
+  else if(ex.tipo==="relacionar"){
+    const L=ex.lig||(ex.lig={sel:null,map:{}}),certo=i=>L.map[i]!=null&&ex.direita[L.map[i]]===ex.pares[i].d;
+    const i=ex.pares.findIndex((_,k)=>!certo(k));if(i>=0){
+      const dono=j=>Object.keys(L.map).find(k=>L.map[k]===j),j=ex.direita.findIndex((d,jj)=>d===ex.pares[i].d&&(dono(jj)==null||!certo(+dono(jj))));
+      if(j>=0){const o=dono(j);if(o!=null)delete L.map[o];L.map[i]=j;L.sel=null}}}
+  else if(ex.tipo==="ordenar"){
+    const O=ex.ord||(ex.ord={fila:[]});let k=0;while(k<O.fila.length&&ex.nums[O.fila[k]]===ex.ordemCerta[k])k++;
+    O.fila=O.fila.slice(0,k);if(k<ex.nums.length-1)O.fila.push(ex.nums.findIndex((v,i)=>v===ex.ordemCerta[k]&&!O.fila.includes(i)))}
+}
+function comprarDica(){
+  const s=FS.ses;if(!s||s.estado!=="pergunta")return;const ex=s.fila[0];
+  if(ex.dicaPaga||S.coins<PRECO_DICA)return;
+  S.coins-=PRECO_DICA;aplicarDicaResp(ex);ex.dicaPaga=dicaTextoResp(ex);save();bip([880,1100]);render();
+}
+function htmlDicaMoeda(ex){
+  const pode=!ex.dicaPaga&&S.coins>=PRECO_DICA;
+  return `<div class="dicaLinha"><button id="bt-dica" class="dicaMoeda" ${pode?"":"disabled"} onclick="comprarDica()" aria-label="Dica da resposta, custa ${PRECO_DICA} moedas">🪙 Dica da resposta · ${PRECO_DICA}</button></div>${ex.dicaPaga?`<div id="dica-paga" class="dicaPaga">🪙 <b>Dica:</b> ${ex.dicaPaga}</div>`:""}`;
+}
 function htmlResposta(ex){
   if(ex.tipo==="ordenar")return htmlOrdenar(ex);
-  if(ex.tipo==="escolha")return `<div class="ops">${ex.opcoes.map(o=>`<button class="op" onclick="responderFase(${o})">${o}</button>`).join("")}</div>`;
+  if(ex.tipo==="escolha")return `<div class="ops">${ex.opcoes.map(o=>`<button class="op" ${(ex.elim||[]).includes(o)?"disabled":""} onclick="responderFase(${o})">${o}</button>`).join("")}</div>`;
   if(ex.tipo==="relacionar")return htmlRelacionar(ex);
   return `<input id="resp" type="number" inputmode="numeric" autocomplete="off" aria-label="${ex.tipo==="lacuna"?"Número que falta":"Sua resposta"}" onkeydown="if(event.key==='Enter')responderFase($('#resp').value)"><button class="grande" onclick="responderFase($('#resp').value)">${ex.tipo==="lacuna"?"Completar":"Verificar"}</button>`;
 }
 function htmlExerc(){
   const s=FS.ses,ex=s.fila[0],pct=Math.round(s.feitas/s.total*100);
   const vidas=`<span class="vidas" aria-label="${s.vidas} vidas">${"❤️".repeat(s.vidas)}${"🖤".repeat(VIDAS_NIVEL-s.vidas)}</span>`;
-  const resp=s.estado==="pergunta"?htmlResposta(ex):"";
+  const resp=s.estado==="pergunta"?htmlDicaMoeda(ex)+htmlResposta(ex):"";
   const dica=s.estado==="pergunta"?botaoLampada("abrirLampadaFase()"):"";
   const certa=ex.respTxt||ex.resposta;
   const fb=s.estado==="certo"?`<div class="fb ok">${s.msg}<button class="grande" onclick="continuarSessao()">Continuar</button></div>`
