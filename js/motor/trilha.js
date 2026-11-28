@@ -154,15 +154,14 @@ function svgMoeda(v,cx){
 /* ---- Lote C: tabelas, gráficos, urna, dado, moeda e roleta — desenhos próprios em SVG ---- */
 const CORB={azul:"#3b82f6",vermelha:"#ef4444",verde:"#22b05a",amarela:"#f5c518"};
 const TINTA="#16224a";
-/* carinha de Pokémon (orelhas, olhos e sorriso) na cor do bichinho; t = tamanho */
-function svgIconePk(cor,x,y,t,attr){
-  const r=t/2,cx=x+r,cy=y+r+t*.08,f=(a,b)=>`${(cx+a*r).toFixed(1)},${(cy+b*r).toFixed(1)}`;
-  return `<g ${attr||""}><polygon points="${f(-.85,-.3)} ${f(-.7,-1.15)} ${f(-.2,-.8)}" fill="${cor}" stroke="${TINTA}" stroke-width="1.3" stroke-linejoin="round"/><polygon points="${f(.85,-.3)} ${f(.7,-1.15)} ${f(.2,-.8)}" fill="${cor}" stroke="${TINTA}" stroke-width="1.3" stroke-linejoin="round"/>`+
-    `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(r*.95).toFixed(1)}" fill="${cor}" stroke="${TINTA}" stroke-width="1.5"/>`+
-    `<circle cx="${(cx-r*.35).toFixed(1)}" cy="${(cy-r*.1).toFixed(1)}" r="${(r*.13).toFixed(1)}" fill="${TINTA}"/><circle cx="${(cx+r*.35).toFixed(1)}" cy="${(cy-r*.1).toFixed(1)}" r="${(r*.13).toFixed(1)}" fill="${TINTA}"/>`+
-    `<path d="M${(cx-r*.3).toFixed(1)} ${(cy+r*.3).toFixed(1)} Q${cx.toFixed(1)} ${(cy+r*.6).toFixed(1)} ${(cx+r*.3).toFixed(1)} ${(cy+r*.3).toFixed(1)}" fill="none" stroke="${TINTA}" stroke-width="1.3" stroke-linecap="round"/></g>`;
+/* imagem oficial do Pokémon (arquivo em img/pokemon/); aceita o nome ("Pikachu") ou a cor do bichinho; t = tamanho */
+function imgPk(q){const p=PKS.find(x=>x.nome===q||x.cor===q);return p?p.img:null}
+function svgIconePk(q,x,y,t,attr){
+  const im=imgPk(q);
+  return im?`<g ${attr||""}><image href="${im}" x="${x}" y="${y}" width="${t}" height="${t}" preserveAspectRatio="xMidYMid meet"/></g>`
+    :`<g ${attr||""}><circle cx="${x+t/2}" cy="${y+t/2}" r="${t/2-1}" fill="${/^#/.test(q)?q:"#ddd"}" stroke="${TINTA}" stroke-width="1.4"/></g>`;
 }
-const svgIconeSolo=cor=>`<svg viewBox="0 0 26 26" role="img" aria-label="ícone" class="iconeSvg">${svgIconePk(cor,2,2,22)}</svg>`;
+const svgIconeSolo=q=>`<svg viewBox="0 0 26 26" role="img" aria-label="ícone" class="iconeSvg">${svgIconePk(q,1,1,24)}</svg>`;
 function geoTabela(v){
   const W=320,n=v.cols.length,c0=n===2?150:112,cw=(W-16-c0)/(n-1),tH=26,hH=28,rH=28,xs=[8,8+c0],ws=[c0];
   for(let j=2;j<n;j++)xs.push(xs[j-1]+cw);for(let j=1;j<n;j++)ws.push(cw);
@@ -173,35 +172,35 @@ function svgTabela(v){
   const cab=v.cols.map((c,j)=>`<rect x="${g.xs[j].toFixed(1)}" y="${g.tH}" width="${g.ws[j].toFixed(1)}" height="${g.hH}" fill="${TINTA}" stroke="#fff" stroke-width="1"/><text x="${(g.xs[j]+g.ws[j]/2).toFixed(1)}" y="${g.tH+19}" text-anchor="middle" font-size="12.5" font-weight="800" fill="#fff">${c}</text>`).join("");
   const lin=v.linhas.map((l,i)=>{const y=g.y(i),pk=PKS.find(p=>p.nome===l[0]),bg=i%2?"#fff":"#fff6d6";
     return `<g data-linha="${i}"><rect x="8" y="${y}" width="${g.W-16}" height="${g.rH}" fill="${bg}" stroke="${TINTA}" stroke-width="1.5"/>`+
-      (pk?svgIconePk(pk.cor,14,y+4,20):"")+`<text x="${pk?40:14}" y="${y+19}" font-size="13.5" font-weight="700" fill="${TINTA}">${l[0]}</text>`+
+      (pk?svgIconePk(pk.nome,12,y+1,26):"")+`<text x="${pk?42:14}" y="${y+19}" font-size="13.5" font-weight="700" fill="${TINTA}">${l[0]}</text>`+
       l.slice(1).map((x,j)=>`<line x1="${g.xs[j+1].toFixed(1)}" y1="${y}" x2="${g.xs[j+1].toFixed(1)}" y2="${y+g.rH}" stroke="${TINTA}" stroke-width="1.5"/><text data-celula="${i},${j}" x="${(g.xs[j+1]+g.ws[j+1]/2).toFixed(1)}" y="${y+20}" text-anchor="middle" font-size="16" font-weight="800" fill="${TINTA}">${x}</text>`).join("")+`</g>`}).join("");
   return `<svg viewBox="0 0 ${g.W} ${g.H}" role="img" aria-label="tabela: ${v.titulo}" class="tabelaSvg"><text x="${g.W/2}" y="18" text-anchor="middle" font-size="14" font-weight="800" fill="${TINTA}">${v.titulo}</text>${cab}${lin}</svg>`;
 }
 function svgPictograma(v){
   const n=v.itens.length,H=34+n*30+30,lin=v.itens.map((it,i)=>{const y=34+i*30;
     return `<g data-linha="${i}"><text x="8" y="${y+20}" font-size="13" font-weight="700" fill="${TINTA}">${it.nome}</text>`+
-      Array.from({length:it.n},(_,k)=>svgIconePk(it.cor,100+k*26,y+1,22,'data-icone="1"')).join("")+`<line x1="8" y1="${y+29}" x2="312" y2="${y+29}" stroke="#cfd6ee" stroke-width="1"/></g>`}).join("");
+      Array.from({length:it.n},(_,k)=>svgIconePk(it.nome,100+k*26,y+1,26,'data-icone="1"')).join("")+`<line x1="8" y1="${y+29}" x2="312" y2="${y+29}" stroke="#cfd6ee" stroke-width="1"/></g>`}).join("");
   return `<svg viewBox="0 0 320 ${H}" role="img" aria-label="pictograma: ${v.titulo}" class="graficoSvg pictoSvg"><text x="160" y="20" text-anchor="middle" font-size="14" font-weight="800" fill="${TINTA}">${v.titulo}</text>${lin}`+
-    `${svgIconePk("#ddd",100,H-27,18)}<text x="124" y="${H-12}" font-size="12.5" font-weight="800" fill="${TINTA}">= cada ícone vale ${v.vale}</text></svg>`;
+    `<g data-pokebola="1"><circle cx="109" cy="${H-18}" r="9" fill="#fff" stroke="${TINTA}" stroke-width="1.6"/><path d="M100 ${H-18} A9 9 0 0 1 118 ${H-18} Z" fill="#ef4444" stroke="${TINTA}" stroke-width="1.6"/><circle cx="109" cy="${H-18}" r="3" fill="#fff" stroke="${TINTA}" stroke-width="1.4"/></g><text x="124" y="${H-12}" font-size="12.5" font-weight="800" fill="${TINTA}">= cada ícone vale ${v.vale}</text></svg>`;
 }
 function geoColunas(v){
   const n=v.itens.length,left=44,right=312,top=34,base=166,scale=(base-top)/v.max,slot=(right-left)/n,bw=Math.min(54,slot*.6);
-  return{W:320,H:214,left,right,top,base,scale,slot,bw,x:i=>left+slot*i+(slot-bw)/2,y:q=>base-q*scale};
+  return{W:320,H:240,left,right,top,base,scale,slot,bw,x:i=>left+slot*i+(slot-bw)/2,y:q=>base-q*scale};
 }
 function svgColunas(v){
   const g=geoColunas(v),ticks=[];for(let t=0;t<=v.max;t+=v.passo)ticks.push(t);
   const grade=ticks.map(t=>`<line x1="${g.left}" y1="${g.y(t).toFixed(1)}" x2="${g.right}" y2="${g.y(t).toFixed(1)}" stroke="${t?"#cfd6ee":TINTA}" stroke-width="${t?1:2}"/><text data-tick="1" x="${g.left-6}" y="${(g.y(t)+4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="${TINTA}">${t}</text>`).join("");
-  const bar=v.itens.map((it,i)=>`<rect data-barra="${i}" x="${g.x(i).toFixed(1)}" y="${g.y(it.n).toFixed(2)}" width="${g.bw.toFixed(1)}" height="${(it.n*g.scale).toFixed(2)}" fill="${it.cor}" stroke="${TINTA}" stroke-width="2" rx="2" style="transform-box:fill-box;transform-origin:bottom"/><text x="${(g.x(i)+g.bw/2).toFixed(1)}" y="${g.base+17}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${TINTA}">${it.nome}</text>`).join("");
+  const bar=v.itens.map((it,i)=>`<rect data-barra="${i}" x="${g.x(i).toFixed(1)}" y="${g.y(it.n).toFixed(2)}" width="${g.bw.toFixed(1)}" height="${(it.n*g.scale).toFixed(2)}" fill="${it.cor}" stroke="${TINTA}" stroke-width="2" rx="2" style="transform-box:fill-box;transform-origin:bottom"/><text x="${(g.x(i)+g.bw/2).toFixed(1)}" y="${g.base+42}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${TINTA}">${it.nome}</text>${svgIconePk(it.nome,+(g.x(i)+g.bw/2-13).toFixed(1),g.base+4,26)}`).join("");
   return `<svg viewBox="0 0 ${g.W} ${g.H}" role="img" aria-label="gráfico de colunas: ${v.titulo}" class="graficoSvg colunasSvg"><text x="${g.W/2}" y="18" text-anchor="middle" font-size="14" font-weight="800" fill="${TINTA}">${v.titulo}</text>${grade}${bar}</svg>`;
 }
 function geoBarras(v){
-  const n=v.itens.length,left=84,right=308,top=30,rowH=34,scale=(right-left)/v.max;
+  const n=v.itens.length,left=112,right=308,top=30,rowH=34,scale=(right-left)/v.max;
   return{W:320,H:top+n*rowH+32,left,right,top,rowH,scale,base:top+n*rowH,x:q=>left+q*scale,y:i=>top+i*rowH+6};
 }
 function svgBarras(v){
   const g=geoBarras(v),ticks=[];for(let t=0;t<=v.max;t+=v.passo)ticks.push(t);
   const grade=ticks.map(t=>`<line x1="${g.x(t).toFixed(1)}" y1="${g.top}" x2="${g.x(t).toFixed(1)}" y2="${g.base}" stroke="${t?"#cfd6ee":TINTA}" stroke-width="${t?1:2}"/><text data-tick="1" x="${g.x(t).toFixed(1)}" y="${g.base+15}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${TINTA}">${t}</text>`).join("");
-  const bar=v.itens.map((it,i)=>`<rect data-barra="${i}" x="${g.left}" y="${g.y(i)}" width="${(it.n*g.scale).toFixed(2)}" height="22" fill="${it.cor}" stroke="${TINTA}" stroke-width="2" rx="2" style="transform-box:fill-box;transform-origin:left"/><text x="78" y="${g.y(i)+16}" text-anchor="end" font-size="12" font-weight="700" fill="${TINTA}">${it.nome}</text>`).join("");
+  const bar=v.itens.map((it,i)=>`<rect data-barra="${i}" x="${g.left}" y="${g.y(i)}" width="${(it.n*g.scale).toFixed(2)}" height="22" fill="${it.cor}" stroke="${TINTA}" stroke-width="2" rx="2" style="transform-box:fill-box;transform-origin:left"/><text x="106" y="${g.y(i)+16}" text-anchor="end" font-size="12" font-weight="700" fill="${TINTA}">${it.nome}</text>${svgIconePk(it.nome,4,g.y(i)-2,26)}`).join("");
   return `<svg viewBox="0 0 ${g.W} ${g.H}" role="img" aria-label="gráfico de barras: ${v.titulo}" class="graficoSvg barrasSvg"><text x="${g.W/2}" y="18" text-anchor="middle" font-size="14" font-weight="800" fill="${TINTA}">${v.titulo}</text>${grade}${bar}</svg>`;
 }
 /* urna: as bolinhas ficam em fileiras de até 6, de baixo para cima */
@@ -212,9 +211,16 @@ function svgUrna(bolas){
   return `<svg viewBox="0 0 220 176" role="img" aria-label="urna com bolinhas" class="urnaSvg"><path d="M32 40 L188 40 L204 150 Q205 166 190 166 L30 166 Q15 166 16 150 Z" fill="#e8f1ff" stroke="${TINTA}" stroke-width="4" stroke-linejoin="round"/><rect x="24" y="28" width="172" height="14" rx="6" fill="#ffd23f" stroke="${TINTA}" stroke-width="3.5"/>${bs}</svg>`;
 }
 const PTS_DADO={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
-function svgDado(n){
+/* uma face do dado (caixa de 120 × 120), com os pontinhos; attr/transform opcionais */
+function faceDado(n,attr){
   const pts=(PTS_DADO[n]||[4]).map(i=>`<circle data-ponto="${i}" cx="${35+(i%3)*25}" cy="${35+Math.floor(i/3)*25}" r="8" fill="${TINTA}"/>`).join("");
-  return `<svg viewBox="0 0 120 120" role="img" aria-label="dado" class="dadoSvg"><rect x="10" y="10" width="100" height="100" rx="18" fill="#fff" stroke="${TINTA}" stroke-width="5"/>${pts}</svg>`;
+  return `<g ${attr||""}><rect x="10" y="10" width="100" height="100" rx="18" fill="#fff" stroke="${TINTA}" stroke-width="5"/>${pts}</g>`;
+}
+function svgDado(n){return `<svg viewBox="0 0 120 120" role="img" aria-label="dado" class="dadoSvg">${faceDado(n)}</svg>`}
+/* o dado aberto: as 6 faces (1 a 6), 3 em cima e 3 embaixo */
+function svgDadoTodos(){
+  const f=[1,2,3,4,5,6].map((n,i)=>faceDado(n,`data-face="${n}" transform="translate(${(i%3)*100},${Math.floor(i/3)*100}) scale(.8)"`)).join("");
+  return `<svg viewBox="0 0 300 200" role="img" aria-label="as 6 faces do dado: 1, 2, 3, 4, 5 e 6" class="dadosSvg">${f}</svg>`;
 }
 function svgMoedaSorte(){
   return `<svg viewBox="0 0 260 126" role="img" aria-label="moeda com cara e coroa" class="moedaSvg">`+
@@ -246,7 +252,7 @@ function visEstatico(v){
   if(v.tipo==="colunas")return `<div class="visSvg graf">${svgColunas(v)}</div>`;
   if(v.tipo==="barras")return `<div class="visSvg graf">${svgBarras(v)}</div>`;
   if(v.tipo==="urna")return `<div class="visSvg urna">${svgUrna(v.bolas)}</div>`;
-  if(v.tipo==="dado")return `<div class="visSvg dado">${svgDado(v.face)}</div>`;
+  if(v.tipo==="dado")return `<div class="visSvg dado">${svgDadoTodos()}</div>`;
   if(v.tipo==="moeda")return `<div class="visSvg moeda">${svgMoedaSorte()}</div>`;
   if(v.tipo==="roleta")return `<div class="visSvg roleta">${svgRoleta(v.cores)}</div>`;
   if(v.tipo==="conta"){const a=String(v.a),b=String(v.b),w=Math.max(a.length,b.length)+1;
@@ -295,7 +301,7 @@ const PRECO_DICA=3;
 function dicaTextoResp(ex){
   const base=ex.dica||"Pense com calma, passo a passo.";
   const n=ex.resposta!=null?String(ex.resposta).length:0;
-  const ini=ex.tipo==="escolha"?"Tirei 2 opções que não são a resposta. ":ex.tipo==="relacionar"?"Já liguei um par certo para você. ":ex.tipo==="ordenar"?"Já coloquei o próximo número da ordem certa na fila. ":`A resposta tem ${n} ${n===1?"algarismo":"algarismos"}. `;
+  const ini=ex.tipo==="escolha"?"Tirei 2 opções que não são a resposta. ":ex.tipo==="relacionar"?"Já liguei um par certo para você. ":ex.tipo==="ordenar"?"Já coloquei o próximo número da ordem certa na fila. ":ex.din?"Escreva em reais, com vírgula e dois algarismos depois dela (reais, vírgula, centavos). ":`A resposta tem ${n} ${n===1?"algarismo":"algarismos"}. `;
   return ini+base;
 }
 function aplicarDicaResp(ex){
@@ -322,6 +328,7 @@ function htmlResposta(ex){
   if(ex.tipo==="ordenar")return htmlOrdenar(ex);
   if(ex.tipo==="escolha")return `<div class="ops">${ex.opcoes.map(o=>`<button class="op" ${(ex.elim||[]).includes(o)?"disabled":""} onclick="responderFase(${o})">${(ex.rotulos&&ex.rotulos[o])||o}</button>`).join("")}</div>`;
   if(ex.tipo==="relacionar")return htmlRelacionar(ex);
+  if(ex.din)return `<div class="dinResp">${ex.tipo==="lacuna"?"":`<span class="dinRs">R$</span>`}<input id="resp" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="${ex.tipo==="lacuna"?"Valor que falta, em reais, com vírgula":"Sua resposta, em reais, com vírgula"}" onkeydown="if(event.key==='Enter')responderFase($('#resp').value)"></div><button class="grande" onclick="responderFase($('#resp').value)">${ex.tipo==="lacuna"?"Completar":"Verificar"}</button>`;
   return `<input id="resp" type="number" inputmode="numeric" autocomplete="off" aria-label="${ex.tipo==="lacuna"?"Número que falta":"Sua resposta"}" onkeydown="if(event.key==='Enter')responderFase($('#resp').value)"><button class="grande" onclick="responderFase($('#resp').value)">${ex.tipo==="lacuna"?"Completar":"Verificar"}</button>`;
 }
 function htmlExerc(){
@@ -341,7 +348,7 @@ function htmlExerc(){
 }
 function responderFase(v){
   const s=FS.ses;if(!s||s.estado!=="pergunta"||v===""||v==null)return;
-  const ex=s.fila[0],certo=Number(v)===ex.resposta;
+  const ex=s.fila[0],certo=(ex.din&&ex.tipo!=="escolha"?parseDin(v):Number(v))===ex.resposta;      /* dinheiro digitado: 2,30 → 230 centavos */
   if(certo){
     if(!ex.rep){s.acertosPrimeira++;const g=ganhar(S.cfg.moedaAcerto);s.moedas+=g;ganharXP(1);efeito(g>0?"+"+g+" 🪙":"⭐")}
     s.feitas++;conta();bip([660,880]);s.estado="certo";s.msg=`<b>${pick(["Mandou bem!","Isso aí!","Acertou!","Boa, treinadora!"])}</b> `;

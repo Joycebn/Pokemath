@@ -168,13 +168,14 @@ function montarFam(fams,d,tipo,dica,tituloRel){
   const novo=()=>umDe(fams)(d),vis=it=>it.visual?JSON.stringify(it.visual):"";
   if(tipo==="relacionar"){
     const L=[],rs=new Set(),es=new Set();let g=0;
-    while(L.length<3&&g++<400){const it=novo();if(!it.e||rs.has(it.r)||es.has(it.e))continue;rs.add(it.r);es.add(it.e);L.push({e:it.e,d:String(it.r)})}
+    while(L.length<3&&g++<400){const it=novo(),rv=it.rt||String(it.r);if(!it.e||rs.has(rv)||es.has(it.e))continue;rs.add(rv);es.add(it.e);L.push({e:it.e,d:rv})}
     const respTxt=L.map(p=>`${p.e} = ${p.d}`).join("; ");
     return{tipo:"relacionar",enunciado:tituloRel,pares:L,direita:embaralhar(L.map(p=>p.d)),resposta:1,respTxt,chave:respTxt,dica,erro:`As ligações certas são: ${respTxt}.`};
   }
   const it=novo(),base={tipo,resposta:it.r,dica,erro:it.erro};if(it.visual)base.visual=it.visual;
+  if(it.din){base.din=true;base.respTxt=Rs(it.r)}      /* resposta em dinheiro: guardada em centavos, mostrada como R$ 2,30 */
   if(tipo==="digitar")return{...base,enunciado:it.q,chave:it.q+vis(it)};
-  if(tipo==="escolha")return{...base,enunciado:it.q,opcoes:opcoesPos(it.r,it.alt),chave:"e"+it.q+vis(it)};
+  if(tipo==="escolha"){const ops=it.din?opcoesDin(it.r,it.alt):opcoesPos(it.r,it.alt);if(it.din)base.rotulos=Object.fromEntries(ops.map(o=>[o,Rs(o)]));return{...base,enunciado:it.q,opcoes:ops,chave:"e"+it.q+vis(it)}}
   return{...base,enunciado:it.lac,chave:"l"+it.lac+vis(it)};
 }
 /* geometria: vértices de cada figura plana (compartilhado com o desenho e com a animação) */
@@ -237,26 +238,75 @@ function montarTempo(d,tipo,nivel){
   const fams=d>=3?[famTempoConv,famTempoConv,famTempoMeia,famTempoHoraMeia,famRelogioHora,famRelogioMin,famRelogioMin,famRelogioFalta]:[famTempoConv,famTempoConv,famTempoMeia,famRelogioHora,famRelogioMin,famRelogioMin];
   return montarFam(fams,d,tipo,"Lembre: 1 hora = 60 minutos, 1 dia = 24 horas, 1 semana = 7 dias e 1 ano = 12 meses. No relógio, cada número do ponteiro grande vale 5 minutos.","Ligue cada tempo ao valor certo.");
 }
-/* dinheiro (só números inteiros: reais inteiros ou centavos) */
-function famDinConvR(d){const n=rnd(1,d>=3?40:9),r=n*100;
+/* dinheiro: em reais com vírgula (R$ 2,30). Dentro do programa o valor é guardado em CENTAVOS (230); só o texto mostra a vírgula. */
+const Rs=c=>"R$ "+Math.floor(c/100)+","+String(c%100).padStart(2,"0");
+/* lê o que a criança digitou: 2,30 · 2.30 · R$ 2,30 · 3,5 · 2  →  centavos (230, 230, 230, 350, 200); texto inválido → NaN */
+function parseDin(v){
+  const s=String(v==null?"":v).replace(/R\$/gi,"").replace(/\s/g,"");
+  if(!/^\d+([.,]\d{1,2})?$/.test(s))return NaN;
+  const[a,b=""]=s.split(/[.,]/);return +a*100+ +(b+"0").slice(0,2);
+}
+let NIVEL_DIN="bronze";   /* Bronze: reais inteiros e meios (R$ 2,00 · 3,50) · Prata: de 10 em 10 centavos (R$ 2,30) · Ouro: de 5 em 5 centavos (R$ 4,35) */
+const passoDin=()=>NIVEL_DIN==="bronze"?50:NIVEL_DIN==="prata"?10:5;
+const ehOuroDin=()=>NIVEL_DIN==="ouro";
+/* valor sorteado, em centavos: reais de lo a hi + centavos no passo do nível */
+function valDin(lo,hi){const p=passoDin(),v=rnd(lo,hi)*100+p*rnd(0,100/p-1);return v||p}
+function centDin(){const p=passoDin();return p*rnd(1,100/p-1)}
+function opcoesDin(c,alt){
+  const p=passoDin(),s=new Set([c]),ok=x=>Number.isInteger(x)&&x>0&&x%p===0&&x!==c;
+  for(const x of embaralhar([...(alt||[]),c+p,c-p,c+2*p,c-2*p,c+100,c-100,c+10*p]))if(s.size<4&&ok(x))s.add(x);
+  let k=3;while(s.size<4)s.add(c+k++*p);return embaralhar([...s]);
+}
+const MOEDAS_DIN=()=>NIVEL_DIN==="bronze"?[50,100]:NIVEL_DIN==="prata"?[10,50,100]:[5,10,25,50,100];
+const NOTAS_DIN=()=>NIVEL_DIN==="bronze"?[2,5,10]:NIVEL_DIN==="prata"?[2,5,10,20]:[5,10,20,50,100];
+const COISAS_DIN=["um lápis","uma borracha","um caderno","uma caneta","uma régua","um estojo","uma cola","um apontador"];
+const dinItens=(n)=>embaralhar(COISAS_DIN).slice(0,n);
+function famDinConvR(){const n=rnd(1,ehOuroDin()?40:9),r=n*100;
   return{q:`Quantos centavos há em ${n} ${plu(n,"real","reais")}?`,lac:`R$ ${n} = ___ centavos`,e:`R$ ${n} em centavos`,r,alt:[n,r*10,r+10,r+100],erro:`R$ 1 = 100 centavos. ${n} × 100 = ${r} centavos.`}}
-function famDinConvC(d){const n=rnd(1,d>=3?40:9);
-  return{q:`Quantos reais há em ${n*100} centavos?`,lac:`${n*100} centavos = R$ ___`,e:`${n*100} centavos em reais`,r:n,alt:[n*10,n+1,n*100,n-1],erro:`100 centavos formam R$ 1. ${n*100} ÷ 100 = ${n}.`}}
-function famDinSoma(d){const a=rnd(d>=3?10:2,d>=3?49:9),b=rnd(d>=3?10:2,d>=3?49:9);
-  return{q:`Ana comprou um lápis de R$ ${a} e uma borracha de R$ ${b}. Quantos reais ela gastou?`,lac:`R$ ${a} + R$ ${b} = R$ ___`,e:`R$ ${a} + R$ ${b}`,r:a+b,alt:[a+b+10,a+b-10,Math.abs(a-b),a+b+1],erro:`Some os valores: ${a} + ${b} = ${a+b}. Ela gastou R$ ${a+b}.`}}
-function famDinTroco(d){const p=umDe(d>=3?[20,50,100]:[10,20]),c=p===10?rnd(1,9):p===20?rnd(11,19):rnd(Math.floor(p/4),p-1);
-  return{q:`Paguei R$ ${p} por algo que custa R$ ${c}. Qual é o troco, em reais?`,lac:`Paguei R$ ${p} e custava R$ ${c}: troco de R$ ___`,e:`troco de R$ ${p} para R$ ${c}`,r:p-c,alt:[c,p+c,p-c+10,p-c-1],erro:`Conte do preço até o valor pago: ${c} + ${p-c} = ${p}. Ou subtraia: ${p} − ${c} = ${p-c}. O troco é R$ ${p-c}.`}}
-function famDinTrocoC(d){const c=umDe(d>=3?[5,15,20,35,40,55,60,65,85,95]:[10,20,30,40,60,70,80,90]);
+function famDinConvC(){const c=valDin(1,ehOuroDin()?30:9);
+  return{q:`Quanto é ${c} centavos em reais?`,lac:`${c} centavos = R$ ___`,e:`${c} centavos em reais`,r:c,din:true,rt:Rs(c),alt:[c*10,c+100,c-100,Math.floor(c/10)],
+    erro:`100 centavos formam R$ 1. ${c} centavos = ${Math.floor(c/100)} ${plu(Math.floor(c/100),"real","reais")} e ${c%100} centavos, que se escreve ${Rs(c)}.`}}
+function famDinCentTot(){const c=valDin(1,ehOuroDin()?20:5);
+  return{q:`${Rs(c)} equivalem a quantos centavos?`,lac:`${Rs(c)} = ___ centavos`,e:`${Rs(c)} em centavos`,r:c,alt:[Math.floor(c/100),c*10,c+100,c-100],
+    erro:`${Rs(c)} são ${Math.floor(c/100)} ${plu(Math.floor(c/100),"real","reais")} e ${c%100} centavos: ${Math.floor(c/100)} × 100 + ${c%100} = ${c} centavos.`}}
+function famDinEscreve(){const r=rnd(1,ehOuroDin()?30:9),c=centDin(),v=r*100+c;
+  return{q:`Como se escreve ${r} ${plu(r,"real","reais")} e ${c} centavos em dinheiro?`,lac:`${r} ${plu(r,"real","reais")} e ${c} centavos = R$ ___`,e:`${r} ${plu(r,"real","reais")} e ${c} centavos em dinheiro`,r:v,din:true,rt:Rs(v),alt:[r*100+c/5,c*100+r,v+100,v-100],
+    erro:`Os reais ficam antes da vírgula e os centavos depois: ${r} ${plu(r,"real","reais")} e ${c} centavos = ${Rs(v)}.`}}
+function famDinSomaR(){const[x,y]=dinItens(2),a=valDin(1,ehOuroDin()?20:NIVEL_DIN==="prata"?9:4),b=valDin(1,ehOuroDin()?20:NIVEL_DIN==="prata"?9:4),r=a+b;
+  return{q:`Ana comprou ${x} de ${Rs(a)} e ${y} de ${Rs(b)}. Quanto ela gastou?`,lac:`${Rs(a)} + ${Rs(b)} = R$ ___`,e:`${Rs(a)} + ${Rs(b)}`,r,din:true,rt:Rs(r),alt:[r+100,r-100,Math.abs(a-b)],
+    erro:`Some alinhando a vírgula: ${Rs(a)} + ${Rs(b)} = ${Rs(r)}. Ela gastou ${Rs(r)}.`}}
+function famDinCompra(){const [x,y,z]=dinItens(3),a=valDin(1,12),b=valDin(1,12),c=valDin(1,12),r=a+b+c;
+  return{q:`Ana comprou ${x} de ${Rs(a)}, ${y} de ${Rs(b)} e ${z} de ${Rs(c)}. Quanto ela gastou?`,lac:`${Rs(a)} + ${Rs(b)} + ${Rs(c)} = R$ ___`,e:`${Rs(a)} + ${Rs(b)} + ${Rs(c)}`,r,din:true,rt:Rs(r),alt:[r+100,r-100,a+b],
+    erro:`Some os três valores, com a vírgula alinhada: ${Rs(a)} + ${Rs(b)} + ${Rs(c)} = ${Rs(r)}.`}}
+function famDinTrocoR(){const p=umDe(NIVEL_DIN==="bronze"?[5,10]:NIVEL_DIN==="prata"?[10,20]:[20,50,100]),c=valDin(1,p-1),r=p*100-c;
+  return{q:`Paguei com uma nota de ${Rs(p*100)} uma compra de ${Rs(c)}. Qual é o troco?`,lac:`Paguei ${Rs(p*100)} e custava ${Rs(c)}: troco de R$ ___`,e:`troco de ${Rs(p*100)} para ${Rs(c)}`,r,din:true,rt:Rs(r),alt:[c,p*100+c,r+100,r-100],
+    erro:`Conte do preço até o valor pago, ou subtraia: ${Rs(p*100)} − ${Rs(c)} = ${Rs(r)}. O troco é ${Rs(r)}.`}}
+function famDinFalta(){const t=valDin(2,20),f=valDin(1,9),c=t+f;
+  return{q:`Tenho ${Rs(t)} e quero comprar um brinquedo de ${Rs(c)}. Quanto falta?`,lac:`Tenho ${Rs(t)}, quero ${Rs(c)}: faltam R$ ___`,e:`falta de ${Rs(t)} para ${Rs(c)}`,r:f,din:true,rt:Rs(f),alt:[c+t,f+100,f-100,t],
+    erro:`Falta a diferença: ${Rs(c)} − ${Rs(t)} = ${Rs(f)}. Faltam ${Rs(f)}.`}}
+function famDinTrocoC(){const c=umDe(ehOuroDin()?[5,15,20,35,40,55,60,65,85,95]:[10,20,30,40,60,70,80,90]);
   return{q:`Paguei R$ 1 por algo que custa ${c} centavos. Qual é o troco, em centavos?`,lac:`Paguei R$ 1 e custava ${c} centavos: troco de ___ centavos`,e:`troco de R$ 1 para ${c} centavos`,r:100-c,alt:[c,100+c,100-c+10,100-c-10],erro:`R$ 1 = 100 centavos. Então 100 − ${c} = ${100-c} centavos de troco.`}}
-function famDinMoedas(d){const vs=d>=3?[5,10,25,50,100]:[10,50,100],n=rnd(2,d>=3?4:3),it=Array.from({length:n},()=>({k:"moeda",v:umDe(vs)})).sort((a,b)=>b.v-a.v),r=it.reduce((a,x)=>a+x.v,0);
+function famDinMoedas(){const vs=MOEDAS_DIN(),n=rnd(2,ehOuroDin()?4:3),it=Array.from({length:n},()=>({k:"moeda",v:umDe(vs)})).sort((a,b)=>b.v-a.v),r=it.reduce((a,x)=>a+x.v,0);
   return{q:"Quantos centavos há nestas moedas?",lac:"Estas moedas valem ___ centavos.",r,alt:[r+10,r-10,r+5,r+50],visual:{tipo:"dinheiro",itens:it},erro:`Some os valores das moedas: ${it.map(x=>x.v).join(" + ")} = ${r} centavos.`}}
-function famDinNotas(d){const vs=d>=3?[5,10,20,50,100]:[2,5,10],n=rnd(2,d>=3?4:3),it=Array.from({length:n},()=>({k:"nota",v:umDe(vs)})).sort((a,b)=>b.v-a.v),r=it.reduce((a,x)=>a+x.v,0);
-  return{q:"Quantos reais há nestas notas?",lac:"Estas notas valem R$ ___ no total.",r,alt:[r+10,r-10,r+5,r+2],visual:{tipo:"dinheiro",itens:it},erro:`Some os valores das notas: ${it.map(x=>x.v).join(" + ")} = ${r} reais.`}}
-function montarDinheiro(d,tipo){
-  return montarFam([famDinConvR,famDinConvC,famDinSoma,famDinTroco,famDinTrocoC,famDinMoedas,famDinNotas],d,tipo,"R$ 1 = 100 centavos. Para o troco, conte do preço até o valor pago (ou subtraia). Para somar valores, some reais com reais e centavos com centavos.","Ligue cada situação ao valor certo.");
+function famDinMoedasR(){const vs=MOEDAS_DIN(),n=rnd(2,4),it=Array.from({length:n},()=>({k:"moeda",v:umDe(vs)})).sort((a,b)=>b.v-a.v),r=it.reduce((a,x)=>a+x.v,0);
+  return{q:"Quanto dinheiro há nestas moedas?",lac:"Estas moedas valem R$ ___ no total.",r,din:true,rt:Rs(r),alt:[r+50,r-50,r+100],visual:{tipo:"dinheiro",itens:it},
+    erro:`Some os centavos das moedas: ${it.map(x=>x.v).join(" + ")} = ${r} centavos, que é ${Rs(r)}.`}}
+function famDinNotasR(){const vs=NOTAS_DIN(),n=rnd(2,ehOuroDin()?4:3),it=Array.from({length:n},()=>({k:"nota",v:umDe(vs)})).sort((a,b)=>b.v-a.v),s=it.reduce((a,x)=>a+x.v,0);
+  return{q:"Quanto dinheiro há nestas notas?",lac:"Estas notas valem R$ ___ no total.",r:s*100,din:true,rt:Rs(s*100),alt:[s*100+100,s*100-100,s*100+500],visual:{tipo:"dinheiro",itens:it},
+    erro:`Some os valores das notas: ${it.map(x=>x.v).join(" + ")} = ${s} reais, que é ${Rs(s*100)}.`}}
+function famDinMoedasNotas(){const nn=rnd(1,2),nm=rnd(1,3),notas=Array.from({length:nn},()=>({k:"nota",v:umDe(NOTAS_DIN())})).sort((a,b)=>b.v-a.v),moedas=Array.from({length:nm},()=>({k:"moeda",v:umDe(MOEDAS_DIN())})).sort((a,b)=>b.v-a.v),
+    it=[...notas,...moedas],r=notas.reduce((a,x)=>a+x.v*100,0)+moedas.reduce((a,x)=>a+x.v,0),sn=notas.reduce((a,x)=>a+x.v,0),sm=moedas.reduce((a,x)=>a+x.v,0);
+  return{q:"Quanto dinheiro há aqui, somando notas e moedas?",lac:"Aqui há R$ ___ no total.",r,din:true,rt:Rs(r),alt:[r+50,r-50,sn*100,sm],visual:{tipo:"dinheiro",itens:it},
+    erro:`Notas: ${sn} reais = ${Rs(sn*100)}. Moedas: ${sm} centavos = ${Rs(sm)}. Juntando: ${Rs(sn*100)} + ${Rs(sm)} = ${Rs(r)}.`}}
+function montarDinheiro(d,tipo,nivel){
+  NIVEL_DIN=nivel||(d>=3?"ouro":"bronze");
+  const F={bronze:[famDinConvR,famDinConvC,famDinCentTot,famDinEscreve,famDinNotasR,famDinMoedasR,famDinSomaR,famDinTrocoR,famDinMoedas,famDinTrocoC],
+    prata:[famDinConvR,famDinConvC,famDinCentTot,famDinCentTot,famDinEscreve,famDinNotasR,famDinMoedasR,famDinSomaR,famDinSomaR,famDinTrocoR,famDinTrocoR,famDinTrocoC],
+    ouro:[famDinConvR,famDinConvC,famDinCentTot,famDinEscreve,famDinNotasR,famDinMoedasNotas,famDinMoedasNotas,famDinCompra,famDinCompra,famDinFalta,famDinTrocoR,famDinSomaR,famDinTrocoC]}[NIVEL_DIN];
+  return montarFam(F,d,tipo,"R$ 1 = 100 centavos. Em dinheiro, a vírgula separa os reais (antes dela) dos centavos (depois dela). Para somar ou tirar valores, alinhe a vírgula: reais com reais e centavos com centavos. Para o troco, conte do preço até o valor pago.","Ligue cada situação ao valor certo.");
 }
 /* ---------- Lote C: Estatística (tabelas e gráficos) e Probabilidade (acaso). Só números inteiros e palavras. ---------- */
-const PKS=[{nome:"Pikachu",cor:"#f7d02c"},{nome:"Charmander",cor:"#f08030"},{nome:"Squirtle",cor:"#5aa0f0"},{nome:"Bulbasaur",cor:"#5fbf5a"},{nome:"Eevee",cor:"#b0845a"},{nome:"Jigglypuff",cor:"#f49ac2"}];
+const PKS=["Pikachu|#f7d02c","Charmander|#f08030","Squirtle|#5aa0f0","Bulbasaur|#5fbf5a","Eevee|#b0845a","Jigglypuff|#f49ac2"].map(x=>{const[nome,cor]=x.split("|");return{nome,cor,img:"img/pokemon/"+nome.toLowerCase()+".webp"}});
 const DIAS_EST=["Segunda","Terça","Quarta","Quinta"];
 const somaL=a=>a.reduce((x,y)=>x+y,0);
 /* k Pokémon com valores distintos (de lo a hi, multiplicados por passo) */
@@ -370,10 +420,10 @@ function famTotalUrna(d,v){v=v||umDe([urnaLivre,urnaTres])();const r=somaL(v.bol
 function famDifProv(){const v=urnaTres(),ns=v.bolas.map(b=>b.n),a=Math.max(...ns),b=Math.min(...ns),r=a-b;
   return{q:"Quantas bolinhas a mais tem a cor mais provável do que a menos provável?",lac:"A cor mais provável tem ___ bolinhas a mais que a menos provável.",r,alt:[r+1,r-1,a,b],erro:`A mais provável tem ${a} e a menos provável tem ${b}. A diferença é ${a} − ${b} = ${r}.`,visual:v}}
 /* Ouro */
-function famDadoDif(){return{q:"Quantos resultados diferentes podem sair ao jogar um dado?",lac:"Um dado pode dar ___ resultados diferentes.",r:6,alt:[4,5,7,12],erro:"O dado tem 6 faces: 1, 2, 3, 4, 5 e 6. São 6 resultados diferentes.",visual:{tipo:"dado",face:rnd(1,6)}}}
-function famDadoPar(){const par=Math.random()<.5;return{q:`Ao jogar um dado, quantos resultados são ${par?"pares":"ímpares"}?`,lac:`No dado, ___ resultados são ${par?"pares":"ímpares"}.`,r:3,alt:[2,4,6,5],erro:par?"Os pares do dado são 2, 4 e 6: são 3 resultados.":"Os ímpares do dado são 1, 3 e 5: são 3 resultados.",visual:{tipo:"dado",face:rnd(1,6)}}}
+function famDadoDif(){return{q:"Quantos resultados diferentes podem sair ao jogar um dado?",lac:"Um dado pode dar ___ resultados diferentes.",r:6,alt:[4,5,7,12],erro:"O dado tem 6 faces: 1, 2, 3, 4, 5 e 6. São 6 resultados diferentes.",visual:{tipo:"dado"}}}
+function famDadoPar(){const par=Math.random()<.5;return{q:`Ao jogar um dado, quantos resultados são ${par?"pares":"ímpares"}?`,lac:`No dado, ___ resultados são ${par?"pares":"ímpares"}.`,r:3,alt:[2,4,6,5],erro:par?"Os pares do dado são 2, 4 e 6: são 3 resultados.":"Os ímpares do dado são 1, 3 e 5: são 3 resultados.",visual:{tipo:"dado"}}}
 function famDadoCmp(){const mai=Math.random()<.5,k=mai?umDe([2,3,4]):umDe([3,4,5]),r=mai?6-k:k-1,lista=mai?[1,2,3,4,5,6].filter(x=>x>k):[1,2,3,4,5,6].filter(x=>x<k);
-  return{q:`Ao jogar um dado, quantos resultados são ${mai?"maiores":"menores"} que ${k}?`,lac:`No dado, ___ resultados são ${mai?"maiores":"menores"} que ${k}.`,r,alt:[r+1,r-1,6,k],erro:`${mai?"Maiores":"Menores"} que ${k}: ${lista.join(", ")}. São ${r} resultados.`,visual:{tipo:"dado",face:rnd(1,6)}}}
+  return{q:`Ao jogar um dado, quantos resultados são ${mai?"maiores":"menores"} que ${k}?`,lac:`No dado, ___ resultados são ${mai?"maiores":"menores"} que ${k}.`,r,alt:[r+1,r-1,6,k],erro:`${mai?"Maiores":"Menores"} que ${k}: ${lista.join(", ")}. São ${r} resultados.`,visual:{tipo:"dado"}}}
 function famMoeda(){return{q:"Quantos resultados diferentes podem sair ao jogar uma moeda?",lac:"Uma moeda pode dar ___ resultados diferentes.",r:2,alt:[1,3,4,6],erro:"A moeda tem cara e coroa. São 2 resultados diferentes.",visual:{tipo:"moeda"}}}
 function roletaLivre(){const n=rnd(4,8),cs=embaralhar(NOMES_COR).slice(0,3),cores=[cs[0],cs[1],cs[2]];while(cores.length<n)cores.push(umDe(cs));return{tipo:"roleta",cores:embaralhar(cores)}}
 function famRoletaCor(){const v=roletaLivre(),c=umDe(v.cores),r=v.cores.filter(x=>x===c).length;
@@ -424,7 +474,7 @@ const GER={
   figuras:(d,tipo)=>montarFiguras(d,tipo||tipoAleatorio()),
   comprimento:(d,tipo)=>montarComprimento(d,tipo||tipoAleatorio()),
   tempo:(d,tipo,nivel)=>montarTempo(d,tipo||tipoAleatorio(),nivel),
-  dinheiro:(d,tipo)=>montarDinheiro(d,tipo||tipoAleatorio()),
+  dinheiro:(d,tipo,nivel)=>montarDinheiro(d,tipo||tipoAleatorio(),nivel),
   tabelas:(d,tipo,nivel)=>montarTabelas(d,tipo||tipoAleatorio(),nivel),
   acaso:(d,tipo,nivel)=>montarAcaso(d,tipo||tipoAleatorio(),nivel)
 };

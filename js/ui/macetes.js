@@ -36,7 +36,8 @@ function macPerguntas(id){
   }
   if(m.gerador){const qs=[],vis=new Set();let g=0;
     while(qs.length<4&&g++<80){const ex=GER[m.gerador](1,"escolha"),k=ex.chave||ex.enunciado;if(vis.has(k))continue;vis.add(k);
-      qs.push({tipo:"escolha",texto:ex.enunciado,opcoes:Array.from(ex.opcoes),resp:ex.resposta,expl:ex.erro,visual:ex.visual})}
+      const rt=ex.rotulos;      /* dinheiro: as opções aparecem como R$ 2,30 */
+      qs.push({tipo:"escolha",texto:ex.enunciado,opcoes:Array.from(ex.opcoes).map(o=>rt?rt[o]:o),resp:rt?rt[ex.resposta]:ex.resposta,expl:ex.erro,visual:ex.visual})}
     return qs}
   const a=m.a,bs=embaralhar([2,3,4,5,6,7,8,9]).slice(0,5);
   return bs.map(b=>({tipo:"conta",a,b,texto:`${a} × ${b}`,opcoes:opcoes(a,b),resp:a*b,expl:macExplica(id,a,b)}));

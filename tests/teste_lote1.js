@@ -2,7 +2,7 @@ const {JSDOM,VirtualConsole}=require("jsdom"),fs=require("fs"),path=require("pat
 const DIR=process.env.PM_DIR||path.join(__dirname,".."),HTML=require("./montar.js")(DIR),KEY="tabuada-pokemon-v1";
 const T0=Date.UTC(2026,10,9,15,0,0),DIA=864e5;let now=T0;const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const erros=[];const vc=new VirtualConsole();vc.on("jsdomError",e=>{if(!/Not implemented/.test(e.message))erros.push(e.message.slice(0,140))});vc.on("error",e=>erros.push(String(e).slice(0,140)));
-const lerArq=f=>fs.readFileSync(path.join(DIR,f),"utf8");
+const lerArq=f=>fs.readFileSync(path.join(DIR,f),"utf8"),lerArqBin=f=>fs.existsSync(path.join(DIR,f))?fs.readFileSync(path.join(DIR,f)):null;
 function novo(saved,opts={}){return new JSDOM(HTML,{url:"https://app.test/",runScripts:"dangerously",pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){w.PM_TESTE_LOCAL=1;
   if(saved)w.localStorage.setItem(KEY,saved);const R=w.Date;w.Date=class extends R{constructor(...a){super(...(a.length?a:[now]))}static now(){return now}};
   w.confirm=()=>true;w.__anims=[];w.__PYRI_VEL=opts.pyriVel==null?0:opts.pyriVel;
@@ -21,6 +21,7 @@ async function sessao(saved,opts={}){const d=novo(saved,opts),ev=c=>d.window.eva
 function certo(ev){const ex=ev("FS.ses.fila[0]");
   if(ex.tipo==="ordenar"){ev("(()=>{const ex=FS.ses.fila[0];ex.ordemCerta.forEach(v=>ordenarNum(ex.nums.indexOf(v)));verificarOrd()})()");return}
   if(ex.tipo==="relacionar"){ev("(()=>{const ex=FS.ses.fila[0];ex.pares.forEach((p,i)=>{ligarEsq(i);ligarDir(ex.direita.indexOf(p.d))});verificarLig()})()");return}
+  if(ex.din&&ex.tipo!=="escolha"){ev(`responderFase(${JSON.stringify(ev("Rs(FS.ses.fila[0].resposta)").replace("R$ ",""))})`);return}      /* dinheiro: digita 2,30 */
   ev(`responderFase(${ev("FS.ses.fila[0].resposta")})`)}
 function errado(ev){ev("responderFase(-7)")}
 /* joga um nível: errar = quantas respostas erradas dar (cada uma tira 1 vida) */
@@ -347,7 +348,7 @@ try{t("círculos: cada um é um botão com rótulo (título + situação) e alvo
 try{t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha",/body\.reduzir[^{]*\{[^}]*animation:none/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/prefers-reduced-motion/.test(lerArq("css/trilha.css")));}catch(e){t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* arquivos */
 try{t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)",/css\/trilha\.css/.test(lerArq("index.html"))&&lerArq("index.html").indexOf("js/conteudo/zonas.js")>0&&lerArq("index.html").indexOf("js/conteudo/zonas.js")<lerArq("index.html").indexOf("js/ui/trilha_visual.js")&&lerArq("index.html").indexOf("js/ui/trilha_visual.js")<lerArq("index.html").indexOf("js/legado/jogo.js"));}catch(e){t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v19 e os 3 arquivos novos na lista",/const V="pokemath-v19"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v20 e os 3 arquivos novos na lista",/const V="pokemath-v20"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)",/function estadoNivel/.test(lerArq("js/motor/trilha.js"))&&/function abrirNivel/.test(lerArq("js/motor/trilha.js"))&&/restantesNivel/.test(lerArq("js/motor/trilha.js")));}catch(e){t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
@@ -378,7 +379,7 @@ const vistos=[];z.w.Element.prototype.scrollIntoView=function(){vistos.push(this
 zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");
 try{t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)",typeof zv("rolarTrilha")==="string"||zv("typeof rolarTrilha")==="function"?(zv("rolarTrilha()"),vistos.length>0&&vistos[vistos.length-1].dataset&&vistos[vistos.length-1].dataset.fase===zv("fasesDoAno(3)[1].id")):false,vistos.length);}catch(e){t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px",/\.zona\.ilus\{[^}]*aspect-ratio:800\/1732/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/\.ilus\.circulo\{[^}]*width:(4[4-9]|[5-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"").replace(/\.zona\.ilus\.circulo/g,".ilus.circulo")));}catch(e){t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v19 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v19"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v20 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v20"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -403,7 +404,7 @@ try{zv("fecharFolha()");}catch(e){}
 try{t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo",/\.folhaFundo\{[^}]*align-items:center/.test(css)&&!/\.folhaFundo\{[^}]*flex-end/.test(css)&&!/\.folha\{[^}]*border-radius:20px20px00/.test(css));}catch(e){t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)",/\.laje\.nv(\.refazer)?\{[^}]*width:(7[2-9]|[89]\d|1\d\d)px/.test(css.replace(/\.folha\.laje/g,".laje")));}catch(e){t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("movimento: 'reduzir movimento' desliga o brilho das medalhas",/body\.reduzir[^{]*\.nv[^{]*\{[^}]*animation:none/.test(css));}catch(e){t("movimento: 'reduzir movimento' desliga o brilho das medalhas  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v19",/const V="pokemath-v19"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v19  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v20",/const V="pokemath-v20"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v20  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -416,7 +417,7 @@ try{const b=fs.readFileSync(path.join(DIR,"img/pokemon/pyri.webp"));t("Pyri: img
 try{t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI",zv("IMG(PYRI_ID)")==="img/pokemon/pyri.webp"&&zv("IMG(PYRELIS_ID)===PYRI_IMG&&IMG(PYRON_ID)===PYRI_IMG")===true&&/PokeAPI\/sprites/.test(zv("IMG(25)")));}catch(e){t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("S.comp=PYRI_ID;ir('cuidar')");}catch(e){}
 try{t("Pyri: aparece na tela do Cuidar quando é o companheiro",/img\/pokemon\/pyri\.webp/.test(U("#app").innerHTML));}catch(e){t("Pyri: aparece na tela do Cuidar quando é o companheiro  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v19 e a figura do Pyri na lista (offline)",/const V="pokemath-v19"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v19 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v20 e a figura do Pyri na lista (offline)",/const V="pokemath-v20"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v20 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* ---------- Macetes: dados e funções ---------- */
 const IDM=zv("MACETES.map(m=>m.id).join()");
 try{t("macetes: a lista tem as medidas, as casas, somar, vai um, empréstimo, as tabuadas 2 a 11, dividir, comparar, pares/ímpares, sequências e (Lote B) figuras, tempo e dinheiro",IDM==="medidas-comprimento,casas,somar,vaium,emprestimo,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9,tab10,tab11,dividir,comparar,parimpar,sequencia,figuras,tempo,dinheiro,tabelas,acaso",IDM);}catch(e){t("macetes: a lista tem comprimento, ×5, ×4, ×9, ×10 e ×11  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -671,7 +672,7 @@ const esperadoDin=(s,vis)=>{let m;
   if(/^(Quantos reais há nestas notas\?|Estas notas valem R\$ ___ no total\.)$/.test(s))return vis&&vis.tipo==="dinheiro"&&vis.itens.length>=2&&vis.itens.every(i=>i.k==="nota")?vis.itens.reduce((a,i)=>a+i.v,0):null;
   return null};
 const visDe=ex=>ex.visual?JSON.parse(JSON.stringify(ex.visual)):null;
-for(const nome of["figuras","comprimento","tempo","dinheiro"]){let bom=true,msg="";const chk=(c,m)=>{if(!c&&bom){bom=false;msg=nome+": "+m}};
+for(const nome of["figuras","comprimento","tempo"]){let bom=true,msg="";const chk=(c,m)=>{if(!c&&bom){bom=false;msg=nome+": "+m}};
  let cuboAlto=false,compDificil=false,minNaoPadrao=false,visualVisto=false;
  for(const d of[1,3])for(const tp of["digitar","escolha","lacuna","relacionar"])for(let i=0;i<70;i++){
   const ex=ev3(`GER.${nome}(${d},'${tp}')`);if(!ex){chk(false,"sem questão");break}
@@ -746,7 +747,7 @@ const rod=(nome,args)=>ev3(`(async()=>{const ctx={stage:document.getElementById(
 ev3("ir('fases');abrirExplicacao('a3-figuras')");ev3("FS.auto=false;pararAnimacoes()");
 T("explicação de Figuras abre a partir da trilha (liberada depois dos 3 níveis de Sequências)",()=>ev3("FS.vista")==="explica"&&ev3("FS.fase.id")==="a3-figuras");
 ev3("FS.vel=0.001");
-for(const[n,a,passos,fim]of[["tempo","2",7,/60 min.*120 min.*30 min.*3:55.*24 h.*7 dias.*12 meses/],["dinheiro","10,7",5,/R\$ 1 = 100 centavos.*R\$ 5 \+ R\$ 2 = R\$ 7.*troco = R\$ 3/]]){
+for(const[n,a,passos,fim]of[["tempo","2",7,/60 min.*120 min.*30 min.*3:55.*24 h.*7 dias.*12 meses/],["dinheiro","10,7",8,/R\$ 1 = 100 centavos.*R\$ 2,30 = 2 reais e 30 centavos.*R\$ 1,50 \+ R\$ 2,30 = R\$ 3,80.*R\$ 5 \+ R\$ 2 = R\$ 7.*troco = R\$ 3.*R\$ 10,00 − R\$ 7,50 = R\$ 2,50/]]){
   ev3("S.cfg.reduzir=false");sb.w.__anims.length=0;try{await rod(n,a)}catch(e){}await sleep(300);const g=Array.from(ev3("window.__g")||[]);ev3("window.__g=null");
   t(`roteiro ${n}(${a}): ${passos} passos, cada um de 3 a 5 s, falas curtas e números/figuras viajam`,g.length===passos&&g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140)&&sb.w.__anims.length>0,JSON.stringify(g.map(x=>x[0]))+" anims:"+sb.w.__anims.length);
   const res=Array.from(ev3("window.__res")||[]).join("|");
@@ -876,7 +877,7 @@ sb.w.close();
  try{await jogarNivel(s,"a3-paresimpares","bronze");await jogarNivel(s,"a3-paresimpares","prata");now+=DIA;await jogarNivel(s,"a3-paresimpares","ouro");
   t("jogar Pares e ímpares: os 3 níveis (com ligar muitos-para-um) terminam",st(ev,"a3-paresimpares")==="concluido,concluido,concluido",st(ev,"a3-paresimpares"))}catch(e){t("jogar Pares  [erro: "+String(e.message).slice(0,60)+"]",false)}
  s.w.close()}
-t("sw.js: pokemath-v19 (arquivos mudaram)",/const V="pokemath-v19"/.test(lerArq("sw.js")));
+t("sw.js: pokemath-v20 (arquivos mudaram)",/const V="pokemath-v20"/.test(lerArq("sw.js")));
 }
 
 t("limite diário: a chave temporária SEM_LIMITE_TENTATIVAS está ligada no app (os testes rodam com ela desligada, para provar a regra)",/const SEM_LIMITE_TENTATIVAS=true;/.test(lerArq("js/conteudo/matriz.js"))&&/SEM_LIMITE_TENTATIVAS\?cfgF/.test(lerArq("js/motor/trilha.js")));
@@ -939,7 +940,7 @@ T("a dica paga também vale na repetição da questão errada e não cobra de no
   const rep=ev3("FS.ses.fila[FS.ses.fila.length-1]");return {ok:c===7&&rep.rep===true&&!!rep.dicaPaga&&ev3("S.coins")===7,m:JSON.stringify([c,rep.rep,ev3("S.coins"),!!U("#bt-dica")&&U("#bt-dica").disabled,ev3("FS.ses.estado"),ev3("FS.ses.fila.length")])}});
 T("as moedas gastas continuam salvas (save) e o saldo mostrado no topo acompanha",()=>{mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);U("#bt-dica").click();return JSON.parse(sb.w.localStorage.getItem("tabuada-pokemon-v1")).coins===7});
 sb.w.close();
-t("sw.js: pokemath-v19",/const V="pokemath-v19"/.test(lerArq("sw.js")));
+t("sw.js: pokemath-v20",/const V="pokemath-v20"/.test(lerArq("sw.js")));
 }
 
 
@@ -1088,7 +1089,7 @@ ev3(`(async()=>{const ctx={stage:document.getElementById('exp-stage'),instant:fa
   window.__g=g;window.__mo=mo;window.__no=no;window.__an=an;return true})().catch(e=>{window.__err=String(e&&e.stack||e)})`);
 await sleep(2500);if(ev3("window.__err"))console.log("ERRO RODANDO:",ev3("window.__err"));
 const MO=Array.from(ev3("window.__mo")||[]),NO=Array.from(ev3("window.__no")||[]),AN=Array.from(ev3("window.__an")||[]);
-t("roteiro dinheiro: as moedas e as notas da animação usam o desenho novo (1 moeda de R$ 1, 2 de 50, 4 de 25, 2 notas e 1 nota)",JSON.stringify(MO)==="[1,2,4,0,0]"&&JSON.stringify(NO)==="[0,0,0,2,1]",JSON.stringify([MO,NO]));
+t("roteiro dinheiro: as moedas e as notas da animação usam o desenho novo (1 moeda de R$ 1, 2 de 50, 4 de 25, 2 notas e 1 nota)",JSON.stringify(MO)==="[1,2,4,0,0,0,0,0]"&&JSON.stringify(NO)==="[0,0,0,0,0,2,1,0]",JSON.stringify([MO,NO]));
 t("roteiro dinheiro: não sobrou nenhum desenho antigo (círculo dourado liso / retângulo verde liso)",AN.every(x=>x===0),JSON.stringify(AN));
 sb.w.close();
 }
@@ -1347,7 +1348,7 @@ async function rodar(fase,rot,args,extra){
   await sleep(2500);if(ev3("window.__err"))console.log("ERRO RODANDO:",ev3("window.__err"));
   const o=ev3("window.__out")||{g:[],res:[],ex:[]};return{g:Array.from(o.g).map(a=>Array.from(a)),res:Array.from(o.res),ex:Array.from(o.ex)}}
 const ok35=g=>g.every(([dur,gasto,len])=>dur>=3000&&dur<=5000&&gasto<=dur+1&&len>=5&&len<=140);
-const rt=await rodar("a3-tabelas","tabelas","","JSON.stringify({tab:ctx.stage.querySelectorAll('svg.tabelaSvg').length,ico:ctx.stage.querySelectorAll('[data-icone]').length,col:ctx.stage.querySelectorAll('svg.graficoSvg [data-barra]').length,velho:ctx.stage.querySelectorAll('.pm-moeda,.pm-nota').length,leg:ctx.stage.querySelectorAll('.pm-legenda').length,cx:[...ctx.stage.querySelectorAll('.pm-caixa')].map(e=>+e.style.zIndex||0)})");
+const rt=await rodar("a3-tabelas","tabelas","","JSON.stringify({tab:ctx.stage.querySelectorAll('svg.tabelaSvg').length,ico:ctx.stage.querySelectorAll('[data-icone]').length,col:ctx.stage.querySelectorAll('svg.graficoSvg [data-barra]').length,img:ctx.stage.querySelectorAll('image').length,carinha:ctx.stage.querySelectorAll('polygon').length,velho:ctx.stage.querySelectorAll('.pm-moeda,.pm-nota').length,leg:ctx.stage.querySelectorAll('.pm-legenda').length,cx:[...ctx.stage.querySelectorAll('.pm-caixa')].map(e=>+e.style.zIndex||0)})");
 const EX=rt.ex.map(x=>x?JSON.parse(x):{});
 t("roteiro tabelas: 7 passos de 3 a 5 s, falas curtas",rt.g.length===7&&ok35(rt.g),JSON.stringify(rt.g.map(x=>x[0])));
 t("roteiro tabelas: a tabela do Pyri aparece já no 1º passo e a de dupla entrada no 3º",EX[0]&&EX[0].tab===1&&EX[2]&&EX[2].tab>=1,JSON.stringify(EX.map(x=>x.tab)));
@@ -1356,16 +1357,150 @@ t("roteiro tabelas: o pictograma mostra 3 ícones; as colunas aparecem (3 coluna
 t("roteiro tabelas: o destaque (caixa pontilhada) fica NA FRENTE do desenho — 1 caixa ao ler a linha e 2 ao cruzar linha e coluna",EX[1]&&EX[1].cx.length===1&&EX[1].cx.every(z=>z>=5)&&EX[2]&&EX[2].cx.length===2&&EX[2].cx.every(z=>z>=5),JSON.stringify(EX.map(x=>x.cx)));
 t("roteiro tabelas: não mostra a legenda de casas (unidades, dezenas…) que não tem a ver com tabelas",EX.every(x=>x.leg===0),JSON.stringify(EX.map(x=>x.leg)));
 t("roteiro tabelas: usa só os desenhos novos (nenhum círculo/retângulo liso de moeda e nota)",EX.every(x=>x.velho===0));
-const ra=await rodar("a3-acaso","acaso","","JSON.stringify({bola:ctx.stage.querySelectorAll('.pm-bola').length,dado:ctx.stage.querySelectorAll('svg.dadoSvg').length,moeda:ctx.stage.querySelectorAll('svg.moedaSvg').length,rol:ctx.stage.querySelectorAll('svg.roletaSvg [data-setor]').length,urna:ctx.stage.querySelectorAll('svg.urnaSvg').length,leg:ctx.stage.querySelectorAll('.pm-legenda').length})");
+const ra=await rodar("a3-acaso","acaso","","JSON.stringify({bola:ctx.stage.querySelectorAll('.pm-bola').length,dado:ctx.stage.querySelectorAll('svg.dadosSvg').length,faces:ctx.stage.querySelectorAll('svg.dadosSvg [data-face]').length,solta:ctx.stage.querySelectorAll('svg.dadoSvg').length,moeda:ctx.stage.querySelectorAll('svg.moedaSvg').length,rol:ctx.stage.querySelectorAll('svg.roletaSvg [data-setor]').length,urna:ctx.stage.querySelectorAll('svg.urnaSvg').length,leg:ctx.stage.querySelectorAll('.pm-legenda').length})");
 const EA=ra.ex.map(x=>x?JSON.parse(x):{});
 t("roteiro acaso: 7 passos de 3 a 5 s, falas curtas",ra.g.length===7&&ok35(ra.g),JSON.stringify(ra.g.map(x=>x[0])));
 t("roteiro acaso: não mostra a legenda de casas (unidades, dezenas…) que não tem a ver com probabilidade",EA.every(x=>x.leg===0),JSON.stringify(EA.map(x=>x.leg)));
 t("roteiro acaso: certo (5 bolinhas azuis), impossível (nenhuma vermelha) e possível (azuis e vermelhas)",EA[0]&&EA[0].bola===5&&EA[0].urna===1&&/^certo/.test(ra.res[0]||"")&&/impossível/.test(ra.res[1]||"")&&/possível/.test(ra.res[2]||"")&&!/impossível/.test(ra.res[2]||""),JSON.stringify([EA.map(x=>x.bola),ra.res]));
 t("roteiro acaso: contar bolinhas — 6 azuis contra 2 vermelhas: a azul é a mais provável e a vermelha a menos provável",EA[3]&&EA[3].bola===8&&/mais provável/.test(ra.res[3]||"")&&/menos provável/.test(ra.res[3]||""),ra.res[3]);
-t("roteiro acaso: dado (6 resultados), moeda (2) e roleta (cor com 2 chances)",EA[4]&&EA[4].dado===1&&/6 resultados/.test(ra.res[4]||"")&&EA[5]&&EA[5].moeda===1&&/2 resultados/.test(ra.res[5]||"")&&EA[6]&&EA[6].rol===4&&/2 chances/.test(ra.res[6]||""),JSON.stringify([EA.map(x=>x.dado),EA.map(x=>x.moeda),EA.map(x=>x.rol),ra.res.slice(4)]));
+t("roteiro acaso: o dado aparece com TODAS as 6 faces (1 a 6), uma solta nunca; depois moeda (2) e roleta (cor com 2 chances)",EA[4]&&EA[4].dado===1&&EA[4].faces===6&&EA[4].solta===0&&/6 resultados/.test(ra.res[4]||"")&&EA[5]&&EA[5].moeda===1&&/2 resultados/.test(ra.res[5]||"")&&EA[6]&&EA[6].rol===4&&/2 chances/.test(ra.res[6]||""),JSON.stringify([EA.map(x=>x.dado),EA.map(x=>x.moeda),EA.map(x=>x.rol),ra.res.slice(4)]));
 T("explicação das fases novas abre na tela (7 passos, botão Praticar no último) com a trilha desbloqueada",()=>{
   for(const id of["a3-tabelas","a3-acaso"]){ev3(`ir('fases');abrirExplicacao('${id}')`);if(!U("#exp-stage"))return {ok:false,m:id+" sem palco"};if(!/Passo 1 de 7/.test(U("#exp-passo").textContent))return {ok:false,m:id+" "+U("#exp-passo").textContent}}return true});
-T("sw.js: versão do cache sobe para pokemath-v19",()=>/pokemath-v19/.test(lerArq("sw.js")));
+/* ========== AJUSTES PÓS-LOTE C: dado com todas as faces · imagens reais dos Pokémon · dinheiro em reais com vírgula ========== */
+const NOMES_PK=["pikachu","charmander","squirtle","bulbasaur","eevee","jigglypuff"];
+/* ---- 1) dado: todas as faces ---- */
+T("dado: svgDadoTodos desenha as 6 faces (data-face 1 a 6), cada uma com a quantidade certa de pontinhos",()=>{
+  const d=dom(ev3("svgDadoTodos()")),f=[...d.querySelectorAll("[data-face]")];
+  return f.length===6&&f.every((e,i)=>e.getAttribute("data-face")===String(i+1)&&e.querySelectorAll("[data-ponto]").length===i+1)&&!!d.querySelector("svg.dadosSvg")});
+T("dado: toda questão com dado mostra as 6 faces na tela (não uma face só)",()=>{
+  for(let i=0;i<12;i++){const ex=gerar("acaso",3,"digitar","ouro");if(!ex.visual||ex.visual.tipo!=="dado")continue;
+    const h=ev3(`visEstatico(${JSON.stringify(ex.visual)})`),d=dom(h);if(d.querySelectorAll("[data-face]").length!==6)return {ok:false,m:"faces: "+d.querySelectorAll("[data-face]").length};return true}
+  return {ok:false,m:"nenhuma questão de dado"}});
+T("dado: ainda dá para desenhar uma face só (svgDado) — usado dentro do desenho com as 6",()=>{const d=dom(ev3("svgDado(4)"));return d.querySelectorAll("[data-ponto]").length===4});
+/* ---- 2) imagens reais dos Pokémon ---- */
+T("imagens: os 6 arquivos img/pokemon/*.webp existem, são WebP de verdade e leves (< 30 KB)",()=>{
+  for(const n of NOMES_PK){const b=Buffer.from(lerArqBin("img/pokemon/"+n+".webp"));if(b.length<500||b.length>30000||b.slice(0,4).toString()!=="RIFF"||b.slice(8,12).toString()!=="WEBP")return {ok:false,m:n+" "+b.length}}return true});
+T("imagens: cada Pokémon da lista tem a sua imagem (PKS[i].img) e o ícone vira <image> com essa imagem, sem a carinha desenhada",()=>{
+  const pks=ev3("JSON.parse(JSON.stringify(PKS))");
+  for(const p of pks){if(p.img!=="img/pokemon/"+p.nome.toLowerCase()+".webp")return {ok:false,m:"img de "+p.nome+": "+p.img};
+    const d=dom("<svg>"+ev3(`svgIconePk(${JSON.stringify(p.nome)},0,0,24,'data-icone="1"')`)+"</svg>"),im=d.querySelector("image");
+    if(!im||(im.getAttribute("href")||im.getAttribute("xlink:href"))!==p.img||d.querySelector("polygon")||d.querySelector("circle"))return {ok:false,m:"ícone "+p.nome}}
+  return true});
+T("imagens: tabela, pictograma, colunas e barras mostram a imagem de cada Pokémon (e o nome continua escrito)",()=>{
+  const it=[{nome:"Pikachu",cor:"#f7d02c",n:3},{nome:"Eevee",cor:"#b0845a",n:2},{nome:"Squirtle",cor:"#5aa0f0",n:4}];
+  const vs={tabela:{tipo:"tabela",titulo:"x",cols:["Pokémon","Quantidade"],linhas:it.map(x=>[x.nome,x.n])},pictograma:{tipo:"pictograma",titulo:"x",vale:1,itens:it},colunas:{tipo:"colunas",titulo:"x",passo:1,max:5,itens:it},barras:{tipo:"barras",titulo:"x",passo:1,max:5,itens:it}};
+  for(const k of Object.keys(vs)){const d=dom(ev3(`visEstatico(${JSON.stringify(vs[k])})`)),ims=[...d.querySelectorAll("image")];
+    const esp=k==="pictograma"?it.reduce((a,x)=>a+x.n,0)+0:3;
+    if(k==="pictograma"?ims.length<esp:ims.length!==esp)return {ok:false,m:k+" imagens "+ims.length+" esperado "+esp};
+    if(!it.every(x=>d.textContent.includes(x.nome)))return {ok:false,m:k+" sem nome"};
+    if(d.querySelector("polygon"))return {ok:false,m:k+" ainda tem a carinha desenhada"}}
+  return true});
+T("imagens: toda <image> usada nos desenhos aponta para um arquivo que existe, e as imagens ficam dentro do desenho (viewBox)",()=>{
+  const it=[{nome:"Jigglypuff",cor:"#f49ac2",n:5},{nome:"Charmander",cor:"#f08030",n:2},{nome:"Bulbasaur",cor:"#5fbf5a",n:4},{nome:"Pikachu",cor:"#f7d02c",n:1}];
+  for(const v of[{tipo:"colunas",titulo:"x",passo:1,max:6,itens:it},{tipo:"barras",titulo:"x",passo:1,max:6,itens:it},{tipo:"pictograma",titulo:"x",vale:1,itens:it}]){
+    const d=dom(ev3(`visEstatico(${JSON.stringify(v)})`)),sv=d.querySelector("svg"),vb=sv.getAttribute("viewBox").split(" ").map(Number);
+    for(const im of d.querySelectorAll("image")){const h=im.getAttribute("href");if(!/^img\/pokemon\/[a-z]+\.webp$/.test(h)||!lerArqBin(h))return {ok:false,m:"arquivo "+h};
+      const x=+im.getAttribute("x"),y=+im.getAttribute("y"),w=+im.getAttribute("width"),hh=+im.getAttribute("height");
+      if(x<0||y<0||x+w>vb[2]+.5||y+hh>vb[3]+.5)return {ok:false,m:v.tipo+" imagem fora do desenho "+[x,y,w,hh]+" vb "+vb}}}
+  return true});
+T("imagens: as perguntas de Tabelas e gráficos usam a imagem real (nenhuma carinha desenhada) em todos os tipos de gráfico",()=>{
+  let viu=0;for(let i=0;i<60;i++){const ex=gerar("tabelas",i%2?3:1,"digitar",i%2?"ouro":"bronze");if(!ex.visual)continue;const h=ev3(`visEstatico(${JSON.stringify(ex.visual)})`);
+    if(/<polygon/.test(h))return {ok:false,m:"carinha em "+ex.visual.tipo};if(/<image/.test(h))viu++}
+  return viu>5||{ok:false,m:"imagens vistas: "+viu}});
+T("imagens: o roteiro de tabelas usa a imagem real nos ícones do pictograma (3 ícones = 3 imagens)",()=>EX[3]&&EX[3].img===3&&EX[3].carinha===0&&EX.every(x=>x.carinha===0),JSON.stringify(EX.map(x=>[x.img,x.carinha])));
+T("sw.js: as 6 imagens entram no cache offline e a versão sobe para pokemath-v20",()=>{const s=lerArq("sw.js");return /pokemath-v20/.test(s)&&NOMES_PK.every(n=>s.includes("img/pokemon/"+n+".webp"))});
+/* ---- 3) dinheiro em reais, com vírgula ---- */
+T("dinheiro: parseDin entende 2,30 · 2.30 · R$ 2,30 · 3,5 · 2 e recusa texto, 3 casas e vazio",()=>{
+  const p=s=>ev3(`parseDin(${JSON.stringify(s)})`);
+  return p("2,30")===230&&p("2.30")===230&&p("R$ 2,30")===230&&p(" 3,5 ")===350&&p("2")===200&&p("0,50")===50&&Number.isNaN(p("abc"))&&Number.isNaN(p("2,305"))&&Number.isNaN(p(""))&&Number.isNaN(p("2,3,0"))});
+T("dinheiro: Rs formata em dinheiro com vírgula (230 → R$ 2,30 · 200 → R$ 2,00 · 50 → R$ 0,50 · 1250 → R$ 12,50)",()=>["230|R$ 2,30","200|R$ 2,00","50|R$ 0,50","1250|R$ 12,50","5|R$ 0,05"].every(x=>{const[c,r]=x.split("|");return ev3(`Rs(${c})`)===r}));
+const RS=s=>+s.replace(/\D/g,"");               // "R$ 2,30" -> 230
+const VAL=s=>(s.match(/R\$ \d+,\d\d/g)||[]).map(RS);
+const esperado2=(ex)=>{let m;const s=ex.enunciado,v=ex.visual,A=VAL(s);
+  if(m=s.match(/Como se escreve (\d+) (?:real|reais) e (\d+) centavos em dinheiro\?/)||s.match(/^(\d+) (?:real|reais) e (\d+) centavos (?:= R\$ ___|em dinheiro)$/))return +m[1]*100+ +m[2];
+  if(m=s.match(/^Quanto é (\d+) centavos em reais\?$/)||s.match(/^(\d+) centavos (?:= R\$ ___|em reais)$/))return +m[1];
+  if(m=s.match(/^R\$ (\d+),(\d\d) equivalem a quantos centavos\?$/)||s.match(/^R\$ (\d+),(\d\d) (?:= ___ centavos|em centavos)$/))return +m[1]*100+ +m[2];
+  if(m=s.match(/^Quantos centavos há em (\d+) (?:real|reais)\?$/)||s.match(/^R\$ (\d+) (?:= ___ centavos|em centavos)$/))return +m[1]*100;
+  if(m=s.match(/^Paguei R\$ 1 por algo que custa (\d+) centavos\. Qual é o troco, em centavos\?$/)||s.match(/^Paguei R\$ 1 e custava (\d+) centavos: troco de ___ centavos$/)||s.match(/^troco de R\$ 1 para (\d+) centavos$/))return 100-+m[1];
+  if(/troco/i.test(s)&&A.length===2)return A[0]-A[1];
+  if(/falta/i.test(s)&&A.length===2)return A[1]-A[0];
+  if(/^(Quanto dinheiro há nestas notas\?|Estas notas valem R\$ ___ no total\.)$/.test(s))return v&&v.tipo==="dinheiro"&&v.itens.length>=2&&v.itens.every(i=>i.k==="nota")?v.itens.reduce((a,i)=>a+i.v*100,0):null;
+  if(/^(Quanto dinheiro há nestas moedas\?|Estas moedas valem R\$ ___ no total\.)$/.test(s))return v&&v.tipo==="dinheiro"&&v.itens.length>=2&&v.itens.every(i=>i.k==="moeda")?v.itens.reduce((a,i)=>a+i.v,0):null;
+  if(/^(Quantos centavos há nestas moedas\?|Estas moedas valem ___ centavos\.)$/.test(s))return v&&v.tipo==="dinheiro"&&v.itens.every(i=>i.k==="moeda")?v.itens.reduce((a,i)=>a+i.v,0):null;
+  if(/^(Quanto dinheiro há aqui, somando notas e moedas\?|Aqui há R\$ ___ no total\.)$/.test(s))return v&&v.tipo==="dinheiro"&&v.itens.some(i=>i.k==="nota")&&v.itens.some(i=>i.k==="moeda")?v.itens.reduce((a,i)=>a+(i.k==="nota"?i.v*100:i.v),0):null;
+  if(A.length>=2)return A.reduce((a,b)=>a+b,0);
+  return null};
+const DIN_DESC=ex=>JSON.stringify([ex.enunciado,ex.resposta,ex.visual||0]);
+const nivelDe={bronze:1,prata:1,ouro:3},passoDe={bronze:50,prata:10,ouro:5};
+const dinNiveis={};
+for(const nivel of["bronze","prata","ouro"]){let bom=true,msg="",visTxt=false,quebrado=false,compra3=false,faltou=false,notaMoeda=false,temDin=false,temCent=false,deCentavos=false;
+  const chk=(c,m)=>{if(!c&&bom){bom=false;msg=nivel+": "+m}};
+  for(const tp of TIPOS)for(let i=0;i<80;i++){
+    const ex=gerar("dinheiro",nivelDe[nivel],tp,nivel);chk(ex.tipo===tp&&ex.dica&&ex.dica.length>20&&ex.erro&&ex.erro.length>10,"tipo/dica/erro");
+    if(tp==="relacionar"){const P=ex.pares,D=ex.direita;chk(P.length>=3&&P.length<=4&&new Set(D).size===D.length&&P.every(p=>D.includes(p.d))&&ex.resposta===1,"relacionar");
+      for(const p of P){const e=esperado2({enunciado:p.e});chk(e!==null,"par sem conta reconhecível: "+p.e);
+        if(e!==null){const dm=/^R\$ \d+,\d\d$/.test(p.d),emCent=/ em centavos$|^troco de R\$ 1 para/.test(p.e);chk(dm!==emCent,"o valor da ligação precisa estar em dinheiro (R$ x,xx) quando o resultado é em reais, e em centavos quando pede centavos: "+p.e+" = "+p.d);chk(dm?RS(p.d)===e:+p.d===e,"par errado: "+p.e+" = "+p.d+" esperado "+e);if(dm){temDin=true;chk(RS(p.d)%passoDe[nivel]===0||/centavos/.test(p.e),"valor fora do passo do nível")}}}
+      continue}
+    const e=esperado2(ex);chk(e!==null&&e===ex.resposta,"resposta: "+DIN_DESC(ex)+" esperado "+e);
+    chk(Number.isInteger(ex.resposta)&&ex.resposta>0,"resposta inválida");
+    if(ex.din){temDin=true;chk(ex.respTxt===ev3(`Rs(${ex.resposta})`),"respTxt precisa ser o dinheiro com vírgula: "+ex.respTxt);chk(ex.resposta%passoDe[nivel]===0,"valor fora do passo do nível: "+ex.resposta);
+      if(ex.resposta%100!==0)quebrado=true}else temCent=true;
+    if(tp==="escolha"){const o=ex.opcoes;chk(o.length===4&&new Set(o).size===4&&o.includes(ex.resposta)&&o.every(Number.isInteger),"opções");
+      if(ex.din)chk(o.every(x=>ex.rotulos&&ex.rotulos[x]===ev3(`Rs(${x})`))&&o.every(x=>x%passoDe[nivel]===0),"rótulos em dinheiro")}
+    if(tp==="lacuna")chk(ex.enunciado.includes("___"),"lacuna");
+    if(ex.visual){visTxt=true;chk(!!ex.chave&&ex.chave.includes(JSON.stringify(ex.visual)),"chave sem a figura");
+      const it=ex.visual.itens;chk(it.every(x=>x.k==="moeda"?(nivel==="bronze"?[50,100]:nivel==="prata"?[10,50,100]:[5,10,25,50,100]).includes(x.v):[2,5,10,20,50,100].includes(x.v)),"valor de moeda/nota para o nível: "+JSON.stringify(it));
+      if(it.some(x=>x.k==="nota")&&it.some(x=>x.k==="moeda"))notaMoeda=true}
+    if(VAL(ex.enunciado).length>=3)compra3=true;if(/falta/i.test(ex.enunciado))faltou=true;
+    VAL(ex.enunciado).forEach(c=>chk(c%passoDe[nivel]===0,"preço fora do passo "+c+" em "+ex.enunciado));
+    if(/centavos/.test(ex.enunciado)&&!/R\$/.test(ex.enunciado.split("?")[0].replace(/R\$ 1 /,"")))deCentavos=true;
+  }
+  chk(temDin,"nenhuma resposta em formato de dinheiro");chk(temCent,"nenhuma resposta em centavos");chk(quebrado,"nunca trouxe valor quebrado (com centavos)");chk(visTxt,"nenhuma questão com moedas/notas");
+  if(nivel==="ouro"){chk(compra3,"o Ouro nunca trouxe compra de 3 itens");chk(faltou,"o Ouro nunca perguntou quanto falta");chk(notaMoeda,"o Ouro nunca juntou notas e moedas")}
+  dinNiveis[nivel]=[bom,msg];
+  t(`dinheiro (${nivel}): 4 tipos × 80 sorteios — respostas recalculadas a partir do texto/figura, em dinheiro com vírgula e só valores do nível`,bom,msg)}
+T("dinheiro: Bronze usa reais inteiros e meios (R$ 2,00 · R$ 3,50 · R$ 0,50); Prata e Ouro trazem valores quebrados como R$ 2,30",()=>{
+  const vis=n=>{const s=new Set();for(const tp of["digitar","escolha"])for(let i=0;i<80;i++){const ex=gerar("dinheiro",nivelDe[n],tp,n);if(ex.din)s.add(ex.resposta%100)}return[...s]};
+  const b=vis("bronze"),p=vis("prata"),o=vis("ouro");
+  return b.every(x=>x===0||x===50)&&b.includes(50)&&p.some(x=>x%50!==0)&&p.every(x=>x%10===0)&&o.some(x=>x%10!==0)&&o.every(x=>x%5===0)||{ok:false,m:JSON.stringify([b,p,o])}});
+T("dinheiro: sem o nível (chamada antiga) o Bronze/Prata e o Ouro ainda funcionam (d=1 e d=3)",()=>["digitar","escolha"].every(tp=>[1,3].every(d=>{const ex=ev3(`GER.dinheiro(${d},'${tp}')`);return ex&&ex.resposta>0})));
+/* tela: digitar com vírgula */
+const mostra2=(ex)=>{ev3(`(()=>{S.coins=9;const ex=${JSON.stringify(ex)};FS.ses=novaSessao(FASES.find(f=>f.id==='a3-dinheiro'),'bronze');FS.ses.fila[0]=ex;FS.fase=FS.ses.fase;FS.vista='exerc';render()})()`)};
+const pegaDin=(tp,filtro)=>{for(let i=0;i<400;i++){const ex=gerar("dinheiro",1,tp,"prata");if(ex.din&&ex.resposta%100!==0&&(!filtro||filtro(ex)))return ex}return null};
+T("tela: a resposta em reais é digitada com vírgula (campo de texto decimal, sem aceitar só inteiros) e 2,30 acerta quando a resposta é R$ 2,30",()=>{
+  const ex=pegaDin("digitar");if(!ex)return {ok:false,m:"sem questão"};mostra2(ex);const i=U("#resp");
+  if(!i||i.getAttribute("type")!=="text"||i.getAttribute("inputmode")!=="decimal")return {ok:false,m:"campo "+(i&&i.outerHTML)};
+  const txt=ev3(`Rs(${ex.resposta})`).replace("R$ ","");i.value=txt;ev3("responderFase($('#resp').value)");
+  return ev3("FS.ses.estado")==="certo"||{ok:false,m:"não acertou "+txt+" para "+ex.resposta}});
+T("tela: o 'R$' fica ao lado do campo só quando o enunciado não tem R$ (digitar sim; completar não, para não repetir)",()=>{
+  const d=pegaDin("digitar");mostra2(d);const a=!!U(".dinResp .dinRs");const l=pegaDin("lacuna");mostra2(l);const b=!!U(".dinResp .dinRs");
+  return a&&!b&&/R\$ ___/.test(l.enunciado)||{ok:false,m:[a,b].join()}});
+T("desenho: a legenda do pictograma usa uma Pokébola (nenhum círculo cinza sem sentido)",()=>{const h=ev3("svgPictograma({tipo:'pictograma',titulo:'x',vale:2,itens:[{nome:'Eevee',cor:'#b0845a',n:2}]})");return /data-pokebola/.test(h)&&!/#ddd/.test(h)});
+T("tela: aceita também com ponto e com R$ (2.30 · R$ 2,30) e erra o valor trocado (centavos errados)",()=>{
+  const ex=pegaDin("digitar");mostra2(ex);const txt=ev3(`Rs(${ex.resposta})`).replace("R$ ","");ev3(`responderFase(${JSON.stringify("R$ "+txt)})`);const a=ev3("FS.ses.estado");
+  mostra2(ex);ev3(`responderFase(${JSON.stringify(txt.replace(",","."))})`);const b=ev3("FS.ses.estado");
+  mostra2(ex);ev3(`responderFase(${JSON.stringify(ev3(`Rs(${ex.resposta+10})`).replace("R$ ",""))})`);const c=ev3("FS.ses.estado");
+  mostra2(ex);ev3("responderFase('abc')");const d=ev3("FS.ses.estado");
+  return a==="certo"&&b==="certo"&&c==="errado"&&d==="errado"||{ok:false,m:[a,b,c,d].join()}});
+T("tela: ao errar mostra 'A resposta certa é R$ 2,30' em dinheiro com vírgula",()=>{
+  const ex=pegaDin("digitar");mostra2(ex);ev3("responderFase('0,01')");const h=U(".fb.err")&&U(".fb.err").textContent||"";
+  return h.includes("A resposta certa é "+ev3(`Rs(${ex.resposta})`))||{ok:false,m:h}});
+T("tela: nas questões de escolher, os botões mostram R$ com vírgula e clicar no certo acerta",()=>{
+  const ex=pegaDin("escolha");mostra2(ex);const b=Q(".ops .op").map(x=>x.textContent);
+  if(b.length!==4||!b.every(x=>/^R\$ \d+,\d\d$/.test(x)))return {ok:false,m:b.join("|")};
+  const k=b.indexOf(ev3(`Rs(${ex.resposta})`));Q(".ops .op")[k].click();return ev3("FS.ses.estado")==="certo"||{ok:false,m:"clique"}});
+T("tela: relacionar com valores em dinheiro mostra R$ x,xx nos dois lados e liga certo",()=>{
+  let ex=null;for(let i=0;i<300&&!ex;i++){const e=gerar("dinheiro",1,"relacionar","prata");if(e.pares.every(p=>/^R\$/.test(p.d)))ex=e}
+  if(!ex)return {ok:false,m:"nenhum relacionar só com dinheiro nos 300 sorteios"};mostra2(ex);return Q(".rel .dir, .rel button, .relacionar button").length>=0&&/R\$ \d+,\d\d/.test(U("#app").innerHTML)});
+T("lâmpada de dica 🪙: no dinheiro a dica fala em vírgula e dois algarismos depois dela, sem entregar a resposta",()=>{
+  const ex=pegaDin("digitar");mostra2(ex);ev3("comprarDica()");const h=(U("#dica-paga")||{textContent:""}).textContent,rt=ev3(`Rs(${ex.resposta})`).replace("R$ ","");
+  return /vírgula/i.test(h)&&!h.includes(rt)&&!/\d+ algarismos/.test(h)||{ok:false,m:h}});
+T("macete Dinheiro: a prática mostra as opções em dinheiro (R$ x,xx) quando a resposta é em reais e a resposta certa está entre elas",()=>{
+  let viu=false;for(let i=0;i<40;i++){const qs=ev3("macPerguntas('dinheiro')");if(qs.length!==4)return {ok:false,m:"qtd"};
+    for(const q of qs){if(!q.opcoes.map(String).includes(String(q.resp)))return {ok:false,m:"resp fora das opções "+JSON.stringify(q)};if(q.opcoes.some(o=>/^R\$ \d+,\d\d$/.test(String(o)))){viu=true;if(!q.opcoes.every(o=>/^R\$ \d+,\d\d$/.test(String(o)))||!/^R\$ \d+,\d\d$/.test(String(q.resp)))return {ok:false,m:"mistura "+JSON.stringify(q)}}}}
+  return viu||{ok:false,m:"nunca apareceu dinheiro"}});
+T("macete Dinheiro: o texto explica reais e centavos com vírgula (R$ 2,30 = 2 reais e 30 centavos) e o troco",()=>{const m=ev3("macAch('dinheiro')");return /a vírgula separa os reais.*R\$ 2,30 são 2 reais e 30 centavos/.test(m.explicacao)&&/troco/i.test(m.explicacao)&&/R\$ 1 = 100 centavos/.test(m.explicacao)});
+T("fase Dinheiro: os tópicos falam de valores com vírgula",()=>/vírgula|2,30/i.test(ev3("FASES.find(f=>f.id==='a3-dinheiro').topicos.join(' ')")));
 sb.w.close();
 }
 

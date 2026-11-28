@@ -648,6 +648,17 @@ const ROT={
       R.box.innerHTML="";cofre(R);const m=[0,1,2,3].map(()=>nd(R,"moeda",25,10,-60,52,52));
       await voarVarios(ctx,m.map((e,i)=>[e,40+i*58,20]),900,250);await voarVarios(ctx,m.map((e,i)=>[e,50+i*58,128]),800,150);
       resSub(R,"25 + 25 + 25 + 25 = 100 centavos",10,200,280);glowRes(R);dizer(ctx,"25 + 25 + 25 + 25 = 100");await esperar(ctx,700)}));
+    passos.push(P("Em dinheiro, a vírgula separa os reais dos centavos: R$ 2,30 são 2 reais e 30 centavos.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";const v=criar(R.box,"R$ 2,30","pm-pacote bgn",10,-60,150,52),r=criar(R.box,"2 reais","pm-pacote bgn",10,-60,110,44),c=criar(R.box,"30 centavos","pm-pacote bgn",10,-60,130,44);
+      await voarVarios(ctx,[[v,75,14]],1000);
+      criar(R.box,"antes da vírgula","pm-txt pm-pop",10,74,120,30);criar(R.box,"depois da vírgula","pm-txt pm-pop",150,74,140,30);
+      await voarVarios(ctx,[[r,20,110],[c,150,110]],1100,300);
+      resSub(R,"R$ 2,30 = 2 reais e 30 centavos",10,170,280);glowRes(R);dizer(ctx,"R$ 2,30 = 2 reais + 30 centavos");await esperar(ctx,800)},{vírgula:"separa os reais (antes) dos centavos (depois)"}));
+    passos.push(P("Para somar valores, alinhe a vírgula: reais com reais e centavos com centavos. R$ 1,50 + R$ 2,30 = R$ 3,80.",4800,async(ctx,R)=>{
+      R.box.innerHTML="";cofre(R);const a=criar(R.box,"R$ 1,50","pm-pacote bgn",10,-60,110,44),b=criar(R.box,"R$ 2,30","pm-pacote bgn",10,-60,110,44),m=criar(R.box,"+","pm-op pm-mini",10,-60,30,40);
+      await voarVarios(ctx,[[a,20,20],[m,134,24],[b,170,20]],1100,300);
+      criar(R.box,"1 + 2 = 3 reais · 50 + 30 = 80 centavos","pm-txt pm-pop",10,126,280,40);await esperar(ctx,1000);
+      resSub(R,"R$ 1,50 + R$ 2,30 = R$ 3,80",20,190,260);glowRes(R);dizer(ctx,"1,50 + 2,30 = 3,80");await esperar(ctx,700)}));
     passos.push(P(`Para juntar valores, some: uma nota de R$ ${a} e uma de R$ ${b} valem ${a} + ${b} = ${custo} reais.`,4500,async(ctx,R)=>{
       R.box.innerHTML="";cofre(R);const n1=nd(R,"nota",a,10,-60,112,56),n2=nd(R,"nota",b,10,-60,112,56);
       await voarVarios(ctx,[[n1,24,20],[n2,164,20]],1000,300);await voarVarios(ctx,[[n1,30,122],[n2,158,122]],900,200);
@@ -657,6 +668,11 @@ const ROT={
       await voarVarios(ctx,[[nota,20,20],[pr,150,26]],1000,300);await voarVarios(ctx,[[tr,226,78]],1200);tr.classList.add("pm-glow");
       criar(R.box,`R$ ${custo} + R$ ${t} = R$ ${pago}`,"pm-txt pm-res pm-pop",20,128,260,40);
       criar(R.box,`troco = R$ ${t}`,"pm-txt pm-res pm-pop",60,184,180,44);glowRes(R);dizer(ctx,`troco = R$ ${t}`);await esperar(ctx,900)}));
+    passos.push(P("Com centavos é igual: pagou R$ 10,00 por R$ 7,50? Conte de 7,50 até 10,00: 50 centavos + 2 reais. O troco é R$ 2,50.",5000,async(ctx,R)=>{
+      R.box.innerHTML="";const pr=criar(R.box,"custa R$ 7,50","pm-pacote bgn",10,-60,130,40),pg=criar(R.box,"pagou R$ 10,00","pm-pacote bgn",10,-60,130,40);
+      await voarVarios(ctx,[[pr,10,20],[pg,160,20]],1000,300);
+      criar(R.box,"7,50 → 8,00 = 50 centavos","pm-txt pm-pop",10,84,280,34);await esperar(ctx,900);criar(R.box,"8,00 → 10,00 = 2 reais","pm-txt pm-pop",10,124,280,34);await esperar(ctx,900);
+      criar(R.box,"R$ 10,00 − R$ 7,50 = R$ 2,50","pm-txt pm-res pm-pop",10,170,280,40);glowRes(R);dizer(ctx,"troco = R$ 2,50");await esperar(ctx,700)}));
     return{montar:ctx=>({box:novaCena(ctx,W,H)}),passos};
   },
   /* ---------- Lote C: tabelas e gráficos ---------- */
@@ -679,7 +695,7 @@ const ROT={
       resSub(R,"Pikachu na terça = 5",40,150,220);glowRes(R);dizer(ctx,"linha + coluna = 5");await esperar(ctx,800)},{"dupla entrada":"tabela com linhas e colunas que se cruzam"}));
     passos.push(P("No pictograma, cada ícone vale um tanto. Aqui cada ícone vale 2: 3 ícones valem 3 × 2 = 6.",4500,async(ctx,R)=>{
       R.box.innerHTML="";criar(R.box,"Pikachu","pm-txt pm-pop",6,30,90,40);
-      const ic=[0,1,2].map(()=>{const e=criar(R.box,"","pm-ic",100,-70,40,40);e.innerHTML=svgIconeSolo("#f7d02c");e.setAttribute("data-icone","1");return e});
+      const ic=[0,1,2].map(()=>{const e=criar(R.box,"","pm-ic",100,-70,40,40);e.innerHTML=svgIconeSolo("Pikachu");e.setAttribute("data-icone","1");return e});
       await voarVarios(ctx,ic.map((e,i)=>[e,100+i*48,30]),1200,300);
       criar(R.box,"cada ícone vale 2","pm-txt pm-pop",50,90,200,40);
       resSub(R,"3 × 2 = 6",70,150,160);glowRes(R);dizer(ctx,"3 × 2 = 6");await esperar(ctx,800)},{pictograma:"gráfico feito de ícones; cada um vale um número"}));
@@ -714,11 +730,13 @@ const ROT={
       await encher(ctx,R,"azul",[7],1000);R.box.querySelectorAll(".pm-res").forEach(e=>e.remove());
       criar(R.box,"azul = 6: mais provável","pm-txt pm-res pm-pop",20,230,260,36);await esperar(ctx,1400);
       criar(R.box,"vermelha = 2: menos provável","pm-txt pm-res pm-pop",20,268,260,36);glowRes(R);dizer(ctx,"mais bolinhas = mais chance");await esperar(ctx,700)},{provável:"que tem mais chance de acontecer"}));
-    passos.push(P("Um dado tem 6 faces: pode sair 1, 2, 3, 4, 5 ou 6. São 6 resultados possíveis.",4500,async(ctx,R)=>{
-      R.box.innerHTML="";svgBox(R,svgDado(5),100,10,100,"pm-pop");
+    passos.push(P("Olhe as 6 faces do dado: pode sair 1, 2, 3, 4, 5 ou 6. São 6 resultados possíveis.",4500,async(ctx,R)=>{
+      R.box.innerHTML="";const dd=svgBox(R,svgDadoTodos(),30,4,240);
+      const fs=[...dd.querySelectorAll("[data-face]")];fs.forEach(f=>f.style.opacity="0");
+      for(const f of fs){f.style.opacity="1";f.style.transition="opacity .25s";await esperar(ctx,260)}
       const ch=[1,2,3,4,5,6].map(n=>criar(R.box,String(n),"pm-d cn pm-mini",20+(n-1)*44,-60,40,40));
-      await voarVarios(ctx,ch.map((e,i)=>[e,20+i*44,150]),1200,250);
-      resSub(R,"6 resultados possíveis",30,210,240);glowRes(R);dizer(ctx,"dado: 6 resultados");await esperar(ctx,500)},{"resultados possíveis":"tudo o que pode sair"}));
+      await voarVarios(ctx,ch.map((e,i)=>[e,20+i*44,170]),1000,200);
+      resSub(R,"6 resultados possíveis",30,222,240);glowRes(R);dizer(ctx,"dado: 6 resultados");await esperar(ctx,500)},{"resultados possíveis":"tudo o que pode sair"}));
     passos.push(P("Uma moeda tem cara e coroa. São 2 resultados possíveis.",4000,async(ctx,R)=>{
       R.box.innerHTML="";svgBox(R,svgMoedaSorte(),20,10,260,"pm-pop");
       const ch=["cara","coroa"].map(n=>criar(R.box,n,"pm-pacote bgn",20,-60,90,40));
