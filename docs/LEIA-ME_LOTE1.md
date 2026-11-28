@@ -138,3 +138,11 @@ Ao tocar numa fase abre, no MEIO da tela, uma laje de pedra com folhagem e as 3 
   - Explicação do Pyri (`ROT.dinheiro`, agora 8 passos): novos passos "R$ 2,30 = 2 reais e 30 centavos", "somar alinhando a vírgula" e "troco com centavos". Macete Dinheiro e a prática do macete atualizados (`js/ui/macetes.js` usa os rótulos).
 - `sw.js`: `pokemath-v20` (imagens no cache offline). **Depois de publicar, limpar o cache do site** (como na vez anterior) para ver tudo.
 - Arquivos alterados: js/motor/geradores.js, js/motor/trilha.js, js/motor/explicacao.js, js/conteudo/macetes.js, js/conteudo/ano3.js, js/ui/macetes.js, css/novo.css, sw.js, img/pokemon/*.webp (6 novos), tests/teste_lote1.js, tests/teste_nuvem.js, docs/LEIA-ME_LOTE1.md.
+
+## Tábuas de madeira na trilha (ponte até o vulcão)
+- Cada fase da trilha é agora uma **tábua de madeira** (botão `button.circulo.tabua`, em `js/ui/trilha_visual.js` e `css/trilha.css`), no formato da imagem que a Joyce enviou: retângulo grosso, moldura escura, face lisa com veios, espessura embaixo e 2 pregos. Desenhada só em CSS (sem arquivo novo).
+- Na zona ilustrada (Ninho de Fogo) o tamanho usa `cqw` (`container-type:inline-size` em `.zona.ilus`): 15% da largura × 8,6% — cresce e diminui junto com a imagem; fica nas mesmas posições (`pontos` em `js/conteudo/zonas.js`). O nome curto continua na etiqueta ao lado (a tábua é pequena demais para o nome; ícone, medalha, ✔ e cadeado ficam nela). Área de toque ampliada em 6 px por `::before`.
+- Estados: disponível (madeira clara que brilha), concluída (madeira esverdeada + selo ✔ + medalha), para refazer (laranja), bloqueada (cinza + 🔒), em breve (apagada). Fora da zona ilustrada (zigue-zague) a tábua tem 96 × 48 px.
+- Regras, folha com as 3 medalhas e a aba Tabuada em trilha não mudaram. `sw.js`: `pokemath-v21`.
+- Arquivos alterados: js/ui/trilha_visual.js, css/trilha.css, sw.js, tests/teste_lote1.js, tests/teste_nuvem.js, docs/LEIA-ME_LOTE1.md.
+

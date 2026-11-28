@@ -1,4 +1,4 @@
-/* Visual da trilha de fases: cada ANO é uma zona; cada FASE é um círculo (tijolo) no caminho; tocar no círculo abre a folha com os
+/* Visual da trilha de fases: cada ANO é uma zona; cada FASE é uma TÁBUA de madeira (botão .circulo.tabua) no caminho/ponte; tocar no círculo abre a folha com os
    3 níveis (Bronze, Prata e Ouro). Aqui só se DESENHA: as regras (vidas, tentativas, liberação) continuam em trilha.js e matriz.js.
    Nada novo é gravado: o estado do círculo é calculado a partir dos 3 níveis. */
 const MEDALHA={bronze:"🥉",prata:"🥈",ouro:"🥇"};
@@ -22,11 +22,11 @@ const classePos=(i,pos)=>pos?(pos[2]==="e"?"esq":pos[2]==="d"?"dir":pos[0]>50?"e
 const estiloPos=pos=>pos?` style="left:${pos[0]}%;top:${pos[1]}%"`:"";
 function noCirculo(f,i,pos){
   const st=estadoFase(f),m=medalhaFase(f);
-  return `<li class="no ${classePos(i,pos)} ${st==="concluido"?"feito":""}"${estiloPos(pos)}><button class="circulo ${st}" data-fase="${f.id}" data-estado="${st}" aria-label="${f.titulo}, ${ROT_CIRC[st]}" onclick="abrirFolhaFase('${f.id}')"><span class="ic">${f.icone}</span>${st==="bloqueado"?`<span class="cad">🔒</span>`:""}${m?`<span class="medalha">${m}</span>`:""}</button><span class="tit">${pos&&f.curto?f.curto:f.titulo}</span></li>`;
+  return `<li class="no ${classePos(i,pos)} ${st==="concluido"?"feito":""}"${estiloPos(pos)}><button class="circulo tabua ${st}" data-fase="${f.id}" data-estado="${st}" aria-label="${f.titulo}, ${ROT_CIRC[st]}" onclick="abrirFolhaFase('${f.id}')"><span class="ic">${f.icone}</span>${st==="bloqueado"?`<span class="cad">🔒</span>`:""}${st==="concluido"?`<span class="selo" aria-hidden="true">✔</span>`:""}${m?`<span class="medalha">${m}</span>`:""}</button><span class="tit">${pos&&f.curto?f.curto:f.titulo}</span></li>`;
 }
 function noEmBreve(t,i,pos){
   /* na zona ilustrada os "em breve" são só cadeados (o nome fica no rótulo e no title) para não cobrir a trilha da imagem */
-  return `<li class="no ${classePos(i,pos)}"${estiloPos(pos)}><button class="circulo embreve" disabled title="${t} (em breve)" aria-label="${t}, em breve"><span class="ic">🔒</span></button>${pos?"":`<span class="tit">${t} <small>(em breve)</small></span>`}</li>`;
+  return `<li class="no ${classePos(i,pos)}"${estiloPos(pos)}><button class="circulo tabua embreve" disabled title="${t} (em breve)" aria-label="${t}, em breve"><span class="ic">🔒</span></button>${pos?"":`<span class="tit">${t} <small>(em breve)</small></span>`}</li>`;
 }
 function portalZona(a){
   const z=ZONAS[a],ok=anoCompleto(a);

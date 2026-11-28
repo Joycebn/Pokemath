@@ -348,7 +348,7 @@ try{t("círculos: cada um é um botão com rótulo (título + situação) e alvo
 try{t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha",/body\.reduzir[^{]*\{[^}]*animation:none/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/prefers-reduced-motion/.test(lerArq("css/trilha.css")));}catch(e){t("movimento: 'reduzir movimento' e prefers-reduced-motion desligam as animações da trilha  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* arquivos */
 try{t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)",/css\/trilha\.css/.test(lerArq("index.html"))&&lerArq("index.html").indexOf("js/conteudo/zonas.js")>0&&lerArq("index.html").indexOf("js/conteudo/zonas.js")<lerArq("index.html").indexOf("js/ui/trilha_visual.js")&&lerArq("index.html").indexOf("js/ui/trilha_visual.js")<lerArq("index.html").indexOf("js/legado/jogo.js"));}catch(e){t("index.html liga zonas.js, trilha_visual.js e css/trilha.css (zonas antes do visual, ambos antes do jogo)  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v20 e os 3 arquivos novos na lista",/const V="pokemath-v20"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v21 e os 3 arquivos novos na lista",/const V="pokemath-v21"/.test(lerArq("sw.js"))&&["css/trilha.css","js/conteudo/zonas.js","js/ui/trilha_visual.js"].every(a=>lerArq("sw.js").includes('"'+a+'"')));}catch(e){t("sw.js: pokemath-v10 e os 3 arquivos novos na lista  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)",/function estadoNivel/.test(lerArq("js/motor/trilha.js"))&&/function abrirNivel/.test(lerArq("js/motor/trilha.js"))&&/restantesNivel/.test(lerArq("js/motor/trilha.js")));}catch(e){t("regras intocadas: trilha.js ainda tem estadoNivel, abrirNivel e as tentativas por nível (só a tela mudou)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
@@ -379,7 +379,7 @@ const vistos=[];z.w.Element.prototype.scrollIntoView=function(){vistos.push(this
 zv("S.fases={'a3-posicional':{niveis:{bronze:{ok:true},prata:{ok:true},ouro:{ok:true}},viu:true}};save();ir('fases')");
 try{t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)",typeof zv("rolarTrilha")==="string"||zv("typeof rolarTrilha")==="function"?(zv("rolarTrilha()"),vistos.length>0&&vistos[vistos.length-1].dataset&&vistos[vistos.length-1].dataset.fase===zv("fasesDoAno(3)[1].id")):false,vistos.length);}catch(e){t("ao abrir a aba, a trilha rola até a fase atual (a primeira disponível)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px",/\.zona\.ilus\{[^}]*aspect-ratio:800\/1732/.test(lerArq("css/trilha.css").replace(/\s+/g,""))&&/\.ilus\.circulo\{[^}]*width:(4[4-9]|[5-9]\d)px/.test(lerArq("css/trilha.css").replace(/\s+/g,"").replace(/\.zona\.ilus\.circulo/g,".ilus.circulo")));}catch(e){t("CSS: a zona ilustrada mantém a proporção da imagem e o círculo dela tem pelo menos 44px  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v20 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v20"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v21 e a imagem da zona na lista para funcionar offline",/const V="pokemath-v21"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/zonas/ano3.webp"'));}catch(e){t("sw.js: pokemath-v11 e a imagem da zona na lista para funcionar offline  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -404,7 +404,7 @@ try{zv("fecharFolha()");}catch(e){}
 try{t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo",/\.folhaFundo\{[^}]*align-items:center/.test(css)&&!/\.folhaFundo\{[^}]*flex-end/.test(css)&&!/\.folha\{[^}]*border-radius:20px20px00/.test(css));}catch(e){t("tela: a folha fica no MEIO da tela (centralizada), não colada embaixo  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)",/\.laje\.nv(\.refazer)?\{[^}]*width:(7[2-9]|[89]\d|1\d\d)px/.test(css.replace(/\.folha\.laje/g,".laje")));}catch(e){t("tela: a laje e as medalhas têm tamanho de toque confortável (medalha com pelo menos 72px)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{t("movimento: 'reduzir movimento' desliga o brilho das medalhas",/body\.reduzir[^{]*\.nv[^{]*\{[^}]*animation:none/.test(css));}catch(e){t("movimento: 'reduzir movimento' desliga o brilho das medalhas  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v20",/const V="pokemath-v20"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v20  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v21",/const V="pokemath-v21"/.test(lerArq("sw.js")));}catch(e){t("sw.js: pokemath-v21  [erro: "+String(e.message).slice(0,60)+"]",false)}
 z.w.close();
 }
 
@@ -417,7 +417,7 @@ try{const b=fs.readFileSync(path.join(DIR,"img/pokemon/pyri.webp"));t("Pyri: img
 try{t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI",zv("IMG(PYRI_ID)")==="img/pokemon/pyri.webp"&&zv("IMG(PYRELIS_ID)===PYRI_IMG&&IMG(PYRON_ID)===PYRI_IMG")===true&&/PokeAPI\/sprites/.test(zv("IMG(25)")));}catch(e){t("Pyri: IMG(Pyri) devolve a figura nova; Pyrelis e Pyron seguem com o desenho provisório; um Pokémon comum segue na PokéAPI  [erro: "+String(e.message).slice(0,60)+"]",false)}
 try{zv("S.comp=PYRI_ID;ir('cuidar')");}catch(e){}
 try{t("Pyri: aparece na tela do Cuidar quando é o companheiro",/img\/pokemon\/pyri\.webp/.test(U("#app").innerHTML));}catch(e){t("Pyri: aparece na tela do Cuidar quando é o companheiro  [erro: "+String(e.message).slice(0,60)+"]",false)}
-try{t("sw.js: pokemath-v20 e a figura do Pyri na lista (offline)",/const V="pokemath-v20"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v20 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
+try{t("sw.js: pokemath-v21 e a figura do Pyri na lista (offline)",/const V="pokemath-v21"/.test(lerArq("sw.js"))&&lerArq("sw.js").includes('"img/pokemon/pyri.webp"'));}catch(e){t("sw.js: pokemath-v21 e a figura do Pyri na lista (offline)  [erro: "+String(e.message).slice(0,60)+"]",false)}
 /* ---------- Macetes: dados e funções ---------- */
 const IDM=zv("MACETES.map(m=>m.id).join()");
 try{t("macetes: a lista tem as medidas, as casas, somar, vai um, empréstimo, as tabuadas 2 a 11, dividir, comparar, pares/ímpares, sequências e (Lote B) figuras, tempo e dinheiro",IDM==="medidas-comprimento,casas,somar,vaium,emprestimo,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9,tab10,tab11,dividir,comparar,parimpar,sequencia,figuras,tempo,dinheiro,tabelas,acaso",IDM);}catch(e){t("macetes: a lista tem comprimento, ×5, ×4, ×9, ×10 e ×11  [erro: "+String(e.message).slice(0,60)+"]",false)}
@@ -877,7 +877,7 @@ sb.w.close();
  try{await jogarNivel(s,"a3-paresimpares","bronze");await jogarNivel(s,"a3-paresimpares","prata");now+=DIA;await jogarNivel(s,"a3-paresimpares","ouro");
   t("jogar Pares e ímpares: os 3 níveis (com ligar muitos-para-um) terminam",st(ev,"a3-paresimpares")==="concluido,concluido,concluido",st(ev,"a3-paresimpares"))}catch(e){t("jogar Pares  [erro: "+String(e.message).slice(0,60)+"]",false)}
  s.w.close()}
-t("sw.js: pokemath-v20 (arquivos mudaram)",/const V="pokemath-v20"/.test(lerArq("sw.js")));
+t("sw.js: pokemath-v21 (arquivos mudaram)",/const V="pokemath-v21"/.test(lerArq("sw.js")));
 }
 
 t("limite diário: a chave temporária SEM_LIMITE_TENTATIVAS está ligada no app (os testes rodam com ela desligada, para provar a regra)",/const SEM_LIMITE_TENTATIVAS=true;/.test(lerArq("js/conteudo/matriz.js"))&&/SEM_LIMITE_TENTATIVAS\?cfgF/.test(lerArq("js/motor/trilha.js")));
@@ -940,7 +940,7 @@ T("a dica paga também vale na repetição da questão errada e não cobra de no
   const rep=ev3("FS.ses.fila[FS.ses.fila.length-1]");return {ok:c===7&&rep.rep===true&&!!rep.dicaPaga&&ev3("S.coins")===7,m:JSON.stringify([c,rep.rep,ev3("S.coins"),!!U("#bt-dica")&&U("#bt-dica").disabled,ev3("FS.ses.estado"),ev3("FS.ses.fila.length")])}});
 T("as moedas gastas continuam salvas (save) e o saldo mostrado no topo acompanha",()=>{mostra(gerar("adicao",1,"digitar"),"a3-adicao",10);U("#bt-dica").click();return JSON.parse(sb.w.localStorage.getItem("tabuada-pokemon-v1")).coins===7});
 sb.w.close();
-t("sw.js: pokemath-v20",/const V="pokemath-v20"/.test(lerArq("sw.js")));
+t("sw.js: pokemath-v21",/const V="pokemath-v21"/.test(lerArq("sw.js")));
 }
 
 
@@ -1408,7 +1408,7 @@ T("imagens: as perguntas de Tabelas e gráficos usam a imagem real (nenhuma cari
     if(/<polygon/.test(h))return {ok:false,m:"carinha em "+ex.visual.tipo};if(/<image/.test(h))viu++}
   return viu>5||{ok:false,m:"imagens vistas: "+viu}});
 T("imagens: o roteiro de tabelas usa a imagem real nos ícones do pictograma (3 ícones = 3 imagens)",()=>EX[3]&&EX[3].img===3&&EX[3].carinha===0&&EX.every(x=>x.carinha===0),JSON.stringify(EX.map(x=>[x.img,x.carinha])));
-T("sw.js: as 6 imagens entram no cache offline e a versão sobe para pokemath-v20",()=>{const s=lerArq("sw.js");return /pokemath-v20/.test(s)&&NOMES_PK.every(n=>s.includes("img/pokemon/"+n+".webp"))});
+T("sw.js: as 6 imagens entram no cache offline e a versão sobe para pokemath-v21",()=>{const s=lerArq("sw.js");return /pokemath-v21/.test(s)&&NOMES_PK.every(n=>s.includes("img/pokemon/"+n+".webp"))});
 /* ---- 3) dinheiro em reais, com vírgula ---- */
 T("dinheiro: parseDin entende 2,30 · 2.30 · R$ 2,30 · 3,5 · 2 e recusa texto, 3 casas e vazio",()=>{
   const p=s=>ev3(`parseDin(${JSON.stringify(s)})`);
@@ -1501,6 +1501,40 @@ T("macete Dinheiro: a prática mostra as opções em dinheiro (R$ x,xx) quando a
   return viu||{ok:false,m:"nunca apareceu dinheiro"}});
 T("macete Dinheiro: o texto explica reais e centavos com vírgula (R$ 2,30 = 2 reais e 30 centavos) e o troco",()=>{const m=ev3("macAch('dinheiro')");return /a vírgula separa os reais.*R\$ 2,30 são 2 reais e 30 centavos/.test(m.explicacao)&&/troco/i.test(m.explicacao)&&/R\$ 1 = 100 centavos/.test(m.explicacao)});
 T("fase Dinheiro: os tópicos falam de valores com vírgula",()=>/vírgula|2,30/i.test(ev3("FASES.find(f=>f.id==='a3-dinheiro').topicos.join(' ')")));
+/* ========== TÁBUAS DE MADEIRA NA TRILHA (ponte até o vulcão) ========== */
+const cssT=lerArq("css/trilha.css").replace(/\/\*[\s\S]*?\*\//g,"").replace(/\s+/g,"");
+const regraT=(sel)=>{const m=cssT.match(new RegExp("(?<![^}])"+sel.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\{([^}]*)\\}","g"));return m?m.join(""):""};
+T("tábuas: cada fase da zona ilustrada é um botão-tábua (button.circulo.tabua), 15 no 3º ano, na ordem das fases",()=>{
+  ev3("S.fases={};S.tentNivel=null;S.cfg.anoEscolar=3;save();voltarTrilha();ir('fases')");
+  const b=Q('.zona[data-ano="3"] button.circulo.tabua[data-fase]');return b.length===15&&b.map(e=>e.dataset.fase).join()===ev3("fasesDoAno(3).map(f=>f.id).join()")||{ok:false,m:"tábuas: "+b.length}});
+T("tábuas: todos os estados — disponível, concluída (selo ✔ e medalha), para refazer, bloqueada (cadeado) — continuam corretos",()=>{
+  const g=id=>U('button.circulo.tabua[data-fase="'+id+'"]');
+  ev3("S.fases={};"+OURO(["a3-posicional"])+";save();voltarTrilha();ir('fases')");
+  const c=g("a3-posicional"),d=g("a3-adicao"),bl=g("a3-vai-um"),e1=[c,d,bl].map(e=>e&&e.dataset.estado).join();
+  const ok1=e1==="concluido,disponivel,bloqueado"&&c.classList.contains("concluido")&&!!c.querySelector(".selo")&&/✔/.test(c.querySelector(".selo").textContent)&&/🥇/.test(c.textContent)&&!!bl.querySelector(".cad")&&!d.querySelector(".selo")&&!bl.querySelector(".selo");
+  ev3("S.fases={};"+OURO(["a3-posicional"])+";S.fases['a3-adicao']={niveis:{bronze:{ok:true},prata:{falhou:true}},viu:true};save();voltarTrilha();ir('fases')");
+  const r=g("a3-adicao"),e2=r&&r.dataset.estado;
+  return ok1&&e2==="refazer"&&r.classList.contains("refazer")&&!r.querySelector(".selo")||{ok:false,m:e1+" / "+e2}});
+T("tábuas: rótulo de acessibilidade, data-fase e toque continuam — tocar na tábua abre a folha com Bronze, Prata e Ouro",()=>{
+  ev3("S.fases={};save();voltarTrilha();ir('fases')");const b=U('button.circulo.tabua[data-fase="a3-posicional"]');
+  if(!/Posicional|Valor|posicional/i.test(b.getAttribute("aria-label")||"")&&!/,/.test(b.getAttribute("aria-label")||""))return {ok:false,m:b.getAttribute("aria-label")};
+  b.click();return Q("#folha .nv").length===3||{ok:false,m:"folha"}});
+T("tábuas: o nome curto continua ao lado (etiqueta .tit) e o ícone da fase fica dentro da tábua",()=>{
+  ev3("voltarTrilha();ir('fases')");const b=U('button.circulo.tabua[data-fase="a3-paresimpares"]');
+  return !!b.querySelector(".ic")&&b.parentNode.querySelector(".tit").textContent==="Pares"});
+T("tábuas: fora da zona ilustrada (caminho em zigue-zague) o botão também é tábua",()=>/class="circulo tabua /.test(ev3("noCirculo(FASES[0],0)")));
+T("tábuas CSS: o formato é de tábua — mais larga que alta, moldura e face de madeira, espessura embaixo, 2 pregos e área de toque ampliada",()=>{
+  const z=regraT(".zona.ilus.circulo.tabua"),b=regraT(".circulo.tabua").replace(z,""),pr=regraT(".circulo.tabua::after"),ht=regraT(".circulo.tabua::before");
+  const w=+(z.match(/width:([\d.]+)cqw/)||[])[1],h=+(z.match(/height:([\d.]+)cqw/)||[])[1];
+  return w>h*1.5&&/border-radius:/.test(b)&&/repeating-linear-gradient/.test(b)&&/box-shadow:0[^;]*#[0-9a-f]{3,6}/i.test(b)&&(pr.match(/radial-gradient/g)||[]).length>=2&&/inset:-(\d+)px/.test(ht)&&+(ht.match(/inset:-(\d+)px/)||[])[1]>=5||{ok:false,m:[w,h,b.slice(0,80),pr.slice(0,60),ht].join("|")}});
+T("tábuas CSS: a zona ilustrada mede em cqw (container-type) para a tábua crescer e diminuir junto com a imagem",()=>/\.zona\.ilus\{[^}]*container-type:inline-size/.test(cssT));
+T("tábuas CSS: cada estado tem a sua madeira (disponível brilha, concluída verde, refazer laranja, bloqueada cinza, em breve apagada)",()=>["disponivel","concluido","refazer","bloqueado","embreve"].every(e=>new RegExp("(?<![^}])\\.circulo\\.tabua\\."+e+"[^{]*\\{").test(cssT)));
+T("tábuas: sobre a imagem elas cabem — dentro da zona (0–100%) e sem se cobrirem (sobreposição < 15% da tábua) com o tamanho do CSS",()=>{
+  const z=regraT(".zona.ilus.circulo.tabua"),w=+(z.match(/width:([\d.]+)cqw/)||[])[1],h=+(z.match(/height:([\d.]+)cqw/)||[])[1]/(1732/800),P=Array.from(ev3("ZONAS[3].pontos")).map(p=>Array.from(p));
+  if(!(w>0&&h>0))return {ok:false,m:"sem tamanho em cqw no CSS"};
+  for(const p of P)if(p[0]-w/2<0||p[0]+w/2>100||p[1]-h/2<0||p[1]+h/2>100)return {ok:false,m:"fora: "+p};
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const ox=Math.max(0,w-Math.abs(P[i][0]-P[j][0])),oy=Math.max(0,h-Math.abs(P[i][1]-P[j][1]));if(ox*oy>.15*w*h)return {ok:false,m:"sobrepõe "+i+"-"+j+" "+(ox*oy/(w*h)).toFixed(2)}}
+  return true});
 sb.w.close();
 }
 
